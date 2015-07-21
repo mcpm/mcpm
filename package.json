@@ -25,6 +25,7 @@
     "test": "gulp test"
   },
   "dependencies": {
+    "semver": "^5.0.1"
   },
   "devDependencies": {
     "chai": "^1.9.1",
