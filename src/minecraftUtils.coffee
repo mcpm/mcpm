@@ -26,3 +26,18 @@ module.exports =
 		originalInfo: currentProfile
 		installedPackages: currentProfile.mcpmInstalledPackages ? []
 		version: version
+
+	setCurrentProfile: ( newProfile ) ->
+		pathToProfiles = path.join @getMinecraftPath(), "launcher_profiles.json"
+		launcherProfiles = JSON.parse fs.readFileSync pathToProfiles,
+			encoding: "utf-8"
+		currentProfileName = launcherProfiles.selectedProfile
+
+		launcherProfiles.profiles[ currentProfileName ] = newProfile
+
+		fs.writeFileSync pathToProfiles, JSON.stringify launcherProfiles, null, 2
+
+	addInstalledPackage: ( name, version ) ->
+		currentProfile = @getCurrentProfile().originalInfo
+		currentProfile.mcpmInstalledPackages[ name ] = version
+		@setCurrentProfile currentProfile
