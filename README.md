@@ -1,8 +1,8 @@
 # mcpm
 
-[![Dependency status](https://img.shields.io/david/deltaidea/mcpm.svg?style=flat)](https://david-dm.org/deltaidea/mcpm)
-[![devDependency Status](https://img.shields.io/david/dev/deltaidea/mcpm.svg?style=flat)](https://david-dm.org/deltaidea/mcpm#info=devDependencies)
-[![Build Status](https://img.shields.io/travis/deltaidea/mcpm.svg?style=flat&branch=master)](https://travis-ci.org/deltaidea/mcpm)
+[![Dependency status](https://img.shields.io/david/mcpm/mcpm.svg?style=flat)](https://david-dm.org/mcpm/mcpm)
+[![devDependency Status](https://img.shields.io/david/dev/mcpm/mcpm.svg?style=flat)](https://david-dm.org/mcpm/mcpm#info=devDependencies)
+[![Build Status](https://img.shields.io/travis/mcpm/mcpm.svg?style=flat&branch=master)](https://travis-ci.org/mcpm/mcpm)
 
 [![NPM](https://nodei.co/npm/mcpm.svg?style=flat)](https://npmjs.org/package/mcpm)
 
