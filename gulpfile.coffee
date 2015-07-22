@@ -5,10 +5,15 @@ coffee = require "gulp-coffee"
 istanbul = require "gulp-istanbul"
 mocha = require "gulp-mocha"
 plumber = require "gulp-plumber"
+coveralls = require "gulp-coveralls"
 
 gulp.on "err", ( e ) ->
 	gutil.beep()
 	gutil.log e.err.stack
+
+gulp.task "coveralls", ->
+	gulp.src "./coverage/**/lcov.info"
+		.pipe coveralls()
 
 gulp.task "coffee", ->
 	gulp.src "./src/**/*.coffee"
