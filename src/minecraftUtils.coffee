@@ -1,5 +1,6 @@
 os = require "os"
 path = require "path"
+fs = require "fs"
 
 module.exports =
 	getMinecraftPath: ->
@@ -13,8 +14,9 @@ module.exports =
 		path.join homeDir, relativeMinecraftPath
 
 	getCurrentProfile: ->
-		launcherProfiles = require path.join @getMinecraftPath(),
-			"launcher_profiles.json"
+		pathToProfiles = path.join @getMinecraftPath(), "launcher_profiles.json"
+		launcherProfiles = JSON.parse fs.readFileSync pathToProfiles,
+			encoding: "utf-8"
 
 		currentProfileName = launcherProfiles.selectedProfile
 		currentProfile = launcherProfiles.profiles[ currentProfileName ]

@@ -5,14 +5,15 @@ chai.use require "sinon-chai"
 
 minecraftUtils = require "../lib/minecraftUtils.js"
 
+os = require "os"
+path = require "path"
+fs = require "fs"
+
 describe "minecraftUtils", ->
 
 	describe "getMinecraftPath", ->
 
 		it "returns path to the Minecraft directory", ->
-			os = require "os"
-			path = require "path"
-
 			originalHome = process.env.HOME
 			process.env.HOME = "fakeHome"
 
@@ -36,23 +37,46 @@ describe "minecraftUtils", ->
 
 	describe "getCurrentProfile", ->
 
-		currentProfile = null
-		before ->
-			path = require "path"
-			# cwd seems to be outside of test/
-			pathToFixtures = path.resolve "test/fixtures"
-			sinon.stub minecraftUtils, "getMinecraftPath", -> pathToFixtures
+		# cwd seems to be outside of test/
+		pathToFixtures = path.resolve "test/fixtures"
+		pathToTheFixture = path.join pathToFixtures, "launcher_profiles.json"
 
-			currentProfile = minecraftUtils.getCurrentProfile()
+		loadFixture = ->
+			JSON.parse fs.readFileSync pathToTheFixture, encoding: "utf-8"
+
+		before ->
+			sinon.stub minecraftUtils, "getMinecraftPath", -> pathToFixtures
 
 		after ->
 			minecraftUtils.getMinecraftPath.restore()
 
-		it "returns current profile from in originalInfo property", ->
-			fixture = require "./fixtures/launcher_profiles.json"
+		afterEach ->
+			# Roll back the changes to make the tests stateless.
+			fixture = loadFixture()
+			fixture.selectedProfile = "1.8 + Forge + LiteLoader"
+			fs.writeFileSync pathToTheFixture, JSON.stringify fixture, null, 2
+
+		it "returns current profile in originalInfo property", ->
+			fixture = loadFixture()
 			actualInfo = fixture.profiles[ "1.8 + Forge + LiteLoader" ]
 
+			currentProfile = minecraftUtils.getCurrentProfile()
 			actualInfo.should.deep.equal currentProfile.originalInfo
 
 		it "returns current Minecraft version in version property", ->
+			currentProfile = minecraftUtils.getCurrentProfile()
 			"1.8".should.equal currentProfile.version
+
+		it "reloads profiles on each call", ->
+			fixture = loadFixture()
+			actualInfo = fixture.profiles[ "1.8 + Forge + LiteLoader" ]
+
+			currentProfile = minecraftUtils.getCurrentProfile()
+			actualInfo.should.deep.equal currentProfile.originalInfo
+
+			fixture.selectedProfile = "1.8"
+			fs.writeFileSync pathToTheFixture, JSON.stringify fixture
+			actualInfo = fixture.profiles[ "1.8" ]
+
+			currentProfile = minecraftUtils.getCurrentProfile()
+			actualInfo.should.deep.equal currentProfile.originalInfo
