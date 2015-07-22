@@ -15,26 +15,34 @@ gulp.task "coveralls", ->
 	gulp.src "./coverage/**/lcov.info"
 		.pipe coveralls()
 
-gulp.task "coffee", ->
+gulp.task "coffee-src", ->
 	gulp.src "./src/**/*.coffee"
 		# Pevent pipe breaking caused by errors from gulp plugins
 		.pipe plumber()
 		.pipe coffee bare: true
 		.pipe gulp.dest "./lib/"
 
+gulp.task "coffee-bin", ->
+	gulp.src "./src-bin/**/*.coffee"
+		.pipe plumber()
+		.pipe coffee bare: true
+		.pipe gulp.dest "./bin/"
+
+gulp.task "coffee", [ "coffee-src", "coffee-bin" ]
+
 gulp.task "test", [ "coffee" ], ->
-	gulp.src [ "lib/**/*.js" ]
+	gulp.src "lib/**/*.js"
 		# Covering files
 		.pipe istanbul()
 		# Overwrite require so it returns the covered files
 		.pipe istanbul.hookRequire()
 		.on "finish", ->
-			gulp.src [ "test/**/*.spec.coffee" ]
+			gulp.src "test/**/*.spec.coffee"
 				.pipe mocha reporter: "spec", compilers: "coffee:coffee-script"
 				# Creating the reports after tests run
 				.pipe istanbul.writeReports()
 
 gulp.task "watch", ->
-	gulp.watch "./src/**/*.coffee", [ "coffee" ]
+	gulp.watch "./src{,-bin}/**/*.coffee", [ "coffee" ]
 
 gulp.task "default", [ "coffee" ]

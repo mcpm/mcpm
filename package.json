@@ -24,7 +24,11 @@
   "scripts": {
     "test": "gulp test"
   },
+  "bin": {
+    "mcpm": "./bin/mcpm.js"
+  },
   "dependencies": {
+    "commander": "~2.8.1",
     "fs-extra": "~0.22.1",
     "glob": "~5.0.14",
     "semver": "~5.0.1"
