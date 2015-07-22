@@ -124,13 +124,23 @@ describe "install", ->
 					result.should.be.an.instanceof Error
 					result.message.should.contain "mc"
 
+		it "returns the config when it is valid", ->
+			config =
+				name: "fake"
+				version: "0.1.0"
+				mc: "1.8"
+				install_executable: "index.js"
+			result = install.checkConfig JSON.stringify config
+			result.should.deep.equal config
+
 		it "allows install_file_list instead of install_executable", ->
-			result = install.checkConfig JSON.stringify
+			config =
 				name: "fake"
 				version: "0.1.0"
 				mc: "1.8"
 				install_file_list: [ "index.js" ]
-			result.should.equal true
+			result = install.checkConfig JSON.stringify config
+			result.should.deep.equal config
 
 		it "returns an Error when install_file_list is not an array", ->
 			result = install.checkConfig JSON.stringify
@@ -149,23 +159,16 @@ describe "install", ->
 			result.should.be.an.instanceof Error
 			result.message.should.contain "install"
 
-		it "returns true when config is valid", ->
-			result = install.checkConfig JSON.stringify
-				name: "fake"
-				version: "0.1.0"
-				mc: "1.8"
-				install_executable: "index.js"
-			result.should.equal true
-
 		it "allows custom fields", ->
-			result = install.checkConfig JSON.stringify
+			config =
 				name: "fake"
 				version: "0.1.0"
 				mc: "1.8"
 				install_executable: "index.js"
 				custom: "whatever"
 				field: 5
-			result.should.equal true
+			result = install.checkConfig JSON.stringify config
+			result.should.deep.equal config
 
 	describe "flattenFileList", ->
 

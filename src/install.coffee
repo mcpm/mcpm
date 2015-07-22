@@ -49,7 +49,7 @@ module.exports =
 		if config.install_file_list and not Array.isArray config.install_file_list
 			return new Error "Specified install_file_list is not an array!"
 
-		true
+		config
 
 	flattenFileList: ( list, packageDirectory ) ->
 		if not packageDirectory
