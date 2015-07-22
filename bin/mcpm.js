@@ -1,12 +1,10 @@
 #!/usr/bin/env node
 ;
-var commander, mcpm, minecraftUtils;
+var commander, mcpm;
 
 commander = require("commander");
 
 mcpm = require("../lib/mcpm");
-
-minecraftUtils = require("../lib/minecraftUtils");
 
 commander.version(require("../package.json").version);
 
@@ -22,7 +20,7 @@ commander.command("install <packages...>").alias("i").description("install one o
 });
 
 commander.command("minecraft-version").alias("mc").description("display currently selected Minecraft version").action(function() {
-  return console.log(minecraftUtils.getCurrentProfile().version);
+  return console.log(mcpm.getMinecraftVersion());
 });
 
 commander.parse(process.argv);

@@ -1,4 +1,5 @@
 install = require "./install"
+minecraftUtils = require "./minecraftUtils"
 
 module.exports =
 
@@ -9,3 +10,6 @@ module.exports =
 			install.fromFolder parsed.name
 		else
 			return new Error "Invalid package string!"
+
+	getMinecraftVersion: ->
+		minecraftUtils.getCurrentProfile().version

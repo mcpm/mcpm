@@ -3,7 +3,6 @@
 
 commander = require "commander"
 mcpm = require "../lib/mcpm"
-minecraftUtils = require "../lib/minecraftUtils"
 
 commander
 	.version require( "../package.json" ).version
@@ -22,7 +21,7 @@ commander
 	.alias "mc"
 	.description "display currently selected Minecraft version"
 	.action ->
-		console.log minecraftUtils.getCurrentProfile().version
+		console.log mcpm.getMinecraftVersion()
 
 commander
 	.parse process.argv

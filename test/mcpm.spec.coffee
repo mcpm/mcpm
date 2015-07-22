@@ -7,6 +7,7 @@ chai.should()
 chai.use require "sinon-chai"
 
 install = require "../lib/install"
+minecraftUtils = require "../lib/minecraftUtils"
 
 describe "mcpm", ->
 
@@ -32,3 +33,14 @@ describe "mcpm", ->
 			install.fromFolder.should.have.been.calledOnce
 			install.fromFolder.restore()
 			install.parsePackageString.restore()
+
+	describe "getMinecraftVersion", ->
+
+		it "uses 'minecraftUtils.getCurrentProfile().version'", ->
+			sinon.stub minecraftUtils, "getCurrentProfile", ->
+				version: "foo.bar.qux"
+
+			result = mcpm.getMinecraftVersion()
+			"foo.bar.qux".should.equal result
+
+			minecraftUtils.getCurrentProfile.restore()
