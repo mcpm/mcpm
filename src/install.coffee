@@ -27,4 +27,10 @@ module.exports =
 		if not config.mc or not semver.validRange config.mc
 			return new Error "Invalid package mc!"
 
+		if not config.install_file_list and not config.install_executable
+			return new Error "No install_file_list and install_executable!"
+
+		if config.install_file_list and not Array.isArray config.install_file_list
+			return new Error "Specified install_file_list is not an array!"
+
 		true

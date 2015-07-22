@@ -33,6 +33,7 @@ describe "install", ->
 			result = install.checkConfig JSON.stringify
 				version: "0.1.0"
 				mc: "1.8"
+				install_executable: "index.js"
 			result.should.be.an.instanceof Error
 			result.message.should.contain "name"
 
@@ -40,6 +41,7 @@ describe "install", ->
 			result = install.checkConfig JSON.stringify
 				name: "fake"
 				mc: "1.8"
+				install_executable: "index.js"
 			result.should.be.an.instanceof Error
 			result.message.should.contain "version"
 
@@ -47,6 +49,7 @@ describe "install", ->
 			result = install.checkConfig JSON.stringify
 				name: "fake"
 				version: "0.1.0"
+				install_executable: "index.js"
 			result.should.be.an.instanceof Error
 			result.message.should.contain "mc"
 
@@ -57,6 +60,7 @@ describe "install", ->
 						name: name
 						version: "0.1.0"
 						mc: "1.8"
+						install_executable: "index.js"
 					result.should.be.an.instanceof Error
 					result.message.should.contain "name"
 
@@ -67,6 +71,7 @@ describe "install", ->
 						name: "fake"
 						version: version
 						mc: "1.8"
+						install_executable: "index.js"
 					result.should.be.an.instanceof Error
 					result.message.should.contain "version"
 
@@ -77,14 +82,41 @@ describe "install", ->
 						name: "fake"
 						version: "0.1.0"
 						mc: mc
+						install_executable: "index.js"
 					result.should.be.an.instanceof Error
 					result.message.should.contain "mc"
+
+		it "allows install_file_list instead of install_executable", ->
+			result = install.checkConfig JSON.stringify
+				name: "fake"
+				version: "0.1.0"
+				mc: "1.8"
+				install_file_list: [ "index.js" ]
+			result.should.equal true
+
+		it "returns an Error when install_file_list is not an array", ->
+			result = install.checkConfig JSON.stringify
+				name: "fake"
+				version: "0.1.0"
+				mc: "1.8"
+				install_file_list: "index.js"
+			result.should.be.an.instanceof Error
+			result.message.should.contain "install"
+
+		it "returns an Error when no install_file_list/install_executable", ->
+			result = install.checkConfig JSON.stringify
+				name: "fake"
+				version: "0.1.0"
+				mc: "1.8"
+			result.should.be.an.instanceof Error
+			result.message.should.contain "install"
 
 		it "returns true when config is valid", ->
 			result = install.checkConfig JSON.stringify
 				name: "fake"
 				version: "0.1.0"
 				mc: "1.8"
+				install_executable: "index.js"
 			result.should.equal true
 
 		it "allows custom fields", ->
@@ -92,6 +124,7 @@ describe "install", ->
 				name: "fake"
 				version: "0.1.0"
 				mc: "1.8"
+				install_executable: "index.js"
 				custom: "whatever"
 				field: 5
 			result.should.equal true
