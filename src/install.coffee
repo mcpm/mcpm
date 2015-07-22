@@ -18,11 +18,7 @@ module.exports =
 		if not config
 			return new SyntaxError
 
-		for field in [ "name", "version", "mc" ]
-			if not ( field of config )
-				return new Error "Package config must include #{field} field!"
-
-		if not /^[a-z]([a-z1-9-]*[a-z1-9])?$/i.test config.name
+		if not config.name or not /^[a-z]([\w-]*[a-z])?$/i.test config.name
 			return new Error "Invalid package name!"
 
 		if not semver.valid config.version
