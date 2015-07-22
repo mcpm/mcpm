@@ -8,6 +8,40 @@ install = require "../lib/install.js"
 
 describe "install", ->
 
+	describe "parsePackageString", ->
+
+		for obj in [ null, undefined, 100, {}, [ "folder:some/path" ] ]
+			do ( obj ) ->
+				it "classifies non-strings as 'invalid': #{obj}", ->
+					parsed = install.parsePackageString obj
+					expect( parsed ).to.equal null
+
+		for str in [ "", "-", "1sdf", "π", "mcpm/mcpm" ]
+			do ( str ) ->
+				it "classifies any non-prefixed string as 'folder': #{str}", ->
+					parsed = install.parsePackageString str
+					parsed.should.deep.equal
+						type: "folder"
+						name: str
+
+		for str in [ "", "-", "1sdf", "π", "mcpm/mcpm" ]
+			do ( str ) ->
+				it "classifies 'folder'-prefixed string as 'folder': #{str}", ->
+					parsed = install.parsePackageString "folder:#{str}"
+					parsed.should.deep.equal
+						type: "folder"
+						name: str
+
+		for prefix in [ "github", "http", "", "whatever", ":folder" ]
+			do ( prefix ) ->
+				it "classifies any other prefix as 'invalid': #{prefix}", ->
+					parsed = install.parsePackageString "#{prefix}:some/path"
+					expect( parsed ).to.equal null
+
+		it "classifies strings with multiple ':' as 'invalid'", ->
+			parsed = install.parsePackageString "folder:wtf:is:this"
+			expect( parsed ).to.equal null
+
 	describe "readConfig", ->
 
 		path = require "path"

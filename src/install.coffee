@@ -4,6 +4,19 @@ semver = require "semver"
 
 module.exports =
 
+	parsePackageString: ( str ) ->
+		if typeof str isnt "string"
+			return null
+
+		if str.startsWith "folder:"
+			str = str.substring "folder:".length
+
+		if str.includes ":"
+			null
+		else
+			type: "folder"
+			name: str
+
 	readConfig: ( packageDirectory ) ->
 		try
 			configFilename = path.join packageDirectory, "mcpm-package.json"
