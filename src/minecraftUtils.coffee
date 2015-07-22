@@ -24,4 +24,5 @@ module.exports =
 		version = currentProfile.lastVersionId.split( "-" )[ 0 ]
 
 		originalInfo: currentProfile
+		installedPackages: currentProfile.mcpmInstalledPackages ? []
 		version: version

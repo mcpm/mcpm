@@ -67,6 +67,13 @@ describe "minecraftUtils", ->
 			currentProfile = minecraftUtils.getCurrentProfile()
 			"1.8".should.equal currentProfile.version
 
+		it "returns installed packages in installedPackages property", ->
+			currentProfile = minecraftUtils.getCurrentProfile()
+			packageList =
+				fake: "1.2.3"
+				package: "2.3.4"
+			packageList.should.deep.equal currentProfile.installedPackages
+
 		it "reloads profiles on each call", ->
 			fixture = loadFixture()
 			actualInfo = fixture.profiles[ "1.8 + Forge + LiteLoader" ]
