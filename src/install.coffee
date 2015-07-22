@@ -1,6 +1,8 @@
-fs = require "fs"
+fs = require "fs-extra"
 path = require "path"
 semver = require "semver"
+glob = require "glob"
+minecraftUtils = require "./minecraftUtils"
 
 module.exports =
 
@@ -47,3 +49,43 @@ module.exports =
 			return new Error "Specified install_file_list is not an array!"
 
 		true
+
+	flattenFileList: ( list, packageDirectory ) ->
+		if not packageDirectory
+			return new Error "Package directory not specified!"
+
+		flattened = {}
+
+		for toWhere, fromGlob of list
+			normalizedToWhere = path.posix.normalize toWhere
+
+			if ( normalizedToWhere.startsWith ".." + path.sep ) or
+			( normalizedToWhere is ".." )
+				return new Error "Trying to copy to outside of Minecraft!"
+			if path.isAbsolute normalizedToWhere
+				return new Error "Trying to copy to an absolute path!"
+
+			expandedGlob = glob.sync fromGlob, cwd: packageDirectory
+
+			for filePath in expandedGlob
+				normalizedFilePath = path.posix.normalize filePath
+
+				if ( normalizedFilePath.startsWith ".." + path.sep ) or
+				( normalizedFilePath is ".." )
+					return new Error "Trying to copy from outside of the package!"
+				if path.isAbsolute normalizedFilePath
+					return new Error "Trying to copy from an absolute path!"
+
+				flattened[ normalizedToWhere ] ?= []
+				flattened[ normalizedToWhere ].push normalizedFilePath
+
+		flattened
+
+	copyFiles: ( list, packageDirectory ) ->
+		minecraftRoot = minecraftUtils.getMinecraftPath()
+		for to, fromList of list
+			for from in fromList
+				absoluteFrom = path.join packageDirectory, from
+				absoluteTo = path.join minecraftRoot, to, path.basename from
+				fs.copySync absoluteFrom, absoluteTo
+		yes

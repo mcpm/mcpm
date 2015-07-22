@@ -6,6 +6,11 @@ chai.use require "sinon-chai"
 
 install = require "../lib/install.js"
 
+glob = require "glob"
+path = require "path"
+fs = require "fs-extra"
+minecraftUtils = require "../lib/minecraftUtils"
+
 describe "install", ->
 
 	describe "parsePackageString", ->
@@ -162,3 +167,79 @@ describe "install", ->
 				custom: "whatever"
 				field: 5
 			result.should.equal true
+
+	describe "flattenFileList", ->
+
+		pathToPackage = "pkgpath"
+		pathToMc = "mcpath"
+
+		fakeFileList =
+			"mods/1.8/./../1.8": "fake.mod"
+			"./config": "configfiles/*.cfg"
+
+		flattenedFakeFileList =
+			"mods/1.8": [ "fake.mod" ]
+			"config": [ "configfiles/1.cfg", "configfiles/2.cfg" ]
+
+		before ->
+			sinon.stub glob, "sync", ( glob, opts ) ->
+				opts.cwd.should.equal pathToPackage
+
+				if glob is "configfiles/*.cfg"
+					[ "configfiles/1.cfg", "configfiles/2.cfg" ]
+				else
+					[ glob ]
+
+		after ->
+			glob.sync.restore()
+
+		it "treats items as globs", ->
+			flattened = install.flattenFileList fakeFileList, pathToPackage
+			flattened.should.deep.equal flattenedFakeFileList
+
+		it "returns an Error when packageDirectory not specified", ->
+			result = install.flattenFileList fakeFileList
+			result.should.be.an.instanceof Error
+
+		it "returns an Error when trying to copy from outside of the package", ->
+			result = install.flattenFileList
+				"malicious": "whatever/../.."
+			, pathToPackage
+			result.should.be.an.instanceof Error
+
+		it "returns an Error when trying to copy from an absolute path", ->
+			result = install.flattenFileList
+				"malicious": path.resolve "whatever"
+			, pathToPackage
+			result.should.be.an.instanceof Error
+
+		it "returns an Error when trying to copy to outside of Minecraft", ->
+			result = install.flattenFileList
+				"whatever/../..": "malicious"
+			, pathToPackage
+			result.should.be.an.instanceof Error
+
+		it "returns an Error when trying to copy to an absolute path", ->
+			list = {}
+			list[ path.resolve "whatever" ] = "malicious"
+			result = install.flattenFileList list, pathToPackage
+			result.should.be.an.instanceof Error
+
+	describe "copyFiles", ->
+
+		beforeEach ->
+			sinon.stub minecraftUtils, "getMinecraftPath", -> "mcpath"
+			sinon.stub fs, "copySync", ( from, to ) ->
+				if from.includes "from.file"
+					to.should.equal path.join "mcpath", "foo/bar/to/from.file"
+				else
+					to.should.equal path.join "mcpath", "foo/bar/to/dir"
+
+		afterEach ->
+			minecraftUtils.getMinecraftPath.restore()
+			fs.copySync.restore()
+
+		it "safely copies files and folders using fs-extra#copySync", ->
+			install.copyFiles
+				"foo/bar/to": [ "whatever/from.file", "whatever/from/dir" ]
+			, "pkgpath"

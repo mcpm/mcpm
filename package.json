@@ -25,6 +25,8 @@
     "test": "gulp test"
   },
   "dependencies": {
+    "fs-extra": "~0.22.1",
+    "glob": "~5.0.14",
     "semver": "~5.0.1"
   },
   "devDependencies": {
