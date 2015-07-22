@@ -2,6 +2,7 @@ fs = require "fs-extra"
 path = require "path"
 semver = require "semver"
 glob = require "glob"
+childProcess = require "child_process"
 minecraftUtils = require "./minecraftUtils"
 
 module.exports =
@@ -31,7 +32,7 @@ module.exports =
 			config = JSON.parse @readConfig packageDirectory
 
 		if not config
-			return new SyntaxError
+			return new SyntaxError "Invalid JSON in package config!"
 
 		if not config.name or not /^[a-z]([\w-]*[a-z])?$/i.test config.name
 			return new Error "Invalid package name!"
@@ -89,3 +90,18 @@ module.exports =
 				absoluteTo = path.join minecraftRoot, to, path.basename from
 				fs.copySync absoluteFrom, absoluteTo
 		yes
+
+	invokeInstallExecutable: ( file, packageDirectory ) ->
+		normalizedFilePath = path.normalize file
+
+		if ( normalizedFilePath.startsWith ".." + path.sep ) or
+		( normalizedFilePath is ".." )
+			return new Error "Trying to call a file outside of the package!"
+
+		fullPath = path.normalize path.join packageDirectory, file
+
+		childProcess.execFileSync fullPath, [],
+			cwd: packageDirectory
+			env:
+				MCPM: "1"
+				PATH_TO_MINECRAFT: minecraftUtils.getMinecraftPath()

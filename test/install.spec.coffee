@@ -9,6 +9,7 @@ install = require "../lib/install.js"
 glob = require "glob"
 path = require "path"
 fs = require "fs-extra"
+childProcess = require "child_process"
 minecraftUtils = require "../lib/minecraftUtils"
 
 describe "install", ->
@@ -241,3 +242,36 @@ describe "install", ->
 			install.copyFiles
 				"foo/bar/to": [ "whatever/from.file", "whatever/from/dir" ]
 			, "pkgpath"
+
+	describe "invokeInstallExecutable", ->
+
+		before ->
+			sinon.stub minecraftUtils, "getMinecraftPath", -> "mcpath"
+
+		after ->
+			minecraftUtils.getMinecraftPath.restore()
+
+		afterEach ->
+			childProcess.execFileSync.restore()
+
+		it "returns an Error when trying to call a file outside of package", ->
+			sinon.stub childProcess, "execFileSync", ( file, args, opts ) ->
+
+			result = install.invokeInstallExecutable "foo/../../bar.jar",
+				"malicious"
+			result.should.be.an.instanceof Error
+
+			childProcess.execFileSync.should.have.not.been.called
+
+		it "invokes install executable", ->
+			sinon.stub childProcess, "execFileSync", ( file, args, opts ) ->
+				fullPath = path.join "fixtures/fake-mod", "fake.jar"
+				file.should.equal fullPath
+				opts.cwd.should.equal "fixtures/fake-mod"
+				opts.env.should.deep.equal
+					MCPM: "1"
+					PATH_TO_MINECRAFT: "mcpath"
+
+			install.invokeInstallExecutable "fake.jar", "fixtures/fake-mod"
+
+			childProcess.execFileSync.should.have.been.calledOnce
