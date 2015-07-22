@@ -49,8 +49,6 @@ describe "install", ->
 
 	describe "readConfig", ->
 
-		path = require "path"
-
 		it "reads config inside package and returns its contents", ->
 			result = install.readConfig path.resolve "./test/fixtures/fake-mod"
 			result.should.be.a "string"
