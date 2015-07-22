@@ -100,8 +100,36 @@ module.exports =
 
 		fullPath = path.normalize path.join packageDirectory, file
 
-		childProcess.execFileSync fullPath, [],
-			cwd: packageDirectory
-			env:
-				MCPM: "1"
-				PATH_TO_MINECRAFT: minecraftUtils.getMinecraftPath()
+		try
+			childProcess.execFileSync fullPath, [],
+				cwd: packageDirectory
+				env:
+					MCPM: "1"
+					PATH_TO_MINECRAFT: minecraftUtils.getMinecraftPath()
+		catch err
+			return err
+
+		true
+
+	fromFolder: ( packageDirectory ) ->
+		config = @checkConfig packageDirectory
+		if config instanceof Error
+			return config
+
+		if config.install_file_list
+			list = @flattenFileList config.install_file_list, packageDirectory
+			if list instanceof Error
+				return list
+
+			result = @copyFiles list, packageDirectory
+			if result instanceof Error
+				return result
+
+		if config.install_executable
+			result = @invokeInstallExecutable config.install_executable,
+				packageDirectory
+
+			if result instanceof Error
+				return result
+
+		minecraftUtils.addInstalledPackage config.name, config.version
