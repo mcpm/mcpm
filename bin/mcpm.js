@@ -1,20 +1,27 @@
 #!/usr/bin/env node
 ;
-var commander, mcpm;
+var commander, mcpm, winston;
 
 commander = require("commander");
+
+winston = require("winston");
 
 mcpm = require("../lib/mcpm");
 
 commander.version(require("../package.json").version);
 
 commander.command("install <packages...>").alias("i").description("install one or more packages").action(function(packages) {
-  var i, len, pkg, results;
+  var i, len, pkg, result, results;
   results = [];
   for (i = 0, len = packages.length; i < len; i++) {
     pkg = packages[i];
-    console.log("Installing " + pkg + "...");
-    results.push(console.log(mcpm.install(pkg)));
+    winston.info(pkg + ": Searching...");
+    result = mcpm.install(pkg);
+    if (result instanceof Error) {
+      results.push(winston.error(pkg + ": " + result.name + ": " + result.message));
+    } else {
+      results.push(void 0);
+    }
   }
   return results;
 });

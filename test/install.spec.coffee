@@ -4,6 +4,9 @@ chai.should()
 expect = chai.expect
 chai.use require "sinon-chai"
 
+# Disabling logging in tests.
+try sinon.stub require "winston"
+
 install = require "../lib/install.js"
 
 glob = require "glob"

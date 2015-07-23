@@ -2,6 +2,7 @@
 `
 
 commander = require "commander"
+winston = require "winston"
 mcpm = require "../lib/mcpm"
 
 commander
@@ -13,8 +14,10 @@ commander
 	.description "install one or more packages"
 	.action ( packages ) ->
 		for pkg in packages
-			console.log "Installing #{pkg}..."
-			console.log mcpm.install pkg
+			winston.info "#{pkg}: Searching..."
+			result = mcpm.install pkg
+			if result instanceof Error
+				winston.error "#{pkg}: #{result.name}: #{result.message}"
 
 commander
 	.command "minecraft-version"

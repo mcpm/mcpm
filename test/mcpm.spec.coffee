@@ -1,6 +1,9 @@
 chai = require "chai"
 sinon = require "sinon"
 
+# Disabling logging in tests.
+try sinon.stub require "winston"
+
 mcpm = require "../lib/mcpm.js"
 
 chai.should()

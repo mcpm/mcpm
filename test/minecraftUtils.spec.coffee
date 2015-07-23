@@ -3,6 +3,9 @@ sinon = require "sinon"
 chai.should()
 chai.use require "sinon-chai"
 
+# Disabling logging in tests.
+try sinon.stub require "winston"
+
 minecraftUtils = require "../lib/minecraftUtils.js"
 
 os = require "os"
