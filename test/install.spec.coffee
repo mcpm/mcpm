@@ -291,6 +291,12 @@ describe "install", ->
 
 	describe "fromFolder", ->
 
+		before ->
+			sinon.stub minecraftUtils, "getCurrentProfile", -> {}
+
+		after ->
+			minecraftUtils.getCurrentProfile.restore()
+
 		it "reads and checks package config", ->
 			result = install.fromFolder "test/fixtures/invalid-mod"
 			result.should.be.an.instanceof Error
