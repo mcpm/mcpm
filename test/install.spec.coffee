@@ -17,16 +17,6 @@ minecraftUtils = require "../lib/minecraftUtils"
 
 describe "install", ->
 
-	describe "readConfig", ->
-
-		it "reads config inside package and returns its contents", ->
-			result = install.readConfig path.resolve "./test/fixtures/fake-mod"
-			result.should.be.a "string"
-
-		it "returns null when config not found", ->
-			result = install.readConfig path.resolve "./test/fixtures/404"
-			expect( result ).to.equal null
-
 	describe "checkConfig", ->
 
 		beforeEach -> sinon.stub install, "readConfig", ( str ) -> str

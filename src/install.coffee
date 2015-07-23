@@ -9,19 +9,7 @@ winston = require "winston"
 module.exports =
 
 	parsePackageString: require "./install/parsePackageString"
-
-	readConfig: ( packageDirectory ) ->
-		winston.verbose "install.readConfig: starting"
-
-		try
-			winston.silly "install.readConfig: trying to read config"
-			configFilename = path.join packageDirectory, "mcpm-package.json"
-			result = fs.readFileSync configFilename, encoding: "utf-8"
-			winston.verbose "install.readConfig: success, returning result"
-			result
-		catch
-			winston.debug "install.readConfig: error, returning null"
-			null
+	readConfig: require "./install/readConfig"
 
 	checkConfig: ( packageDirectory ) ->
 		winston.verbose "install.checkConfig: starting"
