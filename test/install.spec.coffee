@@ -9,32 +9,11 @@ require( "winston" ).level = Infinity
 
 install = require "../lib/install.js"
 
-glob = require "glob"
 path = require "path"
-fs = require "fs-extra"
 childProcess = require "child_process"
 minecraftUtils = require "../lib/minecraftUtils"
 
 describe "install", ->
-
-	describe "copyFiles", ->
-
-		beforeEach ->
-			sinon.stub minecraftUtils, "getMinecraftPath", -> "mcpath"
-			sinon.stub fs, "copySync", ( from, to ) ->
-				if from.includes "from.file"
-					to.should.equal path.join "mcpath", "foo/bar/to/from.file"
-				else
-					to.should.equal path.join "mcpath", "foo/bar/to/dir"
-
-		afterEach ->
-			minecraftUtils.getMinecraftPath.restore()
-			fs.copySync.restore()
-
-		it "safely copies files and folders using fs-extra#copySync", ->
-			install.copyFiles
-				"foo/bar/to": [ "whatever/from.file", "whatever/from/dir" ]
-			, "pkgpath"
 
 	describe "invokeInstallExecutable", ->
 
