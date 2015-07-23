@@ -178,7 +178,7 @@ module.exports =
 
 		try
 			winston.silly "install.invokeInstallExecutable: trying to exec"
-			childProcess.spawnSync fullPath, [],
+			result = childProcess.spawnSync fullPath, [],
 				cwd: packageDirectory
 				env:
 					MCPM: "1"
@@ -187,6 +187,7 @@ module.exports =
 			winston.debug "install.invokeInstallExecutable: failed, " +
 				"returning error"
 			return err
+		winston.verbose "install.invokeInstallExecutable: exited", result
 
 		winston.verbose "install.invokeInstallExecutable: success, returning " +
 			"true"
@@ -201,7 +202,8 @@ module.exports =
 			winston.debug "install.fromFolder: invalid config, returning error"
 			return config
 
-		winston.info "#{config.name}@#{config.version}: Installing..."
+		winston.info "#{config.name}@#{config.version}: Installing from " +
+			"a folder..."
 
 		if config.install_file_list
 			winston.silly "install.fromFolder: found install_file_list"
@@ -225,7 +227,7 @@ module.exports =
 		if config.install_executable
 			winston.silly "install.fromFolder: found install_executable"
 			winston.info "#{config.name}@#{config.version}: Calling " +
-				"provided installation executable..."
+				"#{config.install_executable}..."
 			winston.debug "install.fromFolder: invoking install executable"
 			result = @invokeInstallExecutable config.install_executable,
 				packageDirectory
@@ -239,5 +241,7 @@ module.exports =
 		winston.verbose "install.fromFolder: adding installed package"
 		result = minecraftUtils.addInstalledPackage config.name, config.version
 
+		profile = minecraftUtils.getCurrentProfile()
+		winston.info "#{config.name}@#{config.version}: Success!"
 		winston.verbose "install.fromFolder: done, returning result"
 		result
