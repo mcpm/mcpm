@@ -8,6 +8,8 @@ winston = require("winston");
 
 mcpm = require("../lib/mcpm");
 
+winston.cli();
+
 commander.version(require("../package.json").version);
 
 commander.command("install <packages...>").alias("i").description("install one or more packages").action(function(packages) {
@@ -18,7 +20,7 @@ commander.command("install <packages...>").alias("i").description("install one o
     winston.info(pkg + ": Searching...");
     result = mcpm.install(pkg);
     if (result instanceof Error) {
-      results.push(winston.error(pkg + ": " + result.name + ": " + result.message));
+      results.push(winston.error(pkg + ":", result));
     } else {
       results.push(void 0);
     }

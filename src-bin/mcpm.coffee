@@ -5,6 +5,8 @@ commander = require "commander"
 winston = require "winston"
 mcpm = require "../lib/mcpm"
 
+winston.cli()
+
 commander
 	.version require( "../package.json" ).version
 
@@ -17,7 +19,7 @@ commander
 			winston.info "#{pkg}: Searching..."
 			result = mcpm.install pkg
 			if result instanceof Error
-				winston.error "#{pkg}: #{result.name}: #{result.message}"
+				winston.error "#{pkg}:", result
 
 commander
 	.command "minecraft-version"
