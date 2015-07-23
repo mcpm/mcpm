@@ -2,7 +2,7 @@ chai = require "chai"
 sinon = require "sinon"
 
 # Disabling logging in tests.
-try sinon.stub require "winston"
+require( "winston" ).level = Infinity
 
 mcpm = require "../lib/mcpm.js"
 

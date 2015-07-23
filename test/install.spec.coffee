@@ -5,7 +5,7 @@ expect = chai.expect
 chai.use require "sinon-chai"
 
 # Disabling logging in tests.
-try sinon.stub require "winston"
+require( "winston" ).level = Infinity
 
 install = require "../lib/install.js"
 

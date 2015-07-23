@@ -4,7 +4,7 @@ chai.should()
 chai.use require "sinon-chai"
 
 # Disabling logging in tests.
-try sinon.stub require "winston"
+require( "winston" ).level = Infinity
 
 minecraftUtils = require "../lib/minecraftUtils.js"
 
