@@ -141,16 +141,16 @@ describe "install", ->
 				name: "fake"
 				version: "0.1.0"
 				mc: "1.8"
-				install_file_list: [ "index.js" ]
+				install_file_list: "mods/fake-mod": "index.js"
 			result = install.checkConfig JSON.stringify config
 			result.should.deep.equal config
 
-		it "returns an Error when install_file_list is not an array", ->
+		it "returns an Error when install_file_list is not an object", ->
 			result = install.checkConfig JSON.stringify
 				name: "fake"
 				version: "0.1.0"
 				mc: "1.8"
-				install_file_list: "index.js"
+				install_file_list: [ "index.js" ]
 			result.should.be.an.instanceof Error
 			result.message.should.contain "install"
 

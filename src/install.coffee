@@ -80,10 +80,12 @@ module.exports =
 		winston.silly "install.checkConfig: install_file_list or " +
 			"install_executable is there"
 
-		if config.install_file_list and not Array.isArray config.install_file_list
+		if config.install_file_list and
+		( typeof config.install_file_list isnt "object" ) or
+		Array.isArray config.install_file_list
 			winston.debug "install.checkConfig: install_file_list is not an " +
 				"array, returning error"
-			return new Error "Specified install_file_list is not an array!"
+			return new Error "Specified install_file_list is not an object!"
 		winston.silly "install.checkConfig: valid install_file_list"
 
 		winston.verbose "install.checkConfig: all ok, returning config"
