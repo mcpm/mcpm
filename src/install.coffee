@@ -178,7 +178,7 @@ module.exports =
 
 		try
 			winston.silly "install.invokeInstallExecutable: trying to exec"
-			childProcess.execFileSync fullPath, [],
+			childProcess.spawnSync fullPath, [],
 				cwd: packageDirectory
 				env:
 					MCPM: "1"

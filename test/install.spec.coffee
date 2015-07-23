@@ -258,19 +258,19 @@ describe "install", ->
 			minecraftUtils.getMinecraftPath.restore()
 
 		afterEach ->
-			childProcess.execFileSync.restore()
+			childProcess.spawnSync.restore()
 
 		it "returns an Error when trying to call a file outside of package", ->
-			sinon.stub childProcess, "execFileSync", ( file, args, opts ) ->
+			sinon.stub childProcess, "spawnSync", ( file, args, opts ) ->
 
 			result = install.invokeInstallExecutable "foo/../../bar.jar",
 				"malicious"
 			result.should.be.an.instanceof Error
 
-			childProcess.execFileSync.should.have.not.been.called
+			childProcess.spawnSync.should.have.not.been.called
 
 		it "invokes install executable", ->
-			sinon.stub childProcess, "execFileSync", ( file, args, opts ) ->
+			sinon.stub childProcess, "spawnSync", ( file, args, opts ) ->
 				fullPath = path.join "fixtures/fake-mod", "fake.jar"
 				file.should.equal fullPath
 				opts.cwd.should.equal "fixtures/fake-mod"
@@ -280,10 +280,10 @@ describe "install", ->
 
 			install.invokeInstallExecutable "fake.jar", "fixtures/fake-mod"
 
-			childProcess.execFileSync.should.have.been.calledOnce
+			childProcess.spawnSync.should.have.been.calledOnce
 
 		it "returns an Error when install executable exists with error", ->
-			sinon.stub childProcess, "execFileSync", ( file, args, opts ) ->
+			sinon.stub childProcess, "spawnSync", ( file, args, opts ) ->
 				throw new Error "Something went wrong!"
 
 			result = install.invokeInstallExecutable "fake.jar", "fake-mod"
