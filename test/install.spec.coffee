@@ -230,6 +230,14 @@ describe "install", ->
 			result = install.flattenFileList list, pathToPackage
 			result.should.be.an.instanceof Error
 
+		it "allows to specify arrays of globs", ->
+			list =
+				"mods/1.8/./../1.8": [ "fake.mod" ]
+				"./config": "configfiles/*.cfg"
+
+			result = install.flattenFileList list, pathToPackage
+			result.should.deep.equal flattenedFakeFileList
+
 	describe "copyFiles", ->
 
 		beforeEach ->

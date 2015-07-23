@@ -99,9 +99,20 @@ module.exports =
 			return new Error "Package directory not specified!"
 		winston.silly "install.flattenFileList: packageDirectory specified"
 
+		winston.silly "install.flattenFileList: flattening glob list"
+		flattenedGlobList = []
+		for toWhere, fromGlob of list
+			if Array.isArray fromGlob
+				winston.silly "install.flattenFileList: flattening glob:", fromGlob
+				for individualGlob in fromGlob
+					flattenedGlobList.push [ toWhere, individualGlob ]
+			else
+				flattenedGlobList.push [ toWhere, fromGlob ]
+		winston.silly "install.flattenFileList: flattened glob list"
+
 		flattened = {}
 
-		for toWhere, fromGlob of list
+		for [ toWhere, fromGlob ] in flattenedGlobList
 			winston.verbose "install.flattenFileList: next glob",
 				{ toWhere, fromGlob }
 			normalizedToWhere = path.posix.normalize toWhere
