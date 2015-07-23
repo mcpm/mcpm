@@ -251,7 +251,7 @@ module.exports =
 					"failed, returning error"
 				return result
 
-		winston.verbose "install.fromFolder: adding installed package"
+		winston.debug "install.fromFolder: adding installed package to profile"
 		result = minecraftUtils.addInstalledPackage config.name, config.version
 
 		profile = minecraftUtils.getCurrentProfile()
