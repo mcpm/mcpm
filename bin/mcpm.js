@@ -34,7 +34,8 @@ commander.command("install <packages...>").alias("i").description("install one o
     winston.info(pkg + ": Deciding what to do...");
     result = mcpm.install(pkg);
     if (result instanceof Error) {
-      winston.error(pkg + ": " + result.name + ": " + result.message, winston.debug(pkg + ":", result));
+      winston.verbose("cli#install: error", result);
+      winston.error(pkg + ": " + result.name + ": " + result.message);
     }
   }
   endProfile = minecraftUtils.getCurrentProfile();

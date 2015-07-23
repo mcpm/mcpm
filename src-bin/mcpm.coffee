@@ -32,8 +32,8 @@ commander
 			winston.info "#{pkg}: Deciding what to do..."
 			result = mcpm.install pkg
 			if result instanceof Error
+				winston.verbose "cli#install: error", result
 				winston.error "#{pkg}: #{result.name}: #{result.message}",
-				winston.debug "#{pkg}:", result
 
 		endProfile = minecraftUtils.getCurrentProfile()
 		if ( endProfile.version isnt startProfile.version ) or

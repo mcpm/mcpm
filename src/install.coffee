@@ -156,7 +156,7 @@ module.exports =
 		winston.silly "install.flattenFileList: flattened", flattened
 		flattened
 
-	copyFiles: ( list, packageDirectory ) ->
+	copyFiles: ( list, packageDirectory, config = {}) ->
 		winston.verbose "install.copyFiles: starting"
 		minecraftRoot = minecraftUtils.getMinecraftPath()
 		winston.silly "install.copyFiles: got path to Minecraft root: " +
@@ -170,7 +170,8 @@ module.exports =
 				absoluteTo = path.join minecraftRoot, to, path.basename from
 				winston.verbose "install.copyFiles: absoluteTo: #{absoluteTo}"
 				fs.copySync absoluteFrom, absoluteTo
-				winston.silly "install.copyFiles: copied"
+				winston.info "#{config.name}@#{config.version}: Copied " +
+					"#{from} to #{to}"
 		winston.verbose "install.copyFiles: finished copying"
 		yes
 
@@ -229,8 +230,7 @@ module.exports =
 				return list
 
 			winston.debug "install.fromFolder: copying files"
-			winston.info "#{config.name}@#{config.version}: Copying files..."
-			result = @copyFiles list, packageDirectory
+			result = @copyFiles list, packageDirectory, config
 			winston.silly "install.fromFolder: copied files", result
 			if result instanceof Error
 				winston.debug "install.fromFolder: error while copying, " +
