@@ -5,11 +5,11 @@
       "lastVersionId": "1.8-LiteLoader1.8-1.8-Forge11.14.1.1306",
       "javaArgs": "-Xmx1G",
       "useHopperCrashService": false,
+      "launcherVisibilityOnGameClose": "keep the launcher open",
       "mcpmInstalledPackages": {
         "fake": "1.2.3",
         "package": "2.3.4"
-      },
-      "launcherVisibilityOnGameClose": "keep the launcher open"
+      }
     },
     "1.7.2 + Forge + LiteLoader": {
       "name": "1.7.2 + Forge + LiteLoader",

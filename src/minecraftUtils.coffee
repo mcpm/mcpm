@@ -71,6 +71,7 @@ module.exports =
 		currentProfile = @getCurrentProfile().originalInfo
 		winston.silly "minecraftUtils.addInstalledPackage: old profile",
 			currentProfile
+		currentProfile.mcpmInstalledPackages ?= {}
 		currentProfile.mcpmInstalledPackages[ name ] = version
 		winston.silly "minecraftUtils.addInstalledPackage: new profile",
 			currentProfile
