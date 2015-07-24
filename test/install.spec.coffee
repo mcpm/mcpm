@@ -15,46 +15,6 @@ minecraftUtils = require "../lib/minecraftUtils"
 
 describe "install", ->
 
-	describe "invokeInstallExecutable", ->
-
-		before ->
-			sinon.stub minecraftUtils, "getMinecraftPath", -> "mcpath"
-
-		after ->
-			minecraftUtils.getMinecraftPath.restore()
-
-		afterEach ->
-			childProcess.spawnSync.restore()
-
-		it "returns an Error when trying to call a file outside of package", ->
-			sinon.stub childProcess, "spawnSync", ( file, args, opts ) ->
-
-			result = install.invokeInstallExecutable "foo/../../bar.jar",
-				"malicious"
-			result.should.be.an.instanceof Error
-
-			childProcess.spawnSync.should.have.not.been.called
-
-		it "invokes install executable", ->
-			sinon.stub childProcess, "spawnSync", ( file, args, opts ) ->
-				fullPath = path.join "fixtures/fake-mod", "fake.jar"
-				file.should.equal fullPath
-				opts.cwd.should.equal "fixtures/fake-mod"
-				opts.env.should.deep.equal
-					MCPM: "1"
-					PATH_TO_MINECRAFT: "mcpath"
-
-			install.invokeInstallExecutable "fake.jar", "fixtures/fake-mod"
-
-			childProcess.spawnSync.should.have.been.calledOnce
-
-		it "returns an Error when install executable exists with error", ->
-			sinon.stub childProcess, "spawnSync", ( file, args, opts ) ->
-				throw new Error "Something went wrong!"
-
-			result = install.invokeInstallExecutable "fake.jar", "fake-mod"
-			result.should.be.an.instanceof Error
-
 	describe "fromFolder", ->
 
 		before ->
