@@ -13,9 +13,9 @@ parsePackageString = ( str ) ->
 			"'folder', parsing as a folder"
 		str = str.substring "folder:".length
 
-	if str.includes ":"
-		winston.debug "install.parsePackageString: str includes a " +
-			"colon, returning null"
+	if str.match( /:/g )?.length > 1
+		winston.debug "install.parsePackageString: str includes multiple " +
+			"colons, returning null"
 		null
 	else
 		winston.verbose "install.parsePackageString: str is a folder, " +

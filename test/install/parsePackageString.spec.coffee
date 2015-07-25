@@ -33,11 +33,13 @@ describe "install.parsePackageString", ->
 					type: "folder"
 					name: str
 
-	for prefix in [ "github", "http", "", "whatever", ":folder" ]
+	for prefix in [ "github", "http", "", "whatever", "C" ]
 		do ( prefix ) ->
-			it "classifies any other prefix as 'invalid': #{prefix}", ->
+			it "treats any other prefix as a part of path: #{prefix}", ->
 				parsed = parsePackageString "#{prefix}:some/path"
-				expect( parsed ).to.equal null
+				parsed.should.deep.equal
+					type: "folder"
+					name: "#{prefix}:some/path"
 
 	it "classifies strings with multiple ':' as 'invalid'", ->
 		parsed = parsePackageString "folder:wtf:is:this"
