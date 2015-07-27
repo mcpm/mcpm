@@ -14,3 +14,7 @@
 ## Testing
 
     npm test
+
+## Roadmap
+
+See the [Roadmap](https://github.com/mcpm/mcpm/wiki/Roadmap) page in the [wiki](https://github.com/mcpm/mcpm/wiki).
