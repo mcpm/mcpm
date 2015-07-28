@@ -17,7 +17,7 @@ describe "install.fromFolder", ->
 
 		result = fromFolder "test/fixtures/invalid-mod"
 		result.should.be.an.instanceof Error
-		result.message.should.contain "config"
+		result.message.should.contain "manifest"
 
 	it "returns an Error when install executable exits with error", ->
 		fromFolder = proxyquire "../../lib/install/fromFolder",
