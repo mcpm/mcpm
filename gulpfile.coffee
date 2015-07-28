@@ -16,14 +16,14 @@ gulp.task "coveralls", ->
 		.pipe coveralls()
 
 gulp.task "coffee-src", ->
-	gulp.src "./src/**/*.coffee"
+	gulp.src [ "src/**/*.coffee", "!src/bin{,/**/*}" ]
 		# Pevent pipe breaking caused by errors from gulp plugins
 		.pipe plumber()
 		.pipe coffee bare: true
 		.pipe gulp.dest "./lib/"
 
 gulp.task "coffee-bin", ->
-	gulp.src "./src-bin/**/*.coffee"
+	gulp.src "src/bin/**/*.coffee"
 		.pipe plumber()
 		.pipe coffee bare: true
 		.pipe gulp.dest "./bin/"
