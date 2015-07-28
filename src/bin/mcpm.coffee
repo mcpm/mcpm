@@ -1,6 +1,3 @@
-`#!/usr/bin/env node
-`
-
 commander = require "commander"
 winston = require "winston"
 mcpm = require "../lib/mcpm"

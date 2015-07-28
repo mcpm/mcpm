@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-;
+
 var commander, increaseVerbosity, mcpm, minecraftUtils, verbosityLevels, winston;
 
 commander = require("commander");

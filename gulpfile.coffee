@@ -5,6 +5,7 @@ coffee = require "gulp-coffee"
 coffeelint = require "gulp-coffeelint"
 istanbul = require "gulp-istanbul"
 mocha = require "gulp-mocha"
+insert = require "gulp-insert"
 plumber = require "gulp-plumber"
 coveralls = require "gulp-coveralls"
 
@@ -27,6 +28,7 @@ gulp.task "coffee-bin", ->
 	gulp.src "src/bin/**/*.coffee"
 		.pipe plumber()
 		.pipe coffee bare: true
+		.pipe insert.prepend "#!/usr/bin/env node\n\n"
 		.pipe gulp.dest "./bin/"
 
 gulp.task "coffee", [ "coffee-src", "coffee-bin" ]
