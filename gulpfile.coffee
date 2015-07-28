@@ -43,6 +43,6 @@ gulp.task "test", [ "coffee" ], ->
 				.pipe istanbul.writeReports()
 
 gulp.task "watch", ->
-	gulp.watch "./src{,-bin}/**/*.coffee", [ "coffee" ]
+	gulp.watch "./src/**/*.coffee", [ "coffee" ]
 
 gulp.task "default", [ "coffee" ]
