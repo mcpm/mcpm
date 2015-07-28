@@ -23,7 +23,7 @@ describe "install.fromFolder", ->
 		fromFolder = proxyquire "../../lib/install/fromFolder",
 			"../minecraftUtils":
 				getCurrentProfile: -> {}
-			"./checkConfig": ->
+			"./validateManifest": ->
 				install_executable: "file.jar"
 			"./invokeInstallExecutable": ( file, dir ) ->
 				file.should.equal "file.jar"
@@ -40,7 +40,7 @@ describe "install.fromFolder", ->
 				addInstalledPackage: -> true
 			"./copyFiles": -> yes
 			"./addInstalledPackage": -> yes
-			"./checkConfig": -> install_file_list: {}
+			"./validateManifest": -> install_file_list: {}
 			"./invokeInstallExecutable", fakeInvoke = sinon.spy()
 
 		fromFolder "test/fixtures/invalid-mod"
@@ -51,7 +51,7 @@ describe "install.fromFolder", ->
 		fromFolder = proxyquire "../../lib/install/fromFolder",
 			"../minecraftUtils":
 				getCurrentProfile: -> {}
-			"./checkConfig": -> install_file_list: foo: "bar"
+			"./validateManifest": -> install_file_list: foo: "bar"
 			"./flattenFileList": ( list, dir ) ->
 				list.should.deep.equal foo: "bar"
 				dir.should.equal "test/fixtures/invalid-mod"
@@ -64,7 +64,7 @@ describe "install.fromFolder", ->
 		fromFolder = proxyquire "../../lib/install/fromFolder",
 			"../minecraftUtils":
 				getCurrentProfile: -> {}
-			"./checkConfig": -> install_file_list: foo: "bar"
+			"./validateManifest": -> install_file_list: foo: "bar"
 			"./flattenFileList": ( list, dir ) ->
 				list.should.deep.equal foo: "bar"
 				dir.should.equal "test/fixtures/invalid-mod"
@@ -81,7 +81,7 @@ describe "install.fromFolder", ->
 		fromFolder = proxyquire "../../lib/install/fromFolder",
 			"../minecraftUtils":
 				getCurrentProfile: -> {}
-			"./checkConfig": ->
+			"./validateManifest": ->
 				install_executable: "foo"
 				install_file_list: bar: "qux"
 			"./flattenFileList": ->
@@ -100,7 +100,7 @@ describe "install.fromFolder", ->
 				getCurrentProfile: -> {}
 				addInstalledPackage: ->
 					new Error "Something went wrong!"
-			"./checkConfig": -> install_executable: "file.jar"
+			"./validateManifest": -> install_executable: "file.jar"
 			"./invokeInstallExecutable": -> true
 
 		result = fromFolder "test/fixtures/invalid-mod"
@@ -114,7 +114,7 @@ describe "install.fromFolder", ->
 					name.should.equal "fake-mod"
 					ver.should.equal "1.2.3"
 					new Error "Something went wrong!"
-			"./checkConfig": ->
+			"./validateManifest": ->
 				name: "fake-mod"
 				version: "1.2.3"
 				install_executable: "file.jar"
@@ -128,7 +128,7 @@ describe "install.fromFolder", ->
 			"../minecraftUtils":
 				getCurrentProfile: -> {}
 				addInstalledPackage: -> true
-			"./checkConfig": ->
+			"./validateManifest": ->
 				install_executable: "file.jar"
 			"./invokeInstallExecutable": -> true
 

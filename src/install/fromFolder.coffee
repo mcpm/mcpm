@@ -1,13 +1,13 @@
 winston = require "winston"
 minecraftUtils = require "../minecraftUtils"
-checkConfig = require "./checkConfig"
+validateManifest = require "./validateManifest"
 flattenFileList = require "./flattenFileList"
 copyFiles = require "./copyFiles"
 invokeInstallExecutable = require "./invokeInstallExecutable"
 
 fromFolder = ( packageDirectory ) ->
 	winston.verbose "install.fromFolder: starting"
-	config = checkConfig packageDirectory
+	config = validateManifest packageDirectory
 	winston.silly "install.fromFolder: checked config", config
 
 	if config instanceof Error

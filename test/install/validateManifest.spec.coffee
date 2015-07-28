@@ -8,20 +8,20 @@ chai.use require "sinon-chai"
 # Disabling logging in tests.
 require( "winston" ).level = Infinity
 
-checkConfig = proxyquire "../../lib/install/checkConfig",
-	"./readConfig": ( str ) -> str
+validateManifest = proxyquire "../../lib/install/validateManifest",
+	"./readManifest": ( str ) -> str
 	"../minecraftUtils":
 		getCurrentProfile: ->
 			version: "1.8.0"
 
-describe "install.checkConfig", ->
+describe "install.validateManifest", ->
 
 	it "returns a SyntaxError when invalid JSON", ->
-		result = checkConfig "{'nope'}"
+		result = validateManifest "{'nope'}"
 		result.should.be.an.instanceof SyntaxError
 
 	it "returns an Error when no name", ->
-		result = checkConfig JSON.stringify
+		result = validateManifest JSON.stringify
 			version: "0.1.0"
 			mc: "1.8"
 			install_executable: "index.js"
@@ -29,7 +29,7 @@ describe "install.checkConfig", ->
 		result.message.should.contain "name"
 
 	it "returns an Error when no version", ->
-		result = checkConfig JSON.stringify
+		result = validateManifest JSON.stringify
 			name: "fake"
 			mc: "1.8"
 			install_executable: "index.js"
@@ -37,7 +37,7 @@ describe "install.checkConfig", ->
 		result.message.should.contain "version"
 
 	it "returns an Error when no mc", ->
-		result = checkConfig JSON.stringify
+		result = validateManifest JSON.stringify
 			name: "fake"
 			version: "0.1.0"
 			install_executable: "index.js"
@@ -47,7 +47,7 @@ describe "install.checkConfig", ->
 	for name in [ "", undefined, "-", "1sdf", "π", "mcpm/mcpm" ]
 		do ( name ) ->
 			it "returns an Error when invalid name: " + name, ->
-				result = checkConfig JSON.stringify
+				result = validateManifest JSON.stringify
 					name: name
 					version: "0.1.0"
 					mc: "1.8"
@@ -58,7 +58,7 @@ describe "install.checkConfig", ->
 	for version in [ "", undefined, "1", "1.2", "1.2.", "1-2-3" ]
 		do (version) ->
 			it "returns an Error when invalid version: " + version, ->
-				result = checkConfig JSON.stringify
+				result = validateManifest JSON.stringify
 					name: "fake"
 					version: version
 					mc: "1.8"
@@ -69,7 +69,7 @@ describe "install.checkConfig", ->
 	for mc in [ "", undefined, true, "1.", "1.2.", "1-2-3", "all" ]
 		do ( mc ) ->
 			it "returns an Error when invalid mc: " + mc, ->
-				result = checkConfig JSON.stringify
+				result = validateManifest JSON.stringify
 					name: "fake"
 					version: "0.1.0"
 					mc: mc
@@ -78,7 +78,7 @@ describe "install.checkConfig", ->
 				result.message.should.contain "mc"
 
 	it "returns an Error when incompatible with current Minecraft version", ->
-		result = checkConfig JSON.stringify
+		result = validateManifest JSON.stringify
 			name: "fake"
 			version: "0.1.0"
 			mc: "1.5"
@@ -92,7 +92,7 @@ describe "install.checkConfig", ->
 			version: "0.1.0"
 			mc: "1.8"
 			install_executable: "index.js"
-		result = checkConfig JSON.stringify config
+		result = validateManifest JSON.stringify config
 		result.should.deep.equal config
 
 	it "allows install_file_list instead of install_executable", ->
@@ -101,11 +101,11 @@ describe "install.checkConfig", ->
 			version: "0.1.0"
 			mc: "1.8"
 			install_file_list: "mods/fake-mod": "index.js"
-		result = checkConfig JSON.stringify config
+		result = validateManifest JSON.stringify config
 		result.should.deep.equal config
 
 	it "returns an Error when install_file_list is not an object", ->
-		result = checkConfig JSON.stringify
+		result = validateManifest JSON.stringify
 			name: "fake"
 			version: "0.1.0"
 			mc: "1.8"
@@ -114,7 +114,7 @@ describe "install.checkConfig", ->
 		result.message.should.contain "install"
 
 	it "returns an Error when no install_file_list/install_executable", ->
-		result = checkConfig JSON.stringify
+		result = validateManifest JSON.stringify
 			name: "fake"
 			version: "0.1.0"
 			mc: "1.8"
@@ -129,5 +129,5 @@ describe "install.checkConfig", ->
 			install_executable: "index.js"
 			custom: "whatever"
 			field: 5
-		result = checkConfig JSON.stringify config
+		result = validateManifest JSON.stringify config
 		result.should.deep.equal config

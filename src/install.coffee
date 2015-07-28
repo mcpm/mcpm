@@ -1,7 +1,7 @@
 module.exports =
 	parsePackageString: require "./install/parsePackageString"
-	readConfig: require "./install/readConfig"
-	checkConfig: require "./install/checkConfig"
+	readManifest: require "./install/readManifest"
+	validateManifest: require "./install/validateManifest"
 	flattenFileList: require "./install/flattenFileList"
 	copyFiles: require "./install/copyFiles"
 	invokeInstallExecutable: require "./install/invokeInstallExecutable"
