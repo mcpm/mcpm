@@ -6,7 +6,6 @@ coffeelint = require "gulp-coffeelint"
 istanbul = require "gulp-istanbul"
 mocha = require "gulp-mocha"
 insert = require "gulp-insert"
-plumber = require "gulp-plumber"
 coveralls = require "gulp-coveralls"
 
 gulp.on "err", ( e ) ->
@@ -17,21 +16,19 @@ gulp.task "coveralls", ->
 	gulp.src "./coverage/**/lcov.info"
 		.pipe coveralls()
 
-gulp.task "lint", ->
-	gulp.src "{src,test}/**/*.coffee"
+gulp.task "coffee-src", ->
+	gulp.src [ "src/**/*.coffee", "!src/bin{,/**/*}" ]
 		.pipe coffeelint()
 		.pipe coffeelint.reporter()
-
-gulp.task "coffee-src", [ "lint" ], ->
-	gulp.src [ "src/**/*.coffee", "!src/bin{,/**/*}" ]
-		# Pevent pipe breaking caused by errors from gulp plugins
-		.pipe plumber()
+		.pipe coffeelint.reporter "fail"
 		.pipe coffee bare: true
 		.pipe gulp.dest "./lib/"
 
-gulp.task "coffee-bin", [ "lint" ], ->
+gulp.task "coffee-bin", ->
 	gulp.src "src/bin/**/*.coffee"
-		.pipe plumber()
+		.pipe coffeelint()
+		.pipe coffeelint.reporter()
+		.pipe coffeelint.reporter "fail"
 		.pipe coffee bare: true
 		.pipe insert.prepend "#!/usr/bin/env node\n\n"
 		.pipe gulp.dest "./bin/"
