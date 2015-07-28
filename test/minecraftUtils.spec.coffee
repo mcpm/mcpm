@@ -57,6 +57,7 @@ describe "minecraftUtils", ->
 			# Roll back the changes to make the tests stateless.
 			fixture = loadFixture()
 			fixture.selectedProfile = "1.8 + Forge + LiteLoader"
+			fixture.profiles[ "1.8 + Forge + LiteLoader" ].lastVersionId = "1.8.0"
 			fs.writeFileSync pathToTheFixture, JSON.stringify fixture, null, 2
 
 		it "returns current profile in originalInfo property", ->
@@ -68,7 +69,14 @@ describe "minecraftUtils", ->
 
 		it "returns current Minecraft version in version property", ->
 			currentProfile = minecraftUtils.getCurrentProfile()
-			"1.8".should.equal currentProfile.version
+			"1.8.0".should.equal currentProfile.version
+
+		it "normalizes version to 'x.x.0' when specified as 'x.x'", ->
+			fixture = loadFixture()
+			fixture.profiles[ "1.8 + Forge + LiteLoader" ].lastVersionId = "1.8"
+			fs.writeFileSync pathToTheFixture, JSON.stringify fixture
+			currentProfile = minecraftUtils.getCurrentProfile()
+			"1.8.0".should.equal currentProfile.version
 
 		it "returns installed packages in installedPackages property", ->
 			currentProfile = minecraftUtils.getCurrentProfile()

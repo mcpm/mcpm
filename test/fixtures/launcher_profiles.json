@@ -2,7 +2,7 @@
   "profiles": {
     "1.8 + Forge + LiteLoader": {
       "name": "1.8 + Forge + LiteLoader",
-      "lastVersionId": "1.8-LiteLoader1.8-1.8-Forge11.14.1.1306",
+      "lastVersionId": "1.8.0",
       "javaArgs": "-Xmx1G",
       "useHopperCrashService": false,
       "launcherVisibilityOnGameClose": "keep the launcher open",

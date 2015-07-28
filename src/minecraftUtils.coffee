@@ -38,7 +38,12 @@ module.exports =
 			currentProfile
 
 		version = currentProfile.lastVersionId.split( "-" )[ 0 ]
-		winston.silly "minecraftUtils.getCurrentProfile: version: #{version}"
+		winston.silly "minecraftUtils.getCurrentProfile: raw version: #{version}"
+
+		if /^\d+\.\d+$/.test version
+			winston.silly "minecraftUtils.getCurrentProfile: adding " +
+				"'.0' to the version"
+			version += ".0"
 
 		result =
 			originalInfo: currentProfile
