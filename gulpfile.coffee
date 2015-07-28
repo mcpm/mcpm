@@ -2,6 +2,7 @@
 gulp = require "gulp"
 gutil = require "gulp-util"
 coffee = require "gulp-coffee"
+coffeelint = require "gulp-coffeelint"
 istanbul = require "gulp-istanbul"
 mocha = require "gulp-mocha"
 plumber = require "gulp-plumber"
@@ -30,6 +31,11 @@ gulp.task "coffee-bin", ->
 
 gulp.task "coffee", [ "coffee-src", "coffee-bin" ]
 
+gulp.task "lint", ->
+	gulp.src "{src,test}/**/*.coffee"
+		.pipe coffeelint()
+		.pipe coffeelint.reporter()
+
 gulp.task "test", [ "coffee" ], ->
 	gulp.src "lib/**/*.js"
 		# Covering files
@@ -43,6 +49,6 @@ gulp.task "test", [ "coffee" ], ->
 				.pipe istanbul.writeReports()
 
 gulp.task "watch", ->
-	gulp.watch "./src/**/*.coffee", [ "coffee" ]
+	gulp.watch "./src/**/*.coffee", [ "lint", "coffee" ]
 
 gulp.task "default", [ "coffee" ]
