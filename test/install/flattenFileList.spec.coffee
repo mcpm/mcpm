@@ -70,3 +70,12 @@ describe "install.flattenFileList", ->
 
 		result = flattenFileList list, pathToPackage
 		result.should.deep.equal flattenedFakeFileList
+
+		it "handles several denormalized paths pointing to the same folder", ->
+		list =
+			"mods/1.8/./../1.8": "foo"
+			"./mods/1.8": "bar"
+			"mods/1.8": "qux"
+
+		result = flattenFileList list, pathToPackage
+		result.should.deep.equal "mods/1.8": [ "foo", "bar", "qux" ]
