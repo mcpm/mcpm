@@ -1,6 +1,7 @@
 semver = require "semver"
 winston = require "winston"
 readConfig = require "./readConfig"
+minecraftUtils = require "../minecraftUtils"
 
 checkConfig = ( packageDirectory ) ->
 	winston.verbose "install.checkConfig: starting"
@@ -30,6 +31,12 @@ checkConfig = ( packageDirectory ) ->
 		winston.debug "install.checkConfig: invalid mc, returning error"
 		return new Error "Invalid package mc!"
 	winston.silly "install.checkConfig: valid mc"
+
+	if not semver.satisfies minecraftUtils.getCurrentProfile().version, config.mc
+		winston.debug "install.checkConfig: incompatible mc, returning error"
+		return new Error "The package is incompatible with the current " +
+			"Minecraft version!"
+	winston.silly "install.checkConfig: compatible mc"
 
 	if not config.install_file_list and not config.install_executable
 		winston.debug "install.checkConfig: no install_file_list and " +

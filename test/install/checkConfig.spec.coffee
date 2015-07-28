@@ -10,6 +10,9 @@ require( "winston" ).level = Infinity
 
 checkConfig = proxyquire "../../lib/install/checkConfig",
 	"./readConfig": ( str ) -> str
+	"../minecraftUtils":
+		getCurrentProfile: ->
+			version: "1.8.0"
 
 describe "install.checkConfig", ->
 
@@ -73,6 +76,15 @@ describe "install.checkConfig", ->
 					install_executable: "index.js"
 				result.should.be.an.instanceof Error
 				result.message.should.contain "mc"
+
+	it "returns an Error when incompatible with current Minecraft version", ->
+		result = checkConfig JSON.stringify
+			name: "fake"
+			version: "0.1.0"
+			mc: "1.5"
+			install_executable: "index.js"
+		result.should.be.an.instanceof Error
+		result.message.should.contain "version"
 
 	it "returns the config when it is valid", ->
 		config =
