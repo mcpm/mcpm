@@ -17,14 +17,19 @@ gulp.task "coveralls", ->
 	gulp.src "./coverage/**/lcov.info"
 		.pipe coveralls()
 
-gulp.task "coffee-src", ->
+gulp.task "lint", ->
+	gulp.src "{src,test}/**/*.coffee"
+		.pipe coffeelint()
+		.pipe coffeelint.reporter()
+
+gulp.task "coffee-src", [ "lint" ], ->
 	gulp.src [ "src/**/*.coffee", "!src/bin{,/**/*}" ]
 		# Pevent pipe breaking caused by errors from gulp plugins
 		.pipe plumber()
 		.pipe coffee bare: true
 		.pipe gulp.dest "./lib/"
 
-gulp.task "coffee-bin", ->
+gulp.task "coffee-bin", [ "lint" ], ->
 	gulp.src "src/bin/**/*.coffee"
 		.pipe plumber()
 		.pipe coffee bare: true
@@ -32,11 +37,6 @@ gulp.task "coffee-bin", ->
 		.pipe gulp.dest "./bin/"
 
 gulp.task "coffee", [ "coffee-src", "coffee-bin" ]
-
-gulp.task "lint", ->
-	gulp.src "{src,test}/**/*.coffee"
-		.pipe coffeelint()
-		.pipe coffeelint.reporter()
 
 gulp.task "test", [ "coffee" ], ->
 	gulp.src "lib/**/*.js"
@@ -51,6 +51,6 @@ gulp.task "test", [ "coffee" ], ->
 				.pipe istanbul.writeReports()
 
 gulp.task "watch", ->
-	gulp.watch "./src/**/*.coffee", [ "lint", "coffee" ]
+	gulp.watch "./src/**/*.coffee", [ "coffee" ]
 
 gulp.task "default", [ "coffee" ]
