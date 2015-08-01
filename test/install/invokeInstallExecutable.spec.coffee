@@ -36,7 +36,7 @@ describe "install.invokeInstallExecutable", ->
 		fakeChildProcess.execFileSync.should.have.been.calledOnce
 
 	it "returns an Error when 'execFileSync' throws", ->
-		fakeChildProcess.execFileSync = ( file, args, opts ) ->
+		fakeChildProcess.execFileSync = sinon.spy ( file, args, opts ) ->
 			throw new Error "Something went wrong!"
 		result = invokeInstallExecutable "fake.jar", "fake-mod"
 		result.should.be.an.instanceof Error
