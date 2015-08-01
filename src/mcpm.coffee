@@ -12,6 +12,9 @@ module.exports =
 		if parsed?.type is "folder"
 			winston.silly "mcpm.install: installing as folder"
 			install.fromFolder parsed.name
+		else if parsed?.type is "zip"
+			winston.silly "mcpm.install: installing as zip"
+			install.fromZip parsed.name
 		else
 			winston.debug "mcpm.install: invalid package string, returning error"
 			return new Error "Invalid package string!"

@@ -6,3 +6,4 @@ module.exports =
 	copyFiles: require "./install/copyFiles"
 	invokeInstallExecutable: require "./install/invokeInstallExecutable"
 	fromFolder: require "./install/fromFolder"
+	fromZip: require "./install/fromZip"

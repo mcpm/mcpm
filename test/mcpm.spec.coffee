@@ -37,6 +37,20 @@ describe "mcpm", ->
 			install.fromFolder.restore()
 			install.parsePackageString.restore()
 
+		it "calls install.fromFolder when package is of 'zip' type", ->
+			sinon.stub install, "parsePackageString", ->
+				type: "zip"
+				name: "whatever"
+
+			sinon.stub install, "fromZip", ( dir ) ->
+				dir.should.equal "whatever"
+
+			result = mcpm.install "whatever"
+
+			install.fromZip.should.have.been.calledOnce
+			install.fromZip.restore()
+			install.parsePackageString.restore()
+
 	describe "getMinecraftVersion", ->
 
 		it "uses 'minecraftUtils.getCurrentProfile().version'", ->
