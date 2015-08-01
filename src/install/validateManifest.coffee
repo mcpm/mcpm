@@ -41,11 +41,14 @@ validateBasicInfo = ( manifest ) ->
 	winston.silly "install.validateManifest: valid mc"
 
 checkCompatibility = ( manifest ) ->
-	if not semver.satisfies minecraftUtils.getCurrentProfile().version, manifest.mc
-		winston.debug "install.validateManifest: incompatible mc, returning error"
+	actualVersion = minecraftUtils.getCurrentProfile().version
+	compatibleRange = manifest.mc
+	if not semver.satisfies actualVersion, compatibleRange
+		winston.debug "install.validateManifest: incompatible mc, returning error",
+			{ actualVersion, compatibleRange }
 		return new Error "The package is incompatible with the current " +
-			"Minecraft version!"
-	winston.silly "install.validateManifest: compatible mc"
+			"Minecraft version! Compatible version range: #{compatibleRange}"
+	winston.silly "install.validateManifest: compatible mc", { actualVersion, compatibleRange }
 
 validateManifest = ( packageDirectory ) ->
 	winston.verbose "install.validateManifest: starting"
