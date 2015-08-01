@@ -15,13 +15,22 @@ flattenGlobList = ( globList ) ->
 	winston.silly "install.flattenFileList: flattened glob list"
 	flattenedGlobList
 
-globToFileList = ( fromGlob, packageDirectory ) ->
+globToFileList = ( fromGlob, unpackedPath, zipPath ) ->
 	fileList = []
 
-	expandedGlob = glob.sync fromGlob, cwd: packageDirectory
+	if ( fromGlob is "@" )
+		if zipPath
+			winston.verbose "install.flattenFileList: adding @ to list:", zipPath
+			fileList.push zipPath
+		else
+			winston.verbose "install.flattenFileList: ignoring @, no zipPath"
+		return fileList
+
+	expandedGlob = glob.sync fromGlob, cwd: unpackedPath
 	winston.silly "install.flattenFileList: expanded glob", expandedGlob
 
 	for filePath in expandedGlob
+
 		winston.silly "install.flattenFileList: next path", filePath
 		normalizedFilePath = path.posix.normalize filePath
 		winston.silly "install.flattenFileList: normalized: " +
@@ -43,14 +52,12 @@ globToFileList = ( fromGlob, packageDirectory ) ->
 
 	fileList
 
-flattenFileList = ( list, packageDirectory ) ->
+flattenFileList = ( list, unpackedPath, zipPath ) ->
 	winston.verbose "install.flattenFileList: starting"
-
-	if not packageDirectory
-		winston.debug "install.flattenFileList: packageDirectory not" +
-			"specified, returning error"
+	if not unpackedPath
+		winston.debug "install.flattenFileList: unpackedPath not specified, returning error"
 		return new Error "Package directory not specified!"
-	winston.silly "install.flattenFileList: packageDirectory specified"
+	winston.silly "install.flattenFileList: unpackedPath specified"
 
 	flattenedGlobList = flattenGlobList list
 
@@ -73,7 +80,7 @@ flattenFileList = ( list, packageDirectory ) ->
 				"an absolute path, returning error"
 			return new Error "Trying to copy to an absolute path!"
 
-		fileList = globToFileList fromGlob, packageDirectory
+		fileList = globToFileList fromGlob, unpackedPath, zipPath
 		if fileList instanceof Error
 			return fileList
 

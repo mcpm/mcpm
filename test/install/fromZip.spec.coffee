@@ -84,8 +84,9 @@ describe "install.fromZip", ->
 					{}
 				extractAllTo: ->
 					true
-			"./fromFolder": ( packageDirectory ) ->
+			"./fromFolder": ( packageDirectory, zipPath ) ->
 				packageDirectory.should.equal "fake-temp-dir"
+				zipPath.should.equal "fake-path-to-zip"
 				"fake-fromFolder-result"
 
 		result = fromZip "fake-path-to-zip"

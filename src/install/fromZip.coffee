@@ -5,6 +5,8 @@ AdmZip = require "adm-zip"
 fromFolder = require "./fromFolder"
 
 fromZip = ( pathToArchive ) ->
+	winston.info "#{pathToArchive}: Installing from a zip..."
+
 	winston.verbose "install.fromZip: starting"
 	stats = fs.statSync pathToArchive
 
@@ -35,6 +37,6 @@ fromZip = ( pathToArchive ) ->
 		return new Error "Can't unzip the archive to a temp directory!"
 
 	winston.silly "install.fromZip: unziped, calling fromFolder"
-	fromFolder tempFolderPath
+	fromFolder tempFolderPath, pathToArchive
 
 module.exports = fromZip
