@@ -19,7 +19,15 @@ describe "install.parsePackageString", ->
 
 	for str in [ "", "-", "1sdf", "π", "mcpm/mcpm" ]
 		do ( str ) ->
-			it "classifies any non-prefixed string as 'folder': #{str}", ->
+			it "classifies any '.zip'-suffixed string as 'zip': #{str}.zip", ->
+				parsed = parsePackageString "#{str}.zip"
+				parsed.should.deep.equal
+					type: "zip"
+					name: "#{str}.zip"
+
+	for str in [ "", "-", "1sdf", "π", "mcpm/mcpm" ]
+		do ( str ) ->
+			it "classifies any other non-prefixed string as 'folder': #{str}", ->
 				parsed = parsePackageString str
 				parsed.should.deep.equal
 					type: "folder"
@@ -31,6 +39,14 @@ describe "install.parsePackageString", ->
 				parsed = parsePackageString "folder:#{str}"
 				parsed.should.deep.equal
 					type: "folder"
+					name: str
+
+	for str in [ "", "-", "1sdf", "π", "mcpm/mcpm" ]
+		do ( str ) ->
+			it "classifies 'zip'-prefixed string as 'zip': #{str}", ->
+				parsed = parsePackageString "zip:#{str}"
+				parsed.should.deep.equal
+					type: "zip"
 					name: str
 
 	for prefix in [ "github", "http", "", "whatever", "C" ]
