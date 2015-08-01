@@ -15,12 +15,9 @@ invokeInstallExecutable = ( file, packageDirectory ) ->
 			"file outside of the package, returning error"
 		return new Error "Trying to call a file outside of the package!"
 
-	fullPath = path.normalize path.join packageDirectory, file
-	winston.verbose "install.invokeInstallExecutable: fullPath: #{fullPath}"
-
 	try
 		winston.silly "install.invokeInstallExecutable: trying to exec"
-		result = childProcess.spawnSync fullPath, [],
+		result = childProcess.execFileSync file, [],
 			cwd: packageDirectory
 			env:
 				MCPM: "1"

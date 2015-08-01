@@ -10,8 +10,8 @@ require( "winston" ).level = Infinity
 
 path = require "path"
 fakeChildProcess =
-	spawnSync: sinon.spy ( file, args, opts ) ->
-		file.should.equal path.join "fixtures/fake-mod", "fake.jar"
+	execFileSync: sinon.spy ( file, args, opts ) ->
+		file.should.equal "fake.jar"
 		opts.cwd.should.equal "fixtures/fake-mod"
 		opts.env.should.deep.equal
 			MCPM: "1"
@@ -24,19 +24,19 @@ invokeInstallExecutable = proxyquire "../../lib/install/invokeInstallExecutable"
 describe "install.invokeInstallExecutable", ->
 
 	beforeEach ->
-		fakeChildProcess.spawnSync.reset()
+		fakeChildProcess.execFileSync.reset()
 
 	it "returns an Error when trying to call a file outside of package", ->
 		result = invokeInstallExecutable "foo/../../bar.jar", "malicious"
 		result.should.be.an.instanceof Error
-		fakeChildProcess.spawnSync.should.have.not.been.called
+		fakeChildProcess.execFileSync.should.have.not.been.called
 
 	it "invokes install executable", ->
 		invokeInstallExecutable "fake.jar", "fixtures/fake-mod"
-		fakeChildProcess.spawnSync.should.have.been.calledOnce
+		fakeChildProcess.execFileSync.should.have.been.calledOnce
 
-	it "returns an Error when install executable exists with error", ->
-		fakeChildProcess.spawnSync = ( file, args, opts ) ->
+	it "returns an Error when 'execFileSync' throws", ->
+		fakeChildProcess.execFileSync = ( file, args, opts ) ->
 			throw new Error "Something went wrong!"
 		result = invokeInstallExecutable "fake.jar", "fake-mod"
 		result.should.be.an.instanceof Error
