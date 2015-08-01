@@ -25,10 +25,13 @@ fromZip = ( pathToArchive ) ->
 	tempFolderPath = tmp.dirSync( prefix: "mcpm-" ).name
 	winston.verbose "install.fromZip: temp dir: #{tempFolderPath}"
 
-	unzipResult = zip.extractAllTo tempFolderPath
+	try
+		unzipResult = zip.extractAllTo tempFolderPath
+	catch e
+		unzipResult = new Error e
 
-	if ( not unzipResult ) or ( unzipResult instanceof Error )
-		winston.debug "install.fromZip: can't unzip, returning error"
+	if unzipResult instanceof Error
+		winston.debug "install.fromZip: can't unzip, returning error", unzipResult
 		return new Error "Can't unzip the archive to a temp directory!"
 
 	winston.silly "install.fromZip: unziped, calling fromFolder"

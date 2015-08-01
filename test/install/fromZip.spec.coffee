@@ -28,9 +28,30 @@ describe "install.fromZip", ->
 		result = fromZip "test/fixtures/empty.zip"
 		result.should.be.an.instanceof Error
 
-	it "returns an Error when can't unzip to a temp directory", ->
+	it "returns an Error when can't unzip returns an error", ->
 		getEntryStub = sinon.stub().returns {}
 		extractAllToStub = sinon.stub().returns new Error
+
+		fromZip = proxyquire "../../lib/install/fromZip",
+			"fs":
+				statSync: ->
+					isFile: -> true
+			"tmp":
+				dirSync: ->
+					name: "fake-temp-dir"
+			"adm-zip": class FakeAdmZip
+				getEntry: getEntryStub
+				extractAllTo: extractAllToStub
+
+		result = fromZip "fake-path-to-zip"
+		result.should.be.an.instanceof Error
+
+		getEntryStub.should.have.been.called
+		extractAllToStub.should.have.been.calledOnce
+
+	it "returns an Error when can't unzip throws", ->
+		getEntryStub = sinon.stub().returns {}
+		extractAllToStub = sinon.stub().throws()
 
 		fromZip = proxyquire "../../lib/install/fromZip",
 			"fs":
