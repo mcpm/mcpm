@@ -46,5 +46,19 @@ commander
 	.action ->
 		console.log mcpm.getMinecraftVersion()
 
+commander.on "--help", ->
+	console.log [
+		"  Examples:"
+		""
+		"    Install a package from the ./foo directory"
+		"      $ mcpm install ./foo"
+		""
+		"    Install a package from the ./foo.zip archive"
+		"      $ mcpm install ./foo.zip"
+		""
+		"    Show the Minecraft version of the currently selected profile"
+		"      $ mcpm mc"
+	].join "\n"
+
 commander
 	.parse process.argv
