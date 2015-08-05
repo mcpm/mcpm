@@ -10,7 +10,34 @@
 
     npm install mcpm
 
-## Usage Example
+## Usage
+
+```Text
+  Usage: mcpm [options] [command]
+
+
+  Commands:
+
+    install|i <packages...>  install one or more packages
+    minecraft-version|mc     display currently selected Minecraft version
+
+  Options:
+
+    -h, --help     output usage information
+    -V, --version  output the version number
+    -v, --verbose  Increase verbosity
+
+  Examples:
+
+    Install a package from the ./foo directory
+      $ mcpm install ./foo
+
+    Install a package from the ./foo.zip archive
+      $ mcpm install ./foo.zip
+
+    Show the Minecraft version of the currently selected profile
+      $ mcpm mc
+```
 
 ## Testing
 
