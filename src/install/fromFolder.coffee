@@ -54,9 +54,12 @@ fromFolder = ( packageDirectory, zipPath ) ->
 	winston.debug "install.fromFolder: adding installed package to profile"
 	result = util.addInstalledPackage config.name, config.version
 
-	profile = util.getCurrentProfile()
+	if result instanceof Error
+		winston.debug "install.fromFolder: can't add to the installed list, returning error"
+		return result
+
 	winston.info "#{config.name}@#{config.version}: Success!"
-	winston.verbose "install.fromFolder: done, returning result"
-	result
+	winston.verbose "install.fromFolder: done, returning config"
+	config
 
 module.exports = fromFolder

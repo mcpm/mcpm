@@ -123,14 +123,16 @@ describe "install.fromFolder", ->
 		result = fromFolder "test/fixtures/invalid-mod"
 		result.should.be.an.instanceof Error
 
-	it "returns true when everything goes right", ->
+	it "returns the package manifest when everything goes right", ->
+		fakeManifest =
+			install_executable: "file.jar"
+
 		fromFolder = proxyquire "../../lib/install/fromFolder",
 			"../util":
 				getCurrentProfile: -> {}
 				addInstalledPackage: -> true
-			"./validateManifest": ->
-				install_executable: "file.jar"
+			"./validateManifest": -> fakeManifest
 			"./invokeInstallExecutable": -> true
 
 		result = fromFolder "test/fixtures/invalid-mod"
-		result.should.equal true
+		result.should.equal fakeManifest

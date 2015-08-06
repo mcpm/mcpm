@@ -2,7 +2,8 @@ winston = require "winston"
 fs = require "fs"
 tmp = require "tmp"
 AdmZip = require "adm-zip"
-fromFolder = require "./fromFolder"
+installFromFolder = require "./fromFolder"
+cache = require "../cache"
 
 fromZip = ( pathToArchive ) ->
 	winston.info "#{pathToArchive}: Installing from a zip..."
@@ -37,6 +38,15 @@ fromZip = ( pathToArchive ) ->
 		return new Error "Can't unzip the archive to a temp directory!"
 
 	winston.silly "install.fromZip: unziped, calling fromFolder"
-	fromFolder tempFolderPath, pathToArchive
+	config = installFromFolder tempFolderPath, pathToArchive
+
+	if config instanceof Error
+		winston.debug "install.fromZip: error during installation, returning error", unzipResult
+		return config
+
+	cache.add pathToArchive, config
+	winston.info "#{config.name}@#{config.version}: Added to cache"
+
+	config
 
 module.exports = fromZip

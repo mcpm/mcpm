@@ -38,7 +38,8 @@ describe "cache.add", ->
 			version: "1.2.3"
 
 		fakeCopySync = sinon.stub()
-		fakeOutputJsonSync = sinon.mock().withArgs fakeManifest, path.join dest, "mcpm-package.json"
+		filename = path.join dest, "mcpm-package.json"
+		fakeOutputJsonSync = sinon.mock().withArgs filename, fakeManifest
 
 		add = proxyquire "../../lib/cache/add",
 			"../util":
