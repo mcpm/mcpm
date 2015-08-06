@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-var commander, increaseVerbosity, mcpm, util, verbosityLevels, winston;
+var commander, increaseVerbosity, install, util, verbosityLevels, winston;
 
 commander = require("commander");
 
 winston = require("winston");
 
-mcpm = require("../lib/mcpm");
+install = require("../lib/install");
 
 util = require("../lib/util");
 
@@ -32,7 +32,7 @@ commander.command("install <packages...>").alias("i").description("install one o
   for (i = 0, len = packages.length; i < len; i++) {
     pkg = packages[i];
     winston.info(pkg + ": Deciding what to do...");
-    result = mcpm.install(pkg);
+    result = install(pkg);
     if (result instanceof Error) {
       winston.verbose("cli#install: error", result);
       winston.error(pkg + ": " + result.name + ": " + result.message);

@@ -1,9 +1,27 @@
-module.exports =
-	parsePackageString: require "./install/parsePackageString"
-	readManifest: require "./install/readManifest"
-	validateManifest: require "./install/validateManifest"
-	flattenFileList: require "./install/flattenFileList"
-	copyFiles: require "./install/copyFiles"
-	invokeInstallExecutable: require "./install/invokeInstallExecutable"
-	fromFolder: require "./install/fromFolder"
-	fromZip: require "./install/fromZip"
+winston = require "winston"
+
+install = ( packageString ) ->
+	winston.verbose "install: starting"
+	parsed = install.parsePackageString packageString
+	winston.silly "install: parsed string:", parsed
+
+	if parsed?.type is "folder"
+		winston.silly "install: installing as folder"
+		install.fromFolder parsed.name
+	else if parsed?.type is "zip"
+		winston.silly "install: installing as zip"
+		install.fromZip parsed.name
+	else
+		winston.debug "install: invalid package string, returning error"
+		return new Error "Invalid package string!"
+
+install.parsePackageString = require "./install/parsePackageString"
+install.readManifest = require "./install/readManifest"
+install.validateManifest = require "./install/validateManifest"
+install.flattenFileList = require "./install/flattenFileList"
+install.copyFiles = require "./install/copyFiles"
+install.invokeInstallExecutable = require "./install/invokeInstallExecutable"
+install.fromFolder = require "./install/fromFolder"
+install.fromZip = require "./install/fromZip"
+
+module.exports = install

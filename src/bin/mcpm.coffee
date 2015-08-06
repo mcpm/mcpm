@@ -1,6 +1,6 @@
 commander = require "commander"
 winston = require "winston"
-mcpm = require "../lib/mcpm"
+install = require "../lib/install"
 util = require "../lib/util"
 
 winston.setLevels winston.config.cli.levels
@@ -27,7 +27,7 @@ commander
 
 		for pkg in packages
 			winston.info "#{pkg}: Deciding what to do..."
-			result = mcpm.install pkg
+			result = install pkg
 			if result instanceof Error
 				winston.verbose "cli#install: error", result
 				winston.error "#{pkg}: #{result.name}: #{result.message}",
