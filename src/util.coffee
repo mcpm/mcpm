@@ -4,3 +4,4 @@ module.exports =
 	getCurrentProfile: require "./util/getCurrentProfile"
 	setCurrentProfile: require "./util/setCurrentProfile"
 	addInstalledPackage: require "./util/addInstalledPackage"
+	getPathToMcpmDir: require "./util/getPathToMcpmDir"
