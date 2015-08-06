@@ -1,7 +1,7 @@
 path = require "path"
 childProcess = require "child_process"
 winston = require "winston"
-minecraftUtils = require "../minecraftUtils"
+util = require "../util"
 
 invokeInstallExecutable = ( file, packageDirectory ) ->
 	winston.verbose "install.invokeInstallExecutable: starting"
@@ -21,7 +21,7 @@ invokeInstallExecutable = ( file, packageDirectory ) ->
 			cwd: packageDirectory
 			env:
 				MCPM: "1"
-				PATH_TO_MINECRAFT: minecraftUtils.getMinecraftPath()
+				PATH_TO_MINECRAFT: util.getMinecraftPath()
 	catch err
 		winston.debug "install.invokeInstallExecutable: failed, " +
 			"returning error"

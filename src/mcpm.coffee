@@ -1,5 +1,5 @@
 install = require "./install"
-minecraftUtils = require "./minecraftUtils"
+util = require "./util"
 winston = require "winston"
 
 module.exports =
@@ -21,7 +21,7 @@ module.exports =
 
 	getMinecraftVersion: ->
 		winston.verbose "mcpm.getMinecraftVersion: starting"
-		version = minecraftUtils.getCurrentProfile().version
+		version = util.getCurrentProfile().version
 		winston.verbose "mcpm.getMinecraftVersion: success:", version
 
 		winston.silly "mcpm.getMinecraftVersion: returning version"

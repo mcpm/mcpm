@@ -1,7 +1,7 @@
 commander = require "commander"
 winston = require "winston"
 mcpm = require "../lib/mcpm"
-minecraftUtils = require "../lib/minecraftUtils"
+util = require "../lib/util"
 
 winston.setLevels winston.config.cli.levels
 winston.cli()
@@ -20,7 +20,7 @@ commander
 	.alias "i"
 	.description "install one or more packages"
 	.action ( packages ) ->
-		startProfile = minecraftUtils.getCurrentProfile()
+		startProfile = util.getCurrentProfile()
 		winston.info "Current Minecraft version: #{startProfile.version}"
 		winston.info "Current profile name: #{startProfile.originalInfo.name}"
 		console.log()
@@ -32,7 +32,7 @@ commander
 				winston.verbose "cli#install: error", result
 				winston.error "#{pkg}: #{result.name}: #{result.message}",
 
-		endProfile = minecraftUtils.getCurrentProfile()
+		endProfile = util.getCurrentProfile()
 		if ( endProfile.version isnt startProfile.version ) or
 		( endProfile.originalInfo.name isnt startProfile.originalInfo.name )
 			console.log()

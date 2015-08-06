@@ -1,11 +1,11 @@
 fs = require "fs-extra"
 path = require "path"
-minecraftUtils = require "../minecraftUtils"
+util = require "../util"
 winston = require "winston"
 
 copyFiles = ( list, packageDirectory, zipPath, config = {}) ->
 	winston.verbose "install.copyFiles: starting"
-	minecraftRoot = minecraftUtils.getMinecraftPath()
+	minecraftRoot = util.getMinecraftPath()
 	winston.silly "install.copyFiles: got path to Minecraft root: " +
 		minecraftRoot
 	for to, fromList of list

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var commander, increaseVerbosity, mcpm, minecraftUtils, verbosityLevels, winston;
+var commander, increaseVerbosity, mcpm, util, verbosityLevels, winston;
 
 commander = require("commander");
 
@@ -8,7 +8,7 @@ winston = require("winston");
 
 mcpm = require("../lib/mcpm");
 
-minecraftUtils = require("../lib/minecraftUtils");
+util = require("../lib/util");
 
 winston.setLevels(winston.config.cli.levels);
 
@@ -25,7 +25,7 @@ commander.version(require("../package.json").version).option("-v, --verbose", "I
 
 commander.command("install <packages...>").alias("i").description("install one or more packages").action(function(packages) {
   var endProfile, i, len, pkg, result, startProfile;
-  startProfile = minecraftUtils.getCurrentProfile();
+  startProfile = util.getCurrentProfile();
   winston.info("Current Minecraft version: " + startProfile.version);
   winston.info("Current profile name: " + startProfile.originalInfo.name);
   console.log();
@@ -38,7 +38,7 @@ commander.command("install <packages...>").alias("i").description("install one o
       winston.error(pkg + ": " + result.name + ": " + result.message);
     }
   }
-  endProfile = minecraftUtils.getCurrentProfile();
+  endProfile = util.getCurrentProfile();
   if ((endProfile.version !== startProfile.version) || (endProfile.originalInfo.name !== startProfile.originalInfo.name)) {
     console.log();
     winston.info("Current Minecraft version: " + endProfile.version);

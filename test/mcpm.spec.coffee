@@ -1,16 +1,15 @@
 chai = require "chai"
 sinon = require "sinon"
+chai.should()
+chai.use require "sinon-chai"
 
 # Disabling logging in tests.
 require( "winston" ).level = Infinity
 
 mcpm = require "../lib/mcpm.js"
 
-chai.should()
-chai.use require "sinon-chai"
-
 install = require "../lib/install"
-minecraftUtils = require "../lib/minecraftUtils"
+util = require "../lib/util"
 
 describe "mcpm", ->
 
@@ -53,11 +52,11 @@ describe "mcpm", ->
 
 	describe "getMinecraftVersion", ->
 
-		it "uses 'minecraftUtils.getCurrentProfile().version'", ->
-			sinon.stub minecraftUtils, "getCurrentProfile", ->
+		it "uses 'util.getCurrentProfile().version'", ->
+			sinon.stub util, "getCurrentProfile", ->
 				version: "foo.bar.qux"
 
 			result = mcpm.getMinecraftVersion()
 			"foo.bar.qux".should.equal result
 
-			minecraftUtils.getCurrentProfile.restore()
+			util.getCurrentProfile.restore()

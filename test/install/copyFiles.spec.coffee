@@ -10,7 +10,7 @@ require( "winston" ).level = Infinity
 
 path = require "path"
 copyFiles = proxyquire "../../lib/install/copyFiles",
-	"../minecraftUtils":
+	"../util":
 		getMinecraftPath: -> "mcpath"
 	"fs-extra":
 		copySync: ( from, to ) ->

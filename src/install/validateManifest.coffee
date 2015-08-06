@@ -1,7 +1,7 @@
 semver = require "semver"
 winston = require "winston"
 readManifest = require "./readManifest"
-minecraftUtils = require "../minecraftUtils"
+util = require "../util"
 
 validateInstallFields = ( manifest ) ->
 	if not manifest.install_file_list and not manifest.install_executable
@@ -41,7 +41,7 @@ validateBasicInfo = ( manifest ) ->
 	winston.silly "install.validateManifest: valid mc"
 
 checkCompatibility = ( manifest ) ->
-	actualVersion = minecraftUtils.getCurrentProfile().version
+	actualVersion = util.getCurrentProfile().version
 	compatibleRange = manifest.mc
 	if not semver.satisfies actualVersion, compatibleRange
 		winston.debug "install.validateManifest: incompatible mc, returning error",

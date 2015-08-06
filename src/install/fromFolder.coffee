@@ -1,5 +1,5 @@
 winston = require "winston"
-minecraftUtils = require "../minecraftUtils"
+util = require "../util"
 validateManifest = require "./validateManifest"
 flattenFileList = require "./flattenFileList"
 copyFiles = require "./copyFiles"
@@ -52,9 +52,9 @@ fromFolder = ( packageDirectory, zipPath ) ->
 			return result
 
 	winston.debug "install.fromFolder: adding installed package to profile"
-	result = minecraftUtils.addInstalledPackage config.name, config.version
+	result = util.addInstalledPackage config.name, config.version
 
-	profile = minecraftUtils.getCurrentProfile()
+	profile = util.getCurrentProfile()
 	winston.info "#{config.name}@#{config.version}: Success!"
 	winston.verbose "install.fromFolder: done, returning result"
 	result

@@ -6,13 +6,13 @@ chai.use require "sinon-chai"
 # Disabling logging in tests.
 require( "winston" ).level = Infinity
 
-minecraftUtils = require "../lib/minecraftUtils.js"
+util = require "../lib/util.js"
 
 os = require "os"
 path = require "path"
 fs = require "fs"
 
-describe "minecraftUtils", ->
+describe "util", ->
 
 	describe "getMinecraftPath", ->
 
@@ -24,15 +24,15 @@ describe "minecraftUtils", ->
 			sinon.stub os, "platform", -> fakeOsPlatform
 
 			fakeOsPlatform = "win32"
-			minecraftUtils.getMinecraftPath().should.equal path.join "fakeHome",
+			util.getMinecraftPath().should.equal path.join "fakeHome",
 				"AppData", "Roaming", ".minecraft"
 
 			fakeOsPlatform = "linux"
-			minecraftUtils.getMinecraftPath().should.equal path.join "fakeHome",
+			util.getMinecraftPath().should.equal path.join "fakeHome",
 				".minecraft"
 
 			fakeOsPlatform = "darwin"
-			minecraftUtils.getMinecraftPath().should.equal path.join "fakeHome",
+			util.getMinecraftPath().should.equal path.join "fakeHome",
 				"Library", "Application Support", "minecraft"
 
 			process.env.HOME = originalHome
@@ -48,10 +48,10 @@ describe "minecraftUtils", ->
 			JSON.parse fs.readFileSync pathToTheFixture, encoding: "utf-8"
 
 		before ->
-			sinon.stub minecraftUtils, "getMinecraftPath", -> pathToFixtures
+			sinon.stub util, "getMinecraftPath", -> pathToFixtures
 
 		after ->
-			minecraftUtils.getMinecraftPath.restore()
+			util.getMinecraftPath.restore()
 
 		afterEach ->
 			# Roll back the changes to make the tests stateless.
@@ -64,22 +64,22 @@ describe "minecraftUtils", ->
 			fixture = loadFixture()
 			actualInfo = fixture.profiles[ "1.8 + Forge + LiteLoader" ]
 
-			currentProfile = minecraftUtils.getCurrentProfile()
+			currentProfile = util.getCurrentProfile()
 			actualInfo.should.deep.equal currentProfile.originalInfo
 
 		it "returns current Minecraft version in version property", ->
-			currentProfile = minecraftUtils.getCurrentProfile()
+			currentProfile = util.getCurrentProfile()
 			"1.8.0".should.equal currentProfile.version
 
 		it "normalizes version to 'x.x.0' when specified as 'x.x'", ->
 			fixture = loadFixture()
 			fixture.profiles[ "1.8 + Forge + LiteLoader" ].lastVersionId = "1.8"
 			fs.writeFileSync pathToTheFixture, JSON.stringify fixture
-			currentProfile = minecraftUtils.getCurrentProfile()
+			currentProfile = util.getCurrentProfile()
 			"1.8.0".should.equal currentProfile.version
 
 		it "returns installed packages in installedPackages property", ->
-			currentProfile = minecraftUtils.getCurrentProfile()
+			currentProfile = util.getCurrentProfile()
 			packageList =
 				fake: "1.2.3"
 				package: "2.3.4"
@@ -89,14 +89,14 @@ describe "minecraftUtils", ->
 			fixture = loadFixture()
 			actualInfo = fixture.profiles[ "1.8 + Forge + LiteLoader" ]
 
-			currentProfile = minecraftUtils.getCurrentProfile()
+			currentProfile = util.getCurrentProfile()
 			actualInfo.should.deep.equal currentProfile.originalInfo
 
 			fixture.selectedProfile = "1.8"
 			fs.writeFileSync pathToTheFixture, JSON.stringify fixture
 			actualInfo = fixture.profiles[ "1.8" ]
 
-			currentProfile = minecraftUtils.getCurrentProfile()
+			currentProfile = util.getCurrentProfile()
 			actualInfo.should.deep.equal currentProfile.originalInfo
 
 	describe "setCurrentProfile", ->
@@ -112,17 +112,17 @@ describe "minecraftUtils", ->
 
 		triedToWriteThis = {}
 		before ->
-			sinon.stub minecraftUtils, "getMinecraftPath", -> pathToFixtures
+			sinon.stub util, "getMinecraftPath", -> pathToFixtures
 			sinon.stub fs, "writeFileSync", ( filename, json ) ->
 				filename.should.equal pathToTheFixture
 				triedToWriteThis = JSON.parse json
 
 		after ->
-			minecraftUtils.getMinecraftPath.restore()
+			util.getMinecraftPath.restore()
 			fs.writeFileSync.restore()
 
 		it "blindly rewrites current profile with specified object", ->
-			minecraftUtils.setCurrentProfile fakeNewProfile
+			util.setCurrentProfile fakeNewProfile
 			triedToWriteThis.profiles[ profileName ].should.deep.equal fakeNewProfile
 
 	describe "addInstalledPackage", ->
@@ -136,10 +136,10 @@ describe "minecraftUtils", ->
 			JSON.parse fs.readFileSync pathToTheFixture, encoding: "utf-8"
 
 		before ->
-			sinon.stub minecraftUtils, "getMinecraftPath", -> pathToFixtures
+			sinon.stub util, "getMinecraftPath", -> pathToFixtures
 
 		after ->
-			minecraftUtils.getMinecraftPath.restore()
+			util.getMinecraftPath.restore()
 
 		afterEach ->
 			# Roll back the changes to make the tests stateless.
@@ -152,8 +152,8 @@ describe "minecraftUtils", ->
 			fs.writeFileSync pathToTheFixture, JSON.stringify fixture, null, 2
 
 		it "should add specified module to 'mcpmInstalledPackages'", ->
-			minecraftUtils.addInstalledPackage "fake-package", "0.1.0"
-			profile = minecraftUtils.getCurrentProfile()
+			util.addInstalledPackage "fake-package", "0.1.0"
+			profile = util.getCurrentProfile()
 			installedPackages = profile.installedPackages
 			"0.1.0".should.equal installedPackages[ "fake-package" ]
 
@@ -168,8 +168,8 @@ describe "minecraftUtils", ->
 			delete actualInfo.mcpmInstalledPackages
 			fs.writeFileSync pathToTheFixture, JSON.stringify fixture, null, 2
 
-			minecraftUtils.addInstalledPackage "fake-package", "0.1.0"
-			profile = minecraftUtils.getCurrentProfile()
+			util.addInstalledPackage "fake-package", "0.1.0"
+			profile = util.getCurrentProfile()
 			installedPackages = profile.installedPackages
 			"0.1.0".should.equal installedPackages[ "fake-package" ]
 

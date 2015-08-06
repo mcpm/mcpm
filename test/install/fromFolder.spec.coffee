@@ -12,7 +12,7 @@ describe "install.fromFolder", ->
 
 	it "reads and checks package config", ->
 		fromFolder = proxyquire "../../lib/install/fromFolder",
-			"../minecraftUtils":
+			"../util":
 				getCurrentProfile: -> {}
 
 		result = fromFolder "test/fixtures/invalid-mod"
@@ -21,7 +21,7 @@ describe "install.fromFolder", ->
 
 	it "returns an Error when install executable exits with error", ->
 		fromFolder = proxyquire "../../lib/install/fromFolder",
-			"../minecraftUtils":
+			"../util":
 				getCurrentProfile: -> {}
 			"./validateManifest": ->
 				install_executable: "file.jar"
@@ -35,7 +35,7 @@ describe "install.fromFolder", ->
 
 	it "doesn't call invokeInstallExecutable when no install_executable", ->
 		fromFolder = proxyquire "../../lib/install/fromFolder",
-			"../minecraftUtils":
+			"../util":
 				getCurrentProfile: -> {}
 				addInstalledPackage: -> true
 			"./copyFiles": -> yes
@@ -49,7 +49,7 @@ describe "install.fromFolder", ->
 
 	it "returns an Error when flattenFileList returns an error", ->
 		fromFolder = proxyquire "../../lib/install/fromFolder",
-			"../minecraftUtils":
+			"../util":
 				getCurrentProfile: -> {}
 			"./validateManifest": -> install_file_list: foo: "bar"
 			"./flattenFileList": ( list, dir ) ->
@@ -62,7 +62,7 @@ describe "install.fromFolder", ->
 
 	it "returns an Error when copyFiles returns an error", ->
 		fromFolder = proxyquire "../../lib/install/fromFolder",
-			"../minecraftUtils":
+			"../util":
 				getCurrentProfile: -> {}
 			"./validateManifest": -> install_file_list: foo: "bar"
 			"./flattenFileList": ( list, dir ) ->
@@ -79,7 +79,7 @@ describe "install.fromFolder", ->
 
 	it "first copies files, then invokes installer when there're both", ->
 		fromFolder = proxyquire "../../lib/install/fromFolder",
-			"../minecraftUtils":
+			"../util":
 				getCurrentProfile: -> {}
 			"./validateManifest": ->
 				install_executable: "foo"
@@ -96,7 +96,7 @@ describe "install.fromFolder", ->
 
 	it "returns an Error when addInstalledPackage returns an error", ->
 		fromFolder = proxyquire "../../lib/install/fromFolder",
-			"../minecraftUtils":
+			"../util":
 				getCurrentProfile: -> {}
 				addInstalledPackage: ->
 					new Error "Something went wrong!"
@@ -108,7 +108,7 @@ describe "install.fromFolder", ->
 
 	it "passes correct name and version to addInstalledPackage", ->
 		fromFolder = proxyquire "../../lib/install/fromFolder",
-			"../minecraftUtils":
+			"../util":
 				getCurrentProfile: -> {}
 				addInstalledPackage: ( name, ver ) ->
 					name.should.equal "fake-mod"
@@ -125,7 +125,7 @@ describe "install.fromFolder", ->
 
 	it "returns true when everything goes right", ->
 		fromFolder = proxyquire "../../lib/install/fromFolder",
-			"../minecraftUtils":
+			"../util":
 				getCurrentProfile: -> {}
 				addInstalledPackage: -> true
 			"./validateManifest": ->

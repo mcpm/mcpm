@@ -18,7 +18,7 @@ fakeChildProcess =
 			PATH_TO_MINECRAFT: "mcpath"
 
 invokeInstallExecutable = proxyquire "../../lib/install/invokeInstallExecutable",
-	"../minecraftUtils": getMinecraftPath: -> "mcpath"
+	"../util": getMinecraftPath: -> "mcpath"
 	child_process: fakeChildProcess
 
 describe "install.invokeInstallExecutable", ->

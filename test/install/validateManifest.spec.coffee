@@ -10,7 +10,7 @@ require( "winston" ).level = Infinity
 
 validateManifest = proxyquire "../../lib/install/validateManifest",
 	"./readManifest": ( str ) -> str
-	"../minecraftUtils":
+	"../util":
 		getCurrentProfile: ->
 			version: "1.8.0"
 
