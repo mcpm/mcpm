@@ -38,9 +38,27 @@
       $ mcpm mc
 ```
 
-## Testing
+## Contributing
 
-    npm test
+#### Prerequisites
+
+- [io.js](https://iojs.org) 2.4.0+
+- `$ npm install -g gulp` ([gulp](http://gulpjs.com/) is an automation tool)
+- Fork [this repo](https://github.com/mcpm/mcpm)
+- Check out it locally
+- `$ npm install`
+
+#### Workflow
+
+- [Write tests](https://en.wikipedia.org/wiki/Test-driven_development)
+- `$ gulp test`
+- Write code
+- `$ gulp test`
+
+#### Make a pull request
+
+- Push changes to your fork (don't push to `master`, create a separate branch)
+- Make a pull request on GitHub
 
 ## Roadmap
 
