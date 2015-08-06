@@ -18,11 +18,3 @@ module.exports =
 		else
 			winston.debug "mcpm.install: invalid package string, returning error"
 			return new Error "Invalid package string!"
-
-	getMinecraftVersion: ->
-		winston.verbose "mcpm.getMinecraftVersion: starting"
-		version = util.getCurrentProfile().version
-		winston.verbose "mcpm.getMinecraftVersion: success:", version
-
-		winston.silly "mcpm.getMinecraftVersion: returning version"
-		version

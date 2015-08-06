@@ -9,7 +9,6 @@ require( "winston" ).level = Infinity
 mcpm = require "../lib/mcpm.js"
 
 install = require "../lib/install"
-util = require "../lib/util"
 
 describe "mcpm", ->
 
@@ -49,14 +48,3 @@ describe "mcpm", ->
 			install.fromZip.should.have.been.calledOnce
 			install.fromZip.restore()
 			install.parsePackageString.restore()
-
-	describe "getMinecraftVersion", ->
-
-		it "uses 'util.getCurrentProfile().version'", ->
-			sinon.stub util, "getCurrentProfile", ->
-				version: "foo.bar.qux"
-
-			result = mcpm.getMinecraftVersion()
-			"foo.bar.qux".should.equal result
-
-			util.getCurrentProfile.restore()

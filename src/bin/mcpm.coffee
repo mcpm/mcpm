@@ -44,7 +44,7 @@ commander
 	.alias "mc"
 	.description "display currently selected Minecraft version"
 	.action ->
-		console.log mcpm.getMinecraftVersion()
+		console.log util.getClientVersion()
 
 commander.on "--help", ->
 	console.log [

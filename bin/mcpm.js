@@ -47,7 +47,7 @@ commander.command("install <packages...>").alias("i").description("install one o
 });
 
 commander.command("minecraft-version").alias("mc").description("display currently selected Minecraft version").action(function() {
-  return console.log(mcpm.getMinecraftVersion());
+  return console.log(util.getClientVersion());
 });
 
 commander.on("--help", function() {
