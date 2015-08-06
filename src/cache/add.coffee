@@ -9,7 +9,8 @@ add = ( pathToZip, manifest ) ->
 	pathToPackageCache = path.join util.getPathToMcpmDir(), "cache", manifest.name, manifest.version
 	winston.silly "cache.add: pathToPackageCache:", pathToPackageCache
 
-	fs.outputJsonSync manifest, path.join pathToPackageCache, "mcpm-package.json"
+	manifestFilename = path.join pathToPackageCache, "mcpm-package.json"
+	fs.outputJsonSync manifestFilename, manifest
 	winston.silly "cache.add: cached manifest"
 
 	fs.copySync pathToZip, path.join pathToPackageCache, "mcpm-package.zip"
