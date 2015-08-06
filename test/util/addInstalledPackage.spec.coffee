@@ -9,7 +9,7 @@ require( "winston" ).level = Infinity
 
 describe "util.addInstalledPackage", ->
 
-	it "should add specified module to 'mcpmInstalledPackages'", ->
+	it "adds specified module to 'mcpmInstalledPackages'", ->
 		addInstalledPackage = proxyquire "../../lib/util/addInstalledPackage",
 			"./getCurrentProfile": ->
 				originalInfo:
@@ -22,7 +22,7 @@ describe "util.addInstalledPackage", ->
 
 		addInstalledPackage "fake-package", "0.1.0"
 
-	it "should add 'mcpmInstalledPackages' field if it's not there yet", ->
+	it "adds 'mcpmInstalledPackages' field if it's not there yet", ->
 		addInstalledPackage = proxyquire "../../lib/util/addInstalledPackage",
 			"./getCurrentProfile": ->
 				originalInfo: {}
