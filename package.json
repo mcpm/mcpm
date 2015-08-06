@@ -22,7 +22,8 @@
     "url": "https://github.com/mcpm/mcpm.git"
   },
   "scripts": {
-    "test": "gulp test"
+    "test": "gulp test",
+    "prepublish": "gulp coffee"
   },
   "bin": {
     "mcpm": "./bin/mcpm.js"
