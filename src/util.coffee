@@ -1,8 +1,3 @@
-os = require "os"
-path = require "path"
-fs = require "fs"
-winston = require "winston"
-
 module.exports =
 	getMinecraftPath: require "./util/getMinecraftPath"
 	getClientVersion: require "./util/getClientVersion"
