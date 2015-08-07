@@ -7,7 +7,7 @@
 
 ## Installation
 
-    npm install mcpm
+    npm install -g mcpm
 
 ## Usage
 
