@@ -3,7 +3,6 @@
 /npm-debug.log
 /test
 /src
-/src-bin
 /.hound.yml
 /.travis.yml
 /.editorconfig
