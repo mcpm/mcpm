@@ -55,9 +55,7 @@
     "sinon-chai": "~2.8.0"
   },
   "engines": {
-    "node": "~0.13.0",
-    "iojs": "~3.0.0",
-    "npm": "~2.13.0"
+    "iojs": "~3.0.0"
   },
   "license": "MIT"
 }
