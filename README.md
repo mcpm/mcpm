@@ -42,7 +42,7 @@
 
 #### Prerequisites
 
-- [io.js](https://iojs.org) 2.4.0+
+- [io.js](https://iojs.org)
 - `$ npm install -g gulp` ([gulp](http://gulpjs.com/) is an automation tool)
 - Fork [this repo](https://github.com/mcpm/mcpm)
 - Check out it locally
