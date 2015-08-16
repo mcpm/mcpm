@@ -36,6 +36,9 @@
     Install a package from the ./foo.zip archive
       $ mcpm install ./foo.zip
 
+    Install a package from cache
+      $ mcpm install foo@0.2.0
+
     Show the Minecraft version of the currently selected profile
       $ mcpm mc
 ```
