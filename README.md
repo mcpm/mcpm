@@ -6,6 +6,9 @@
 
 ## Installation
 
+[![npm version](https://img.shields.io/npm/v/mcpm.svg)](https://www.npmjs.com/package/mcpm)
+[![npm downloads](https://img.shields.io/npm/dm/mcpm.svg)](https://www.npmjs.com/package/mcpm)
+
     npm install -g mcpm
 
 ## Usage
