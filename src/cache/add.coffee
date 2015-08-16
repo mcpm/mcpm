@@ -10,10 +10,16 @@ add = ( pathToZip, manifest ) ->
 	winston.silly "cache.add: pathToPackageCache:", pathToPackageCache
 
 	manifestFilename = path.join pathToPackageCache, "mcpm-package.json"
+	targetPathToZip = path.join pathToPackageCache, "mcpm-package.zip"
+
+	if targetPathToZip is pathToZip
+		winston.verbose "cache.add: trying to cache the cached zip itself, doing nothing"
+		return
+
 	fs.outputJsonSync manifestFilename, manifest
 	winston.silly "cache.add: cached manifest"
 
-	fs.copySync pathToZip, path.join pathToPackageCache, "mcpm-package.zip"
+	fs.copySync pathToZip, targetPathToZip
 	winston.silly "cache.add: cached zip"
 
 	winston.verbose "cache.add: success"

@@ -11,6 +11,28 @@ path = require "path"
 
 describe "cache.add", ->
 
+	it "doesn't do anything when trying to cache the cached zip itself", ->
+		fakeManifest =
+			name: "fake-package"
+			version: "1.2.3"
+		dest = path.join "fake-.mcpm", "cache", fakeManifest.name, fakeManifest.version
+		pathToZip = path.join dest, "mcpm-package.zip"
+
+		fakeCopySync = sinon.stub()
+		fakeOutputJsonSync = sinon.stub()
+
+		add = proxyquire "../../lib/cache/add",
+			"../util":
+				getPathToMcpmDir: -> "fake-.mcpm"
+			"fs-extra":
+				copySync: fakeCopySync
+				outputJsonSync: fakeOutputJsonSync
+
+		add pathToZip, fakeManifest
+
+		fakeCopySync.should.not.have.been.called
+		fakeOutputJsonSync.should.not.have.been.called
+
 	it "adds specified zip to cache", ->
 		dest = path.join "fake-.mcpm", "cache", "fake-package", "1.2.3"
 		fakeManifest =
