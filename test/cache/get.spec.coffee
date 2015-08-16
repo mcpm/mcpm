@@ -25,6 +25,20 @@ describe "cache.get", ->
 		expect( result ).to.equal null
 		fakeExistsSync.should.not.have.been.called
 
+	for name in [ "", "-", "1sdf", "π", "mcpm/mcpm" ]
+		do ( name ) ->
+			it "returns null when package name isn't valid: " + name, ->
+				get = proxyquire "../../lib/cache/get",
+					"../util":
+						getPathToMcpmDir: -> "fake-.mcpm"
+					"fs-extra":
+						existsSync: fakeExistsSync
+
+				result = get name, "1.0.0"
+
+				expect( result ).to.equal null
+				fakeExistsSync.should.not.have.been.called
+
 	it "returns null when specified version isn't semantic", ->
 		fakeExistsSync = sinon.stub()
 
