@@ -21,6 +21,7 @@ install.validateManifest = require "./install/validateManifest"
 install.flattenFileList = require "./install/flattenFileList"
 install.copyFiles = require "./install/copyFiles"
 install.invokeInstallExecutable = require "./install/invokeInstallExecutable"
+install.fromCache = require "./install/fromCache"
 install.fromFolder = require "./install/fromFolder"
 install.fromZip = require "./install/fromZip"
 
