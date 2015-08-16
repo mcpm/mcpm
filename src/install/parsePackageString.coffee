@@ -7,6 +7,11 @@ parsePackageString = ( str ) ->
 		winston.debug "install.parsePackageString: str is not a string, returning null"
 		return null
 
+	if str.includes "@"
+		winston.verbose "install.parsePackageString: str contains '@', using type 'cache'"
+		[ str, version ] = str.split "@"
+		detectedType = "cache"
+
 	if str.startsWith "zip:"
 		winston.verbose "install.parsePackageString: str starts with 'zip', parsing as a zip"
 		str = str.substring "zip:".length
@@ -31,5 +36,6 @@ parsePackageString = ( str ) ->
 
 	type: detectedType
 	name: str
+	version: version
 
 module.exports = parsePackageString

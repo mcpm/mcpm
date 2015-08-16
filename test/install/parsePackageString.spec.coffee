@@ -21,7 +21,7 @@ describe "install.parsePackageString", ->
 		do ( str ) ->
 			it "classifies any '.zip'-suffixed string as 'zip': #{str}.zip", ->
 				parsed = parsePackageString "#{str}.zip"
-				parsed.should.deep.equal
+				parsed.should.include
 					type: "zip"
 					name: "#{str}.zip"
 
@@ -29,7 +29,7 @@ describe "install.parsePackageString", ->
 		do ( str ) ->
 			it "classifies any other non-prefixed string as 'folder': #{str}", ->
 				parsed = parsePackageString str
-				parsed.should.deep.equal
+				parsed.should.include
 					type: "folder"
 					name: str
 
@@ -37,7 +37,7 @@ describe "install.parsePackageString", ->
 		do ( str ) ->
 			it "classifies 'folder'-prefixed string as 'folder': #{str}", ->
 				parsed = parsePackageString "folder:#{str}"
-				parsed.should.deep.equal
+				parsed.should.include
 					type: "folder"
 					name: str
 
@@ -45,15 +45,24 @@ describe "install.parsePackageString", ->
 		do ( str ) ->
 			it "classifies 'zip'-prefixed string as 'zip': #{str}", ->
 				parsed = parsePackageString "zip:#{str}"
-				parsed.should.deep.equal
+				parsed.should.include
 					type: "zip"
 					name: str
+
+	for str in [ "a@b", "@", "-@-", "../..@0.0.0", "mcpm@1.0.0" ]
+		do ( str ) ->
+			it "classifies strings with '@' as 'cache': #{str}", ->
+				parsed = parsePackageString str
+				parsed.should.include
+					type: "cache"
+					name: str.split( "@" )[ 0 ]
+					version: str.split( "@" )[ 1 ]
 
 	for prefix in [ "github", "http", "", "whatever", "C" ]
 		do ( prefix ) ->
 			it "treats any other prefix as a part of path: #{prefix}", ->
 				parsed = parsePackageString "#{prefix}:some/path"
-				parsed.should.deep.equal
+				parsed.should.include
 					type: "folder"
 					name: "#{prefix}:some/path"
 
