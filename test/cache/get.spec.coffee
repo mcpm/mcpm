@@ -11,9 +11,9 @@ require( "winston" ).level = Infinity
 path = require "path"
 
 describe "cache.get", ->
-	fakeExistsSync = sinon.stub()
-
 	it "returns null when package name isn't specified", ->
+		fakeExistsSync = sinon.stub()
+
 		get = proxyquire "../../lib/cache/get",
 			"../util":
 				getPathToMcpmDir: -> "fake-.mcpm"
@@ -28,6 +28,8 @@ describe "cache.get", ->
 	for name in [ "", "-", "1sdf", "π", "mcpm/mcpm" ]
 		do ( name ) ->
 			it "returns null when package name isn't valid: " + name, ->
+				fakeExistsSync = sinon.stub()
+
 				get = proxyquire "../../lib/cache/get",
 					"../util":
 						getPathToMcpmDir: -> "fake-.mcpm"
