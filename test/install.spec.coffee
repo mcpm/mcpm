@@ -34,7 +34,7 @@ describe "install", ->
 
 		fakeFromFolder.verify()
 
-	it "calls install.fromFolder when package is of 'zip' type", ->
+	it "calls install.fromZip when package is of 'zip' type", ->
 		fakeParsePackageString = sinon.stub().returns
 			type: "zip"
 			name: "whatever"
