@@ -13,8 +13,8 @@ get = ( name, version ) ->
 		winston.debug "cache.get: invalid version, returning null"
 		return null
 
-	pathToMc = util.getPathToMcpmDir()
-	pathToZip = path.join pathToMc, name, version, "mcpm-package.zip"
+	pathToMcpm = util.getPathToMcpmDir()
+	pathToZip = path.join pathToMcpm, "cache", name, version, "mcpm-package.zip"
 	if fs.existsSync pathToZip
 		pathToZip
 	else

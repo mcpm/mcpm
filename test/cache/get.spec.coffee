@@ -59,7 +59,8 @@ describe "cache.get", ->
 
 	it "when the version is semantic, return null if it's not cached", ->
 		fakeExistsSync = sinon.spy ( filename ) ->
-			filename.should.equal path.join "fake-.mcpm", "whatever", "1.0.0", "mcpm-package.zip"
+			filename.should.equal path.join "fake-.mcpm", "cache", "whatever",
+				"1.0.0", "mcpm-package.zip"
 			no
 
 		get = proxyquire "../../lib/cache/get",
@@ -74,7 +75,7 @@ describe "cache.get", ->
 		fakeExistsSync.should.have.been.calledOnce
 
 	it "when the version is semantic, return path to zip if it exists", ->
-		pathToZip = path.join "fake-.mcpm", "whatever", "1.0.0", "mcpm-package.zip"
+		pathToZip = path.join "fake-.mcpm", "cache", "whatever", "1.0.0", "mcpm-package.zip"
 		fakeExistsSync = sinon.spy ( filename ) ->
 			filename.should.equal pathToZip
 			yes
