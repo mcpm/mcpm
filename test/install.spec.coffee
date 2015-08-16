@@ -48,3 +48,19 @@ describe "install", ->
 		result = install "whatever"
 
 		fakeFromZip.verify()
+
+	it "calls install.fromCache when package is of 'cache' type", ->
+		fakeParsePackageString = sinon.stub().returns
+			type: "cache"
+			name: "whatever"
+			version: "fake-version"
+
+		fakeFromCache = sinon.mock().once().withExactArgs "whatever", "fake-version"
+
+		install = proxyquire "../lib/install",
+			"./install/parsePackageString": fakeParsePackageString
+			"./install/fromCache": fakeFromCache
+
+		result = install "whatever"
+
+		fakeFromCache.verify()

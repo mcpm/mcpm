@@ -11,6 +11,9 @@ install = ( packageString ) ->
 	else if parsed?.type is "zip"
 		winston.silly "install: installing as zip"
 		install.fromZip parsed.name
+	else if parsed?.type is "cache"
+		winston.silly "install: installing from cache"
+		install.fromCache parsed.name, parsed.version
 	else
 		winston.debug "install: invalid package string, returning error"
 		return new Error "Invalid package string!"
