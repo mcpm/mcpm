@@ -13,7 +13,7 @@ increaseVerbosity = ( v, total ) ->
 
 commander
 	.version require( "../package.json" ).version
-	.option "-v, --verbose", "Increase verbosity", increaseVerbosity, 0
+	.option "-v, --verbose", "increase verbosity", increaseVerbosity, 0
 
 commander
 	.command "install <packages...>"

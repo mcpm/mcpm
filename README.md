@@ -26,7 +26,7 @@
 
     -h, --help     output usage information
     -V, --version  output the version number
-    -v, --verbose  Increase verbosity
+    -v, --verbose  increase verbosity
 
   Examples:
 
