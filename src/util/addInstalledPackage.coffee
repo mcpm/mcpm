@@ -2,7 +2,7 @@ winston = require "winston"
 getCurrentProfile = require "./getCurrentProfile"
 setCurrentProfile = require "./setCurrentProfile"
 
-addInstalledPackage = ( name, version ) ->
+addInstalledPackage = ( name, version, callback ) ->
 	winston.verbose "util.addInstalledPackage: starting"
 	currentProfile = getCurrentProfile().originalInfo
 	winston.silly "util.addInstalledPackage: old profile",
@@ -15,6 +15,6 @@ addInstalledPackage = ( name, version ) ->
 	setCurrentProfile currentProfile
 	winston.verbose "util.addInstalledPackage: success, " +
 		"returning nothing"
-	return
+	callback undefined, yes
 
 module.exports = addInstalledPackage
