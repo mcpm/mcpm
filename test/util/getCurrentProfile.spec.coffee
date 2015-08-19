@@ -2,6 +2,7 @@ proxyquire = require "proxyquire"
 chai = require "chai"
 sinon = require "sinon"
 chai.should()
+expect = chai.expect
 chai.use require "sinon-chai"
 
 # Disabling logging in tests.
@@ -29,41 +30,52 @@ describe "util.getCurrentProfile", ->
 		fixture.profiles[ "1.8 + Forge + LiteLoader" ].lastVersionId = "1.8.0"
 		fs.writeFileSync pathToTheFixture, JSON.stringify fixture, null, 2
 
-	it "returns current profile in originalInfo property", ->
+	it "returns current profile in originalInfo property", ( done ) ->
 		fixture = loadFixture()
 		actualInfo = fixture.profiles[ "1.8 + Forge + LiteLoader" ]
 
-		currentProfile = getCurrentProfile()
-		actualInfo.should.deep.equal currentProfile.originalInfo
+		getCurrentProfile ( err, currentProfile ) ->
+			expect( err ).to.equal undefined
+			actualInfo.should.deep.equal currentProfile.originalInfo
+			done()
 
-	it "returns current Minecraft version in version property", ->
-		currentProfile = getCurrentProfile()
-		"1.8.0".should.equal currentProfile.version
+	it "returns current Minecraft version in version property", ( done ) ->
+		getCurrentProfile ( err, currentProfile ) ->
+			expect( err ).to.equal undefined
+			"1.8.0".should.equal currentProfile.version
+			done()
 
-	it "normalizes version to 'x.x.0' when specified as 'x.x'", ->
+	it "normalizes version to 'x.x.0' when specified as 'x.x'", ( done ) ->
 		fixture = loadFixture()
 		fixture.profiles[ "1.8 + Forge + LiteLoader" ].lastVersionId = "1.8"
 		fs.writeFileSync pathToTheFixture, JSON.stringify fixture
-		currentProfile = getCurrentProfile()
-		"1.8.0".should.equal currentProfile.version
+		getCurrentProfile ( err, currentProfile ) ->
+			expect( err ).to.equal undefined
+			"1.8.0".should.equal currentProfile.version
+			done()
 
-	it "returns installed packages in installedPackages property", ->
-		currentProfile = getCurrentProfile()
-		packageList =
-			fake: "1.2.3"
-			package: "2.3.4"
-		packageList.should.deep.equal currentProfile.installedPackages
+	it "returns installed packages in installedPackages property", ( done ) ->
+		getCurrentProfile ( err, currentProfile ) ->
+			expect( err ).to.equal undefined
+			packageList =
+				fake: "1.2.3"
+				package: "2.3.4"
+			packageList.should.deep.equal currentProfile.installedPackages
+			done()
 
-	it "reloads profiles on each call", ->
+	it "reloads profiles on each call", ( done ) ->
 		fixture = loadFixture()
 		actualInfo = fixture.profiles[ "1.8 + Forge + LiteLoader" ]
 
-		currentProfile = getCurrentProfile()
-		actualInfo.should.deep.equal currentProfile.originalInfo
+		getCurrentProfile ( err, currentProfile ) ->
+			expect( err ).to.equal undefined
+			actualInfo.should.deep.equal currentProfile.originalInfo
 
-		fixture.selectedProfile = "1.8"
-		fs.writeFileSync pathToTheFixture, JSON.stringify fixture
-		actualInfo = fixture.profiles[ "1.8" ]
+			fixture.selectedProfile = "1.8"
+			fs.writeFileSync pathToTheFixture, JSON.stringify fixture
+			actualInfo = fixture.profiles[ "1.8" ]
 
-		currentProfile = getCurrentProfile()
-		actualInfo.should.deep.equal currentProfile.originalInfo
+			getCurrentProfile ( err, currentProfile ) ->
+				expect( err ).to.equal undefined
+				actualInfo.should.deep.equal currentProfile.originalInfo
+				done()
