@@ -5,7 +5,7 @@ winston = require "winston"
 
 getMinecraftPath = require "./getMinecraftPath"
 
-setCurrentProfile = ( newProfile ) ->
+setCurrentProfile = ( newProfile, callback ) ->
 	winston.verbose "util.setCurrentProfile: starting"
 	winston.silly "util.setCurrentProfile: new profile: ", newProfile
 
@@ -20,9 +20,9 @@ setCurrentProfile = ( newProfile ) ->
 	launcherProfiles.profiles[ currentProfileName ] = newProfile
 
 	winston.silly "util.setCurrentProfile: writing back to file"
-	fs.writeFileSync pathToProfiles, JSON.stringify launcherProfiles, null, 2
-
-	winston.verbose "util.setCurrentProfile: success, returning nothing"
-	return
+	serializedProfiles = JSON.stringify launcherProfiles, null, 2
+	fs.writeFile pathToProfiles, serializedProfiles, ( err ) ->
+		winston.verbose "util.setCurrentProfile: result:", err
+		callback err
 
 module.exports = setCurrentProfile
