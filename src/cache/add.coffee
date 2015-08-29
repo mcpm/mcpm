@@ -18,17 +18,17 @@ add = ( pathToZip, manifest, callback ) ->
 			callback null
 		return
 
-	fs.outputJson manifestFilename, manifest, ( err ) ->
+	fs.copy pathToZip, targetPathToZip, ( err ) ->
 		if err
 			callback err
 			return
-		winston.silly "cache.add: cached manifest"
+		winston.silly "cache.add: cached zip"
 
-		fs.copy pathToZip, targetPathToZip, ( err ) ->
+		fs.outputJson manifestFilename, manifest, ( err ) ->
 			if err
 				callback err
 				return
-			winston.silly "cache.add: cached zip"
+			winston.silly "cache.add: cached manifest"
 
 			winston.verbose "cache.add: success"
 			callback null
