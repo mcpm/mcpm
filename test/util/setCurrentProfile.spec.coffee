@@ -25,12 +25,13 @@ describe "util.setCurrentProfile", ->
 	it "returns an Error when writeFile fails", ( done ) ->
 		triedToWriteThis = {}
 		setCurrentProfile = proxyquire "../../lib/util/setCurrentProfile",
-		"./getMinecraftPath": -> pathToFixtures
-		"fs":
-			writeFile: ( filename, json, callback ) ->
-				filename.should.equal pathToTheFixture
-				triedToWriteThis = JSON.parse json
-				callback "fake-result"
+			"./getMinecraftPath": ->
+				pathToFixtures
+			"fs":
+				writeFile: ( filename, json, callback ) ->
+					filename.should.equal pathToTheFixture
+					triedToWriteThis = JSON.parse json
+					callback "fake-result"
 
 		setCurrentProfile fakeNewProfile, ( err ) ->
 			expect( err ).to.equal "fake-result"
@@ -39,12 +40,13 @@ describe "util.setCurrentProfile", ->
 	it "blindly rewrites current profile with specified object", ( done ) ->
 		triedToWriteThis = {}
 		setCurrentProfile = proxyquire "../../lib/util/setCurrentProfile",
-		"./getMinecraftPath": -> pathToFixtures
-		"fs":
-			writeFile: ( filename, json, callback ) ->
-				filename.should.equal pathToTheFixture
-				triedToWriteThis = JSON.parse json
-				callback()
+			"./getMinecraftPath": ->
+				pathToFixtures
+			"fs":
+				writeFile: ( filename, json, callback ) ->
+					filename.should.equal pathToTheFixture
+					triedToWriteThis = JSON.parse json
+					callback()
 
 		setCurrentProfile fakeNewProfile, ( err ) ->
 			expect( err ).to.equal undefined
