@@ -11,82 +11,82 @@ require( "winston" ).level = Infinity
 path = require "path"
 
 describe "cache.get", ->
-	it "returns null when package name isn't specified", ->
-		fakeExistsSync = sinon.stub()
+	it "returns an Error when package name isn't specified", ( done ) ->
+		fakeExists = sinon.stub().throws()
 
 		get = proxyquire "../../lib/cache/get",
 			"../util":
 				getPathToMcpmDir: -> "fake-.mcpm"
 			"fs-extra":
-				existsSync: fakeExistsSync
+				exists: fakeExists
 
-		result = get()
-
-		expect( result ).to.equal null
-		fakeExistsSync.should.not.have.been.called
+		get undefined, undefined, ( err, result ) ->
+			err.should.be.an.instanceof Error
+			done()
 
 	for name in [ "", "-", "1sdf", "π", "mcpm/mcpm" ]
 		do ( name ) ->
-			it "returns null when package name isn't valid: " + name, ->
-				fakeExistsSync = sinon.stub()
+			it "returns an Error when package name isn't valid: " + name, ( done ) ->
+				fakeExists = sinon.stub().throws()
 
 				get = proxyquire "../../lib/cache/get",
 					"../util":
 						getPathToMcpmDir: -> "fake-.mcpm"
 					"fs-extra":
-						existsSync: fakeExistsSync
+						exists: fakeExists
 
-				result = get name, "1.0.0"
+				get name, "1.0.0", ( err, result ) ->
+					err.should.be.an.instanceof Error
+					done()
 
-				expect( result ).to.equal null
-				fakeExistsSync.should.not.have.been.called
-
-	it "returns null when specified version isn't semantic", ->
-		fakeExistsSync = sinon.stub()
+	it "returns an Error when specified version isn't semantic", ( done ) ->
+		fakeExists = sinon.stub().throws()
 
 		get = proxyquire "../../lib/cache/get",
 			"../util":
 				getPathToMcpmDir: -> "fake-.mcpm"
 			"fs-extra":
-				existsSync: fakeExistsSync
+				exists: fakeExists
 			"semver":
 				valid: -> false
 
-		result = get "whatever", "this is not a valid version"
+		get "whatever", "this is not a valid version", ( err, result ) ->
+			err.should.be.an.instanceof Error
+			done()
 
-		expect( result ).to.equal null
-		fakeExistsSync.should.not.have.been.called
-
-	it "when the version is semantic, return null if it's not cached", ->
-		fakeExistsSync = sinon.spy ( filename ) ->
-			filename.should.equal path.join "fake-.mcpm", "cache", "whatever",
-				"1.0.0", "mcpm-package.zip"
-			no
-
-		get = proxyquire "../../lib/cache/get",
-			"../util":
-				getPathToMcpmDir: -> "fake-.mcpm"
-			"fs-extra":
-				existsSync: fakeExistsSync
-
-		result = get "whatever", "1.0.0"
-
-		expect( result ).to.equal null
-		fakeExistsSync.should.have.been.calledOnce
-
-	it "when the version is semantic, return path to zip if it exists", ->
+	it "when the version is semantic, return an Error if it's not cached", ( done ) ->
 		pathToZip = path.join "fake-.mcpm", "cache", "whatever", "1.0.0", "mcpm-package.zip"
-		fakeExistsSync = sinon.spy ( filename ) ->
-			filename.should.equal pathToZip
-			yes
+		fakeExists = sinon.mock()
+			.once()
+			.withArgs pathToZip, sinon.match.func
+			.callsArgWithAsync 1, no
 
 		get = proxyquire "../../lib/cache/get",
 			"../util":
 				getPathToMcpmDir: -> "fake-.mcpm"
 			"fs-extra":
-				existsSync: fakeExistsSync
+				exists: fakeExists
 
-		result = get "whatever", "1.0.0"
+		get "whatever", "1.0.0", ( err, result ) ->
+			err.should.be.an.instanceof Error
+			fakeExists.verify()
+			done()
 
-		result.should.equal pathToZip
-		fakeExistsSync.should.have.been.calledOnce
+	it "when the version is semantic, return path to zip if it exists", ( done ) ->
+		pathToZip = path.join "fake-.mcpm", "cache", "whatever", "1.0.0", "mcpm-package.zip"
+		fakeExists = sinon.mock()
+			.once()
+			.withArgs pathToZip, sinon.match.func
+			.callsArgWithAsync 1, yes
+
+		get = proxyquire "../../lib/cache/get",
+			"../util":
+				getPathToMcpmDir: -> "fake-.mcpm"
+			"fs-extra":
+				exists: fakeExists
+
+		get "whatever", "1.0.0", ( err, result ) ->
+			expect( err ).to.equal null
+			result.should.equal pathToZip
+			fakeExists.verify()
+			done()
