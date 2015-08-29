@@ -8,11 +8,12 @@ chai.use require "sinon-chai"
 require( "winston" ).level = Infinity
 
 getClientVersion = proxyquire "../../lib/util/getClientVersion",
-	"./getCurrentProfile": ->
-		version: "fake-version"
+	"./getCurrentProfile": ( callback ) ->
+		callback version: "fake-version"
 
 describe "util.getClientVersion", ->
 
-		it "returns 'getCurrentProfile().version'", ->
-			result = getClientVersion()
-			"fake-version".should.equal result
+		it "returns 'getCurrentProfile().version'", ( done ) ->
+			getClientVersion ( result ) ->
+				"fake-version".should.equal result
+				done()

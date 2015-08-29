@@ -1,12 +1,10 @@
 winston = require "winston"
 getCurrentProfile = require "./getCurrentProfile"
 
-getClientVersion = ->
+getClientVersion = ( callback ) ->
 	winston.verbose "util.getClientVersion: starting"
-	version = getCurrentProfile().version
-	winston.verbose "util.getClientVersion: success:", version
-
-	winston.silly "util.getClientVersion: returning version"
-	version
+	getCurrentProfile ( profile ) ->
+		winston.verbose "util.getClientVersion: success:", profile.version
+		callback profile.version
 
 module.exports = getClientVersion
