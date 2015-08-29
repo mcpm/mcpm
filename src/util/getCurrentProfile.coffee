@@ -32,6 +32,7 @@ getCurrentProfile = ( callback ) ->
 			version: version
 		winston.verbose "util.getCurrentProfile: success", result
 
-		callback undefined, result
+		setTimeout ->
+			callback undefined, result
 
 module.exports = getCurrentProfile
