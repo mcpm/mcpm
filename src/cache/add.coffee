@@ -3,7 +3,7 @@ path = require "path"
 fs = require "fs-extra"
 util = require "../util"
 
-add = ( pathToZip, manifest ) ->
+add = ( pathToZip, manifest, callback ) ->
 	winston.verbose "cache.add: starting"
 
 	pathToPackageCache = path.join util.getPathToMcpmDir(), "cache", manifest.name, manifest.version
@@ -14,15 +14,23 @@ add = ( pathToZip, manifest ) ->
 
 	if targetPathToZip is pathToZip
 		winston.verbose "cache.add: trying to cache the cached zip itself, doing nothing"
+		setTimeout ->
+			callback null
 		return
 
-	fs.outputJsonSync manifestFilename, manifest
-	winston.silly "cache.add: cached manifest"
+	fs.outputJson manifestFilename, manifest, ( err ) ->
+		if err
+			callback err
+			return
+		winston.silly "cache.add: cached manifest"
 
-	fs.copySync pathToZip, targetPathToZip
-	winston.silly "cache.add: cached zip"
+		fs.copy pathToZip, targetPathToZip, ( err ) ->
+			if err
+				callback err
+				return
+			winston.silly "cache.add: cached zip"
 
-	winston.verbose "cache.add: success"
-	return
+			winston.verbose "cache.add: success"
+			callback null
 
 module.exports = add

@@ -1,5 +1,6 @@
 proxyquire = require "proxyquire"
 chai = require "chai"
+expect = chai.expect
 sinon = require "sinon"
 chai.should()
 chai.use require "sinon-chai"
@@ -11,65 +12,77 @@ path = require "path"
 
 describe "cache.add", ->
 
-	it "doesn't do anything when trying to cache the cached zip itself", ->
+	it "doesn't do anything when trying to cache the cached zip itself", ( done ) ->
 		fakeManifest =
 			name: "fake-package"
 			version: "1.2.3"
 		dest = path.join "fake-.mcpm", "cache", fakeManifest.name, fakeManifest.version
 		pathToZip = path.join dest, "mcpm-package.zip"
 
-		fakeCopySync = sinon.stub()
-		fakeOutputJsonSync = sinon.stub()
+		fakeCopy = sinon.stub()
+		fakeOutputJson = sinon.stub()
 
 		add = proxyquire "../../lib/cache/add",
 			"../util":
 				getPathToMcpmDir: -> "fake-.mcpm"
 			"fs-extra":
-				copySync: fakeCopySync
-				outputJsonSync: fakeOutputJsonSync
+				copy: fakeCopy
+				outputJson: fakeOutputJson
 
-		add pathToZip, fakeManifest
+		add pathToZip, fakeManifest, ( err ) ->
+			expect( err ).to.equal null
+			done()
 
-		fakeCopySync.should.not.have.been.called
-		fakeOutputJsonSync.should.not.have.been.called
+		fakeCopy.should.not.have.been.called
+		fakeOutputJson.should.not.have.been.called
 
-	it "adds specified zip to cache", ->
+	it "adds specified zip to cache", ( done ) ->
 		dest = path.join "fake-.mcpm", "cache", "fake-package", "1.2.3"
 		fakeManifest =
 			name: "fake-package"
 			version: "1.2.3"
 
-		fakeCopySync = sinon.mock().withArgs "path/to/src.zip", path.join dest, "mcpm-package.zip"
-		fakeOutputJsonSync = sinon.stub()
+		fakeCopy = sinon.mock()
+			.withArgs "path/to/src.zip", path.join( dest, "mcpm-package.zip" ), sinon.match.func
+			.callsArg 2
+
+		fakeOutputJson = sinon.stub()
+			.callsArg 2
 
 		add = proxyquire "../../lib/cache/add",
 			"../util":
 				getPathToMcpmDir: -> "fake-.mcpm"
 			"fs-extra":
-				copySync: fakeCopySync
-				outputJsonSync: fakeOutputJsonSync
+				copy: fakeCopy
+				outputJson: fakeOutputJson
 
-		add "path/to/src.zip", fakeManifest
+		add "path/to/src.zip", fakeManifest, ( err ) ->
+			expect( err ).to.equal null
+			fakeCopy.verify()
+			done()
 
-		fakeCopySync.verify()
-
-	it "adds the package manifest to cache", ->
+	it "adds the package manifest to cache", ( done ) ->
 		dest = path.join "fake-.mcpm", "cache", "fake-package", "1.2.3"
 		fakeManifest =
 			name: "fake-package"
 			version: "1.2.3"
 
-		fakeCopySync = sinon.stub()
-		filename = path.join dest, "mcpm-package.json"
-		fakeOutputJsonSync = sinon.mock().withArgs filename, fakeManifest
+		fakeCopy = sinon.stub()
+			.callsArg 2
+
+		fakeOutputJson = sinon.mock()
+			.withArgs path.join( dest, "mcpm-package.json" ), fakeManifest
+			.callsArg 2
 
 		add = proxyquire "../../lib/cache/add",
 			"../util":
 				getPathToMcpmDir: -> "fake-.mcpm"
 			"fs-extra":
-				copySync: fakeCopySync
-				outputJsonSync: fakeOutputJsonSync
+				copy: fakeCopy
+				outputJson: fakeOutputJson
 
-		add "path/to/src.zip", fakeManifest
+		add "path/to/src.zip", fakeManifest, ( err ) ->
+			expect( err ).to.equal null
+			fakeOutputJson.verify()
+			done()
 
-		fakeOutputJsonSync.verify()
