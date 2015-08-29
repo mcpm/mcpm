@@ -15,6 +15,7 @@ addInstalledPackage = ( name, version, callback ) ->
 	setCurrentProfile currentProfile
 	winston.verbose "util.addInstalledPackage: success, " +
 		"returning nothing"
-	callback undefined, yes
+	setTimeout ->
+		callback undefined, yes
 
 module.exports = addInstalledPackage
