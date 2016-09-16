@@ -1,67 +1,74 @@
-commander = require "commander"
-winston = require "winston"
-install = require "../lib/install"
-util = require "../lib/util"
+let commander = require('commander')
+let winston = require('winston')
+let install = require('../lib/install')
+let util = require('../lib/util')
 
-winston.setLevels winston.config.cli.levels
+winston.setLevels(winston.config.cli.levels)
 winston.cli()
 
-verbosityLevels = [ "info", "debug", "verbose", "silly" ]
-increaseVerbosity = ( v, total ) ->
-	winston.level = verbosityLevels[ total ]
-	total + ( total < verbosityLevels.length - 1 )
+let verbosityLevels = [ 'info', 'debug', 'verbose', 'silly' ]
+let increaseVerbosity = function (v, total) {
+  winston.level = verbosityLevels[ total ]
+  return total + (total < verbosityLevels.length - 1)
+}
 
 commander
-	.version require( "../package.json" ).version
-	.option "-v, --verbose", "increase verbosity", increaseVerbosity, 0
+  .version(require('../package.json').version)
+  .option('-v, --verbose', 'increase verbosity', increaseVerbosity, 0)
 
 commander
-	.command "install <packages...>"
-	.alias "i"
-	.description "install one or more packages"
-	.action ( packages ) ->
-		startProfile = util.getCurrentProfile()
-		winston.info "Current Minecraft version: #{startProfile.version}"
-		winston.info "Current profile name: #{startProfile.originalInfo.name}"
-		console.log()
+  .command('install <packages...>')
+  .alias('i')
+  .description('install one or more packages')
+  .action(function (packages) {
+    let startProfile = util.getCurrentProfile()
+    winston.info(`Current Minecraft version: ${startProfile.version}`)
+    winston.info(`Current profile name: ${startProfile.originalInfo.name}`)
+    console.log()
 
-		for pkg in packages
-			winston.info "#{pkg}: Deciding what to do..."
-			result = install pkg
-			if result instanceof Error
-				winston.verbose "cli#install: error", result
-				winston.error "#{pkg}: #{result.name}: #{result.message}",
+    for (let i = 0; i < packages.length; i++) {
+      let pkg = packages[i]
+      winston.info(`${pkg}: Deciding what to do...`)
+      let result = install(pkg)
+      if (result instanceof Error) {
+        winston.verbose('cli#install: error', result)
+        winston.error(`${pkg}: ${result.name}: ${result.message}`)
+      }
+    }
 
-		endProfile = util.getCurrentProfile()
-		if ( endProfile.version isnt startProfile.version ) or
-		( endProfile.originalInfo.name isnt startProfile.originalInfo.name )
-			console.log()
-			winston.info "Current Minecraft version: #{endProfile.version}"
-			winston.info "Current profile name: #{endProfile.originalInfo.name}"
-
-commander
-	.command "minecraft-version"
-	.alias "mc"
-	.description "display currently selected Minecraft version"
-	.action ->
-		console.log util.getClientVersion()
-
-commander.on "--help", ->
-	console.log [
-		"  Examples:"
-		""
-		"    Install a package from the ./foo directory"
-		"      $ mcpm install ./foo"
-		""
-		"    Install a package from the ./foo.zip archive"
-		"      $ mcpm install ./foo.zip"
-		""
-		"    Install a package from cache"
-		"      $ mcpm install foo@0.2.0"
-		""
-		"    Show the Minecraft version of the currently selected profile"
-		"      $ mcpm mc"
-	].join "\n"
+    let endProfile = util.getCurrentProfile()
+    if ((endProfile.version !== startProfile.version) ||
+      (endProfile.originalInfo.name !== startProfile.originalInfo.name)) {
+      console.log()
+      winston.info(`Current Minecraft version: ${endProfile.version}`)
+      return winston.info(`Current profile name: ${endProfile.originalInfo.name}`)
+    }
+  })
 
 commander
-	.parse process.argv
+  .command('minecraft-version')
+  .alias('mc')
+  .description('display currently selected Minecraft version')
+  .action(() => console.log(util.getClientVersion()))
+
+commander.on('--help', () => console.log([
+  '  Examples:',
+  '',
+  '    Install a package from the ./foo directory',
+  '      $ mcpm install ./foo',
+  '',
+  '    Install a package from the ./foo.zip archive',
+  '      $ mcpm install ./foo.zip',
+  '',
+  '    Install a package from cache',
+  '      $ mcpm install foo@0.2.0',
+  '',
+  '    Show the Minecraft version of the currently selected profile',
+  '      $ mcpm mc'
+].join('\n')
+)
+
+)
+
+commander
+  .parse(process.argv)

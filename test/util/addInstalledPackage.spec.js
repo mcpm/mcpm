@@ -1,39 +1,61 @@
-proxyquire = require "proxyquire"
-chai = require "chai"
-sinon = require "sinon"
+let proxyquire = require('proxyquire')
+let chai = require('chai')
+let sinon = require('sinon')
 chai.should()
-expect = chai.expect
-chai.use require "sinon-chai"
+let { expect } = chai
+chai.use(require('sinon-chai'))
 
-# Disabling logging in tests.
-require( "winston" ).level = Infinity
+// Disabling logging in tests.
+require('winston').level = Infinity
 
-describe "util.addInstalledPackage", ->
+describe('util.addInstalledPackage', function () {
+  it("adds specified module to 'mcpmInstalledPackages'", function (done) {
+    let addInstalledPackage = proxyquire('../../lib/util/addInstalledPackage', {
+      ['./getCurrentProfile']() {
+        return {
+          originalInfo: {
+            mcpmInstalledPackages: {
+              'whatever': '1.2.3'
+            }
+          }
+        }
+      },
+      ['./setCurrentProfile'](newProfile) {
+        return newProfile.mcpmInstalledPackages.should.deep.equal({
+          'whatever': '1.2.3',
+          'fake-package': '0.1.0'
+        })
+      }
+    }
+    )
 
-	it "adds specified module to 'mcpmInstalledPackages'", ( done ) ->
-		addInstalledPackage = proxyquire "../../lib/util/addInstalledPackage",
-			"./getCurrentProfile": ->
-				originalInfo:
-					mcpmInstalledPackages:
-						"whatever": "1.2.3"
-			"./setCurrentProfile": ( newProfile ) ->
-				newProfile.mcpmInstalledPackages.should.deep.equal
-					"whatever": "1.2.3"
-					"fake-package": "0.1.0"
+    return addInstalledPackage('fake-package', '0.1.0', function (err, result) {
+      expect(err).to.equal(undefined)
+      expect(result).to.equal(true)
+      return done()
+    }
+    )
+  }
+  )
 
-		addInstalledPackage "fake-package", "0.1.0", ( err, result ) ->
-			expect( err ).to.equal undefined
-			expect( result ).to.equal yes
-			done()
+  return it("adds 'mcpmInstalledPackages' field if it's not there yet", function (done) {
+    let addInstalledPackage = proxyquire('../../lib/util/addInstalledPackage', {
+      ['./getCurrentProfile']() {
+        return {originalInfo: {}}
+      },
+      ['./setCurrentProfile'](newProfile) {
+        '0.1.0'.should.equal(newProfile.mcpmInstalledPackages[ 'fake-package' ])
+      }
+    }
+    )
 
-	it "adds 'mcpmInstalledPackages' field if it's not there yet", ( done ) ->
-		addInstalledPackage = proxyquire "../../lib/util/addInstalledPackage",
-			"./getCurrentProfile": ->
-				originalInfo: {}
-			"./setCurrentProfile": ( newProfile ) ->
-				"0.1.0".should.equal newProfile.mcpmInstalledPackages[ "fake-package" ]
-
-		addInstalledPackage "fake-package", "0.1.0", ( err, result ) ->
-			expect( err ).to.equal undefined
-			expect( result ).to.equal yes
-			done()
+    return addInstalledPackage('fake-package', '0.1.0', function (err, result) {
+      expect(err).to.equal(undefined)
+      expect(result).to.equal(true)
+      return done()
+    }
+    )
+  }
+  )
+}
+)

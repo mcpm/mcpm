@@ -1,30 +1,33 @@
-fs = require "fs-extra"
-path = require "path"
-util = require "../util"
-async = require "async"
-winston = require "winston"
+let fs = require('fs-extra')
+let path = require('path')
+let util = require('../util')
+let async = require('async')
+let winston = require('winston')
 
-copyFiles = ({ fileList, packageRoot, zipPath, callback }) ->
-	winston.verbose "install.copyFiles: starting"
-	minecraftRoot = util.getMinecraftPath()
-	winston.silly "install.copyFiles: got path to Minecraft root: #{minecraftRoot}"
-	async.forEachOfSeries fileList, ( fromList, to, doneList ) ->
+let copyFiles = function ({ fileList, packageRoot, zipPath, callback }) {
+  winston.verbose('install.copyFiles: starting')
+  let minecraftRoot = util.getMinecraftPath()
+  winston.silly(`install.copyFiles: got path to Minecraft root: ${minecraftRoot}`)
+  return async.forEachOfSeries(fileList, (fromList, to, doneList) => async.eachSeries(fromList, function (from, doneOne) {
+    winston.silly(`install.copyFiles: next from: ${from}`)
+    if (from === zipPath) {
+      var absoluteFrom = from
+    } else {
+      var absoluteFrom = path.join(packageRoot, from)
+    }
+    winston.silly(`install.copyFiles: absoluteFrom: ${absoluteFrom}`)
+    let absoluteTo = path.join(minecraftRoot, to, path.basename(from))
+    winston.verbose(`install.copyFiles: absoluteTo: ${absoluteTo}`)
+    return fs.copy(absoluteFrom, absoluteTo, doneOne)
+  }
+    , err => doneList(err)
+  )
 
-		async.eachSeries fromList, ( from, doneOne ) ->
-			winston.silly "install.copyFiles: next from: #{from}"
-			if from is zipPath
-				absoluteFrom = from
-			else
-				absoluteFrom = path.join packageRoot, from
-			winston.silly "install.copyFiles: absoluteFrom: #{absoluteFrom}"
-			absoluteTo = path.join minecraftRoot, to, path.basename from
-			winston.verbose "install.copyFiles: absoluteTo: #{absoluteTo}"
-			fs.copy absoluteFrom, absoluteTo, doneOne
-		, ( err ) ->
-			doneList err
-
-	, ( err = null ) ->
-		winston.verbose "install.copyFiles: finished copying"
-		callback err
+    , function (err = null) {
+      winston.verbose('install.copyFiles: finished copying')
+      return callback(err)
+    }
+  )
+}
 
 module.exports = copyFiles

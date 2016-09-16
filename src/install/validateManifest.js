@@ -1,72 +1,94 @@
-semver = require "semver"
-winston = require "winston"
-readManifest = require "./readManifest"
-util = require "../util"
+let semver = require('semver')
+let winston = require('winston')
+let readManifest = require('./readManifest')
+let util = require('../util')
 
-validateInstallFields = ( manifest ) ->
-	if not manifest.install_file_list and not manifest.install_executable
-		winston.debug "install.validateManifest: no install_file_list and " +
-			"install_executable, returning error"
-		return new Error "No install_file_list and install_executable!"
-	winston.silly "install.validateManifest: install_file_list or " +
-		"install_executable is there"
+let validateInstallFields = function (manifest) {
+  if (!manifest.install_file_list && !manifest.install_executable) {
+    winston.debug('install.validateManifest: no install_file_list and ' +
+      'install_executable, returning error'
+    )
+    return new Error('No install_file_list and install_executable!')
+  }
+  winston.silly('install.validateManifest: install_file_list or ' +
+    'install_executable is there'
+  )
 
-	if manifest.install_file_list and
-	( typeof manifest.install_file_list isnt "object" ) or
-	Array.isArray manifest.install_file_list
-		winston.debug "install.validateManifest: install_file_list is not an " +
-			"object, returning error"
-		return new Error "Specified install_file_list is not an object!"
-	winston.silly "install.validateManifest: valid install_file_list"
+  if ((manifest.install_file_list &&
+    (typeof manifest.install_file_list !== 'object')) ||
+    Array.isArray(manifest.install_file_list)) {
+    winston.debug('install.validateManifest: install_file_list is not an ' +
+      'object, returning error'
+    )
+    return new Error('Specified install_file_list is not an object!')
+  }
+  return winston.silly('install.validateManifest: valid install_file_list')
+}
 
-validateBasicInfo = ( manifest ) ->
-	if not manifest
-		winston.debug "install.validateManifest: no manifest, returning error"
-		return new SyntaxError "Invalid JSON in package manifest!"
-	winston.silly "install.validateManifest: JSON was valid"
+let validateBasicInfo = function (manifest) {
+  if (!manifest) {
+    winston.debug('install.validateManifest: no manifest, returning error')
+    return new SyntaxError('Invalid JSON in package manifest!')
+  }
+  winston.silly('install.validateManifest: JSON was valid')
 
-	if not manifest.name or not /^[a-z]([\w-]*[a-z])?$/i.test manifest.name
-		winston.debug "install.validateManifest: invalid name, returning error"
-		return new Error "Invalid package name!"
-	winston.silly "install.validateManifest: valid name"
+  if (!manifest.name || !/^[a-z]([\w-]*[a-z])?$/i.test(manifest.name)) {
+    winston.debug('install.validateManifest: invalid name, returning error')
+    return new Error('Invalid package name!')
+  }
+  winston.silly('install.validateManifest: valid name')
 
-	if not semver.valid manifest.version
-		winston.debug "install.validateManifest: invalid version, returning error"
-		return new Error "Invalid package version!"
-	winston.silly "install.validateManifest: valid version"
+  if (!semver.valid(manifest.version)) {
+    winston.debug('install.validateManifest: invalid version, returning error')
+    return new Error('Invalid package version!')
+  }
+  winston.silly('install.validateManifest: valid version')
 
-	if not manifest.mc or not semver.validRange manifest.mc
-		winston.debug "install.validateManifest: invalid mc, returning error"
-		return new Error "Invalid package mc!"
-	winston.silly "install.validateManifest: valid mc"
+  if (!manifest.mc || !semver.validRange(manifest.mc)) {
+    winston.debug('install.validateManifest: invalid mc, returning error')
+    return new Error('Invalid package mc!')
+  }
+  return winston.silly('install.validateManifest: valid mc')
+}
 
-checkCompatibility = ( manifest ) ->
-	actualVersion = util.getCurrentProfile().version
-	compatibleRange = manifest.mc
-	if not semver.satisfies actualVersion, compatibleRange
-		winston.debug "install.validateManifest: incompatible mc, returning error",
-			{ actualVersion, compatibleRange }
-		return new Error "The package is incompatible with the current " +
-			"Minecraft version! Compatible version range: #{compatibleRange}"
-	winston.silly "install.validateManifest: compatible mc", { actualVersion, compatibleRange }
+let checkCompatibility = function (manifest) {
+  let actualVersion = util.getCurrentProfile().version
+  let compatibleRange = manifest.mc
+  if (!semver.satisfies(actualVersion, compatibleRange)) {
+    winston.debug('install.validateManifest: incompatible mc, returning error',
+      { actualVersion, compatibleRange})
+    return new Error('The package is incompatible with the current ' +
+      `Minecraft version! Compatible version range: ${compatibleRange}`
+    )
+  }
+  return winston.silly('install.validateManifest: compatible mc', { actualVersion, compatibleRange})
+}
 
-validateManifest = ( packageDirectory ) ->
-	winston.verbose "install.validateManifest: starting"
+let validateManifest = function (packageDirectory) {
+  let invalidBasicInfo
+  let compatibilityError
+  let invalidInstallFields
+  winston.verbose('install.validateManifest: starting')
 
-	try
-		winston.silly "install.validateManifest: parsing manifest"
-		manifest = JSON.parse readManifest packageDirectory
+  try {
+    winston.silly('install.validateManifest: parsing manifest')
+    var manifest = JSON.parse(readManifest(packageDirectory))
+  } catch (error) {}
 
-	winston.silly "install.validateManifest: finished parsing"
+  winston.silly('install.validateManifest: finished parsing')
 
-	if invalidBasicInfo = validateBasicInfo manifest
-		return invalidBasicInfo
-	if compatibilityError = checkCompatibility manifest
-		return compatibilityError
-	if invalidInstallFields = validateInstallFields manifest
-		return invalidInstallFields
+  if (invalidBasicInfo = validateBasicInfo(manifest)) {
+    return invalidBasicInfo
+  }
+  if (compatibilityError = checkCompatibility(manifest)) {
+    return compatibilityError
+  }
+  if (invalidInstallFields = validateInstallFields(manifest)) {
+    return invalidInstallFields
+  }
 
-	winston.verbose "install.validateManifest: all ok, returning manifest"
-	manifest
+  winston.verbose('install.validateManifest: all ok, returning manifest')
+  return manifest
+}
 
 module.exports = validateManifest

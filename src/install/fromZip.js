@@ -1,52 +1,59 @@
-winston = require "winston"
-fs = require "fs"
-tmp = require "tmp"
-AdmZip = require "adm-zip"
-installFromFolder = require "./fromFolder"
-cache = require "../cache"
+let winston = require('winston')
+let fs = require('fs')
+let tmp = require('tmp')
+let AdmZip = require('adm-zip')
+let installFromFolder = require('./fromFolder')
+let cache = require('../cache')
 
-fromZip = ( pathToArchive ) ->
-	winston.info "#{pathToArchive}: Installing from a zip..."
+let fromZip = function (pathToArchive) {
+  winston.info(`${pathToArchive}: Installing from a zip...`)
 
-	winston.verbose "install.fromZip: starting"
-	stats = fs.statSync pathToArchive
+  winston.verbose('install.fromZip: starting')
+  let stats = fs.statSync(pathToArchive)
 
-	if not stats.isFile()
-		winston.debug "install.fromZip: path doesn't point to a file, returning error"
-		return new Error "Provided path doesn't point to a file!"
+  if (!stats.isFile()) {
+    winston.debug("install.fromZip: path doesn't point to a file, returning error")
+    return new Error("Provided path doesn't point to a file!")
+  }
 
-	try
-		zip = new AdmZip pathToArchive
-	catch e
-		winston.debug "install.fromZip: can't read zip, returning error"
-		return new Error e
+  try {
+    var zip = new AdmZip(pathToArchive)
+  } catch (e) {
+    winston.debug("install.fromZip: can't read zip, returning error")
+    return new Error(e)
+  }
 
-	if not zip.getEntry "mcpm-package.json"
-		winston.debug "install.fromZip: no manifest inside, returning error"
-		return new Error "The archive doesn't have mcpm-package.json inside!"
+  if (!zip.getEntry('mcpm-package.json')) {
+    winston.debug('install.fromZip: no manifest inside, returning error')
+    return new Error("The archive doesn't have mcpm-package.json inside!")
+  }
 
-	tempFolderPath = tmp.dirSync( prefix: "mcpm-" ).name
-	winston.verbose "install.fromZip: temp dir: #{tempFolderPath}"
+  let tempFolderPath = tmp.dirSync({ prefix: 'mcpm-' }).name
+  winston.verbose(`install.fromZip: temp dir: ${tempFolderPath}`)
 
-	try
-		unzipResult = zip.extractAllTo tempFolderPath
-	catch e
-		unzipResult = new Error e
+  try {
+    var unzipResult = zip.extractAllTo(tempFolderPath)
+  } catch (e) {
+    var unzipResult = new Error(e)
+  }
 
-	if unzipResult instanceof Error
-		winston.debug "install.fromZip: can't unzip, returning error", unzipResult
-		return new Error "Can't unzip the archive to a temp directory!"
+  if (unzipResult instanceof Error) {
+    winston.debug("install.fromZip: can't unzip, returning error", unzipResult)
+    return new Error("Can't unzip the archive to a temp directory!")
+  }
 
-	winston.silly "install.fromZip: unziped, calling fromFolder"
-	config = installFromFolder tempFolderPath, pathToArchive
+  winston.silly('install.fromZip: unziped, calling fromFolder')
+  let config = installFromFolder(tempFolderPath, pathToArchive)
 
-	if config instanceof Error
-		winston.debug "install.fromZip: error during installation, returning error", unzipResult
-		return config
+  if (config instanceof Error) {
+    winston.debug('install.fromZip: error during installation, returning error', unzipResult)
+    return config
+  }
 
-	cache.add pathToArchive, config
-	winston.info "#{config.name}@#{config.version}: Added to cache"
+  cache.add(pathToArchive, config)
+  winston.info(`${config.name}@${config.version}: Added to cache`)
 
-	config
+  return config
+}
 
 module.exports = fromZip

@@ -1,133 +1,190 @@
-proxyquire = require "proxyquire"
-chai = require "chai"
-sinon = require "sinon"
+let proxyquire = require('proxyquire')
+let chai = require('chai')
+let sinon = require('sinon')
 chai.should()
-expect = chai.expect
-chai.use require "sinon-chai"
+let { expect } = chai
+chai.use(require('sinon-chai'))
 
-# Disabling logging in tests.
-require( "winston" ).level = Infinity
+// Disabling logging in tests.
+require('winston').level = Infinity
 
-validateManifest = proxyquire "../../lib/install/validateManifest",
-	"./readManifest": ( str ) -> str
-	"../util":
-		getCurrentProfile: ->
-			version: "1.8.0"
+let validateManifest = proxyquire('../../lib/install/validateManifest', {
+  ['./readManifest'](str) { return str; },
+  '../util': {
+    getCurrentProfile() {
+      return {version: '1.8.0'}
+    }
+  }
+}
+)
 
-describe "install.validateManifest", ->
+describe('install.validateManifest', function () {
+  it('returns a SyntaxError when invalid JSON', function () {
+    let result = validateManifest("{'nope'}")
+    return result.should.be.an.instanceof(SyntaxError)
+  }
+  )
 
-	it "returns a SyntaxError when invalid JSON", ->
-		result = validateManifest "{'nope'}"
-		result.should.be.an.instanceof SyntaxError
+  it('returns an Error when no name', function () {
+    let result = validateManifest(JSON.stringify({
+      version: '0.1.0',
+      mc: '1.8',
+      install_executable: 'index.js'
+    })
+    )
+    result.should.be.an.instanceof(Error)
+    return result.message.should.contain('name')
+  }
+  )
 
-	it "returns an Error when no name", ->
-		result = validateManifest JSON.stringify
-			version: "0.1.0"
-			mc: "1.8"
-			install_executable: "index.js"
-		result.should.be.an.instanceof Error
-		result.message.should.contain "name"
+  it('returns an Error when no version', function () {
+    let result = validateManifest(JSON.stringify({
+      name: 'fake',
+      mc: '1.8',
+      install_executable: 'index.js'
+    })
+    )
+    result.should.be.an.instanceof(Error)
+    return result.message.should.contain('version')
+  }
+  )
 
-	it "returns an Error when no version", ->
-		result = validateManifest JSON.stringify
-			name: "fake"
-			mc: "1.8"
-			install_executable: "index.js"
-		result.should.be.an.instanceof Error
-		result.message.should.contain "version"
+  it('returns an Error when no mc', function () {
+    let result = validateManifest(JSON.stringify({
+      name: 'fake',
+      version: '0.1.0',
+      install_executable: 'index.js'
+    })
+    )
+    result.should.be.an.instanceof(Error)
+    return result.message.should.contain('mc')
+  }
+  )
 
-	it "returns an Error when no mc", ->
-		result = validateManifest JSON.stringify
-			name: "fake"
-			version: "0.1.0"
-			install_executable: "index.js"
-		result.should.be.an.instanceof Error
-		result.message.should.contain "mc"
+  let iterable = [ '', undefined, '-', '1sdf', 'π', 'mcpm/mcpm' ]
+  for (let i = 0; i < iterable.length; i++) {
+    let name = iterable[i](name => it(`returns an Error when invalid name: ${name}`, function () {
+      let result = validateManifest(JSON.stringify({
+        name,
+        version: '0.1.0',
+        mc: '1.8',
+        install_executable: 'index.js'
+      })
+      )
+      result.should.be.an.instanceof(Error)
+      return result.message.should.contain('name')
+    }
+    )
+    )(name)
+  }
 
-	for name in [ "", undefined, "-", "1sdf", "π", "mcpm/mcpm" ]
-		do ( name ) ->
-			it "returns an Error when invalid name: " + name, ->
-				result = validateManifest JSON.stringify
-					name: name
-					version: "0.1.0"
-					mc: "1.8"
-					install_executable: "index.js"
-				result.should.be.an.instanceof Error
-				result.message.should.contain "name"
+  let iterable1 = [ '', undefined, '1', '1.2', '1.2.', '1-2-3' ]
+  for (let j = 0; j < iterable1.length; j++) {
+    let version = iterable1[j](version => it(`returns an Error when invalid version: ${version}`, function () {
+      let result = validateManifest(JSON.stringify({
+        name: 'fake',
+        version,
+        mc: '1.8',
+        install_executable: 'index.js'
+      })
+      )
+      result.should.be.an.instanceof(Error)
+      return result.message.should.contain('version')
+    }
+    )
+    )(version)
+  }
 
-	for version in [ "", undefined, "1", "1.2", "1.2.", "1-2-3" ]
-		do (version) ->
-			it "returns an Error when invalid version: " + version, ->
-				result = validateManifest JSON.stringify
-					name: "fake"
-					version: version
-					mc: "1.8"
-					install_executable: "index.js"
-				result.should.be.an.instanceof Error
-				result.message.should.contain "version"
+  let iterable2 = [ '', undefined, true, '1.', '1.2.', '1-2-3', 'all' ]
+  for (let k = 0; k < iterable2.length; k++) {
+    let mc = iterable2[k](mc => it(`returns an Error when invalid mc: ${mc}`, function () {
+      let result = validateManifest(JSON.stringify({
+        name: 'fake',
+        version: '0.1.0',
+        mc,
+        install_executable: 'index.js'
+      })
+      )
+      result.should.be.an.instanceof(Error)
+      return result.message.should.contain('mc')
+    }
+    )
+    )(mc)
+  }
 
-	for mc in [ "", undefined, true, "1.", "1.2.", "1-2-3", "all" ]
-		do ( mc ) ->
-			it "returns an Error when invalid mc: " + mc, ->
-				result = validateManifest JSON.stringify
-					name: "fake"
-					version: "0.1.0"
-					mc: mc
-					install_executable: "index.js"
-				result.should.be.an.instanceof Error
-				result.message.should.contain "mc"
+  it('returns an Error when incompatible with current Minecraft version', function () {
+    let result = validateManifest(JSON.stringify({
+      name: 'fake',
+      version: '0.1.0',
+      mc: '1.5',
+      install_executable: 'index.js'
+    })
+    )
+    result.should.be.an.instanceof(Error)
+    return result.message.should.contain('version')
+  }
+  )
 
-	it "returns an Error when incompatible with current Minecraft version", ->
-		result = validateManifest JSON.stringify
-			name: "fake"
-			version: "0.1.0"
-			mc: "1.5"
-			install_executable: "index.js"
-		result.should.be.an.instanceof Error
-		result.message.should.contain "version"
+  it('returns the config when it is valid', function () {
+    let config = {
+      name: 'fake',
+      version: '0.1.0',
+      mc: '1.8',
+      install_executable: 'index.js'
+    }
+    let result = validateManifest(JSON.stringify(config))
+    return result.should.deep.equal(config)
+  }
+  )
 
-	it "returns the config when it is valid", ->
-		config =
-			name: "fake"
-			version: "0.1.0"
-			mc: "1.8"
-			install_executable: "index.js"
-		result = validateManifest JSON.stringify config
-		result.should.deep.equal config
+  it('allows install_file_list instead of install_executable', function () {
+    let config = {
+      name: 'fake',
+      version: '0.1.0',
+      mc: '1.8',
+      install_file_list: { 'mods/fake-mod': 'index.js'
+      }
+    }
+    let result = validateManifest(JSON.stringify(config))
+    return result.should.deep.equal(config)
+  }
+  )
 
-	it "allows install_file_list instead of install_executable", ->
-		config =
-			name: "fake"
-			version: "0.1.0"
-			mc: "1.8"
-			install_file_list: "mods/fake-mod": "index.js"
-		result = validateManifest JSON.stringify config
-		result.should.deep.equal config
+  it('returns an Error when install_file_list is not an object', function () {
+    let result = validateManifest(JSON.stringify({
+      name: 'fake',
+      version: '0.1.0',
+      mc: '1.8',
+    install_file_list: [ 'index.js' ]}))
+    result.should.be.an.instanceof(Error)
+    return result.message.should.contain('install')
+  }
+  )
 
-	it "returns an Error when install_file_list is not an object", ->
-		result = validateManifest JSON.stringify
-			name: "fake"
-			version: "0.1.0"
-			mc: "1.8"
-			install_file_list: [ "index.js" ]
-		result.should.be.an.instanceof Error
-		result.message.should.contain "install"
+  it('returns an Error when no install_file_list/install_executable', function () {
+    let result = validateManifest(JSON.stringify({
+      name: 'fake',
+      version: '0.1.0',
+      mc: '1.8'
+    })
+    )
+    result.should.be.an.instanceof(Error)
+    return result.message.should.contain('install')
+  }
+  )
 
-	it "returns an Error when no install_file_list/install_executable", ->
-		result = validateManifest JSON.stringify
-			name: "fake"
-			version: "0.1.0"
-			mc: "1.8"
-		result.should.be.an.instanceof Error
-		result.message.should.contain "install"
-
-	it "allows custom fields", ->
-		config =
-			name: "fake"
-			version: "0.1.0"
-			mc: "1.8"
-			install_executable: "index.js"
-			custom: "whatever"
-			field: 5
-		result = validateManifest JSON.stringify config
-		result.should.deep.equal config
+  return it('allows custom fields', function () {
+    let config = {
+      name: 'fake',
+      version: '0.1.0',
+      mc: '1.8',
+      install_executable: 'index.js',
+      custom: 'whatever',
+      field: 5
+    }
+    let result = validateManifest(JSON.stringify(config))
+    return result.should.deep.equal(config)
+  }
+  )
+}
+)

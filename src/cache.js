@@ -1,3 +1,4 @@
-module.exports =
-	add: require "./cache/add"
-	get: require "./cache/get"
+module.exports = {
+  add: require('./cache/add'),
+  get: require('./cache/get')
+}

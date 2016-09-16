@@ -1,92 +1,137 @@
-proxyquire = require "proxyquire"
-chai = require "chai"
-sinon = require "sinon"
+let proxyquire = require('proxyquire')
+let chai = require('chai')
+let sinon = require('sinon')
 chai.should()
-expect = chai.expect
-chai.use require "sinon-chai"
+let { expect } = chai
+chai.use(require('sinon-chai'))
 
-# Disabling logging in tests.
-require( "winston" ).level = Infinity
+// Disabling logging in tests.
+require('winston').level = Infinity
 
-path = require "path"
+let path = require('path')
 
-describe "cache.get", ->
-	it "returns an Error when package name isn't specified", ( done ) ->
-		fakeExists = sinon.stub().throws()
+describe('cache.get', function () {
+  it("returns an Error when package name isn't specified", function (done) {
+    let fakeExists = sinon.stub().throws()
 
-		get = proxyquire "../../lib/cache/get",
-			"../util":
-				getPathToMcpmDir: -> "fake-.mcpm"
-			"fs-extra":
-				exists: fakeExists
+    let get = proxyquire('../../lib/cache/get', {
+      '../util': {
+        getPathToMcpmDir() { return 'fake-.mcpm'; }
+      },
+      'fs-extra': {
+        exists: fakeExists
+      }
+    }
+    )
 
-		get undefined, undefined, ( err, result ) ->
-			err.should.be.an.instanceof Error
-			done()
+    return get(undefined, undefined, function (err, result) {
+      err.should.be.an.instanceof(Error)
+      return done()
+    }
+    )
+  }
+  )
 
-	for name in [ "", "-", "1sdf", "π", "mcpm/mcpm" ]
-		do ( name ) ->
-			it "returns an Error when package name isn't valid: " + name, ( done ) ->
-				fakeExists = sinon.stub().throws()
+  let iterable = [ '', '-', '1sdf', 'π', 'mcpm/mcpm' ]
+  for (let i = 0; i < iterable.length; i++) {
+    let name = iterable[i](name => it(`returns an Error when package name isn't valid: ${name}`, function (done) {
+      let fakeExists = sinon.stub().throws()
 
-				get = proxyquire "../../lib/cache/get",
-					"../util":
-						getPathToMcpmDir: -> "fake-.mcpm"
-					"fs-extra":
-						exists: fakeExists
+      let get = proxyquire('../../lib/cache/get', {
+        '../util': {
+          getPathToMcpmDir() { return 'fake-.mcpm'; }
+        },
+        'fs-extra': {
+          exists: fakeExists
+        }
+      }
+      )
 
-				get name, "1.0.0", ( err, result ) ->
-					err.should.be.an.instanceof Error
-					done()
+      return get(name, '1.0.0', function (err, result) {
+        err.should.be.an.instanceof(Error)
+        return done()
+      }
+      )
+    }
+    )
+    )(name)
+  }
 
-	it "returns an Error when specified version isn't semantic", ( done ) ->
-		fakeExists = sinon.stub().throws()
+  it("returns an Error when specified version isn't semantic", function (done) {
+    let fakeExists = sinon.stub().throws()
 
-		get = proxyquire "../../lib/cache/get",
-			"../util":
-				getPathToMcpmDir: -> "fake-.mcpm"
-			"fs-extra":
-				exists: fakeExists
-			"semver":
-				valid: -> false
+    let get = proxyquire('../../lib/cache/get', {
+      '../util': {
+        getPathToMcpmDir() { return 'fake-.mcpm'; }
+      },
+      'fs-extra': {
+        exists: fakeExists
+      },
+      'semver': {
+        valid() { return false; }
+      }
+    }
+    )
 
-		get "whatever", "this is not a valid version", ( err, result ) ->
-			err.should.be.an.instanceof Error
-			done()
+    return get('whatever', 'this is not a valid version', function (err, result) {
+      err.should.be.an.instanceof(Error)
+      return done()
+    }
+    )
+  }
+  )
 
-	it "when the version is semantic, return an Error if it's not cached", ( done ) ->
-		pathToZip = path.join "fake-.mcpm", "cache", "whatever", "1.0.0", "mcpm-package.zip"
-		fakeExists = sinon.mock()
-			.once()
-			.withArgs pathToZip, sinon.match.func
-			.callsArgWithAsync 1, no
+  it("when the version is semantic, return an Error if it's not cached", function (done) {
+    let pathToZip = path.join('fake-.mcpm', 'cache', 'whatever', '1.0.0', 'mcpm-package.zip')
+    let fakeExists = sinon.mock()
+      .once()
+      .withArgs(pathToZip, sinon.match.func)
+      .callsArgWithAsync(1, false)
 
-		get = proxyquire "../../lib/cache/get",
-			"../util":
-				getPathToMcpmDir: -> "fake-.mcpm"
-			"fs-extra":
-				exists: fakeExists
+    let get = proxyquire('../../lib/cache/get', {
+      '../util': {
+        getPathToMcpmDir() { return 'fake-.mcpm'; }
+      },
+      'fs-extra': {
+        exists: fakeExists
+      }
+    }
+    )
 
-		get "whatever", "1.0.0", ( err, result ) ->
-			err.should.be.an.instanceof Error
-			fakeExists.verify()
-			done()
+    return get('whatever', '1.0.0', function (err, result) {
+      err.should.be.an.instanceof(Error)
+      fakeExists.verify()
+      return done()
+    }
+    )
+  }
+  )
 
-	it "when the version is semantic, return path to zip if it exists", ( done ) ->
-		pathToZip = path.join "fake-.mcpm", "cache", "whatever", "1.0.0", "mcpm-package.zip"
-		fakeExists = sinon.mock()
-			.once()
-			.withArgs pathToZip, sinon.match.func
-			.callsArgWithAsync 1, yes
+  return it('when the version is semantic, return path to zip if it exists', function (done) {
+    let pathToZip = path.join('fake-.mcpm', 'cache', 'whatever', '1.0.0', 'mcpm-package.zip')
+    let fakeExists = sinon.mock()
+      .once()
+      .withArgs(pathToZip, sinon.match.func)
+      .callsArgWithAsync(1, true)
 
-		get = proxyquire "../../lib/cache/get",
-			"../util":
-				getPathToMcpmDir: -> "fake-.mcpm"
-			"fs-extra":
-				exists: fakeExists
+    let get = proxyquire('../../lib/cache/get', {
+      '../util': {
+        getPathToMcpmDir() { return 'fake-.mcpm'; }
+      },
+      'fs-extra': {
+        exists: fakeExists
+      }
+    }
+    )
 
-		get "whatever", "1.0.0", ( err, result ) ->
-			expect( err ).to.equal null
-			result.should.equal pathToZip
-			fakeExists.verify()
-			done()
+    return get('whatever', '1.0.0', function (err, result) {
+      expect(err).to.equal(null)
+      result.should.equal(pathToZip)
+      fakeExists.verify()
+      return done()
+    }
+    )
+  }
+  )
+}
+)

@@ -1,151 +1,198 @@
-proxyquire = require( "proxyquire" ).noPreserveCache()
-chai = require "chai"
-sinon = require "sinon"
+let proxyquire = require('proxyquire').noPreserveCache()
+let chai = require('chai')
+let sinon = require('sinon')
 chai.should()
-expect = chai.expect
-chai.use require "sinon-chai"
+let { expect } = chai
+chai.use(require('sinon-chai'))
 
-# Disabling logging in tests.
-require( "winston" ).level = Infinity
+// Disabling logging in tests.
+require('winston').level = Infinity
 
-describe "install.fromZip", ->
+describe('install.fromZip', function () {
+  it('returns an Error when the target is actually a folder', function () {
+    let fromZip = require('../../lib/install/fromZip')
 
-	it "returns an Error when the target is actually a folder", ->
-		fromZip = require "../../lib/install/fromZip"
+    let result = fromZip('test/fixtures/fake-mod')
+    return result.should.be.an.instanceof(Error)
+  }
+  )
 
-		result = fromZip "test/fixtures/fake-mod"
-		result.should.be.an.instanceof Error
+  it('returns an Error when the file is not a zip', function () {
+    let fromZip = require('../../lib/install/fromZip')
 
-	it "returns an Error when the file is not a zip", ->
-		fromZip = require "../../lib/install/fromZip"
+    let result = fromZip('test/fixtures/not-a-zip.zip')
+    return result.should.be.an.instanceof(Error)
+  }
+  )
 
-		result = fromZip "test/fixtures/not-a-zip.zip"
-		result.should.be.an.instanceof Error
+  it("returns an Error when there's no manifest file in the zip", function () {
+    let fromZip = require('../../lib/install/fromZip')
 
-	it "returns an Error when there's no manifest file in the zip", ->
-		fromZip = require "../../lib/install/fromZip"
+    let result = fromZip('test/fixtures/empty.zip')
+    return result.should.be.an.instanceof(Error)
+  }
+  )
 
-		result = fromZip "test/fixtures/empty.zip"
-		result.should.be.an.instanceof Error
+  it('returns an Error when adm-zip returns an error', function () {
+    let getEntryStub = sinon.stub().returns({})
+    let extractAllToStub = sinon.stub().returns(new Error())
 
-	it "returns an Error when adm-zip returns an error", ->
-		getEntryStub = sinon.stub().returns {}
-		extractAllToStub = sinon.stub().returns new Error
+    let fromZip = proxyquire('../../lib/install/fromZip', {
+      'fs': {
+        statSync() {
+          return {isFile() { return true; }}
+        }
+      },
+      'tmp': {
+        dirSync() {
+          return {name: 'fake-temp-dir'}
+        }
+      },
+      'adm-zip': function FakeAdmZip () {
+        this.getEntry = getEntryStub
+        this.extractAllTo = extractAllToStub
+      }
+    }
+    )
 
-		fromZip = proxyquire "../../lib/install/fromZip",
-			"fs":
-				statSync: ->
-					isFile: -> true
-			"tmp":
-				dirSync: ->
-					name: "fake-temp-dir"
-			"adm-zip": class FakeAdmZip
-				getEntry: getEntryStub
-				extractAllTo: extractAllToStub
+    let result = fromZip('fake-path-to-zip')
+    result.should.be.an.instanceof(Error)
 
-		result = fromZip "fake-path-to-zip"
-		result.should.be.an.instanceof Error
+    getEntryStub.should.have.been.called
+    return extractAllToStub.should.have.been.calledOnce
+  }
+  )
 
-		getEntryStub.should.have.been.called
-		extractAllToStub.should.have.been.calledOnce
+  it('returns an Error when adm-zip throws', function () {
+    let getEntryStub = sinon.stub().returns({})
+    let extractAllToStub = sinon.stub().throws()
 
-	it "returns an Error when adm-zip throws", ->
-		getEntryStub = sinon.stub().returns {}
-		extractAllToStub = sinon.stub().throws()
+    let fromZip = proxyquire('../../lib/install/fromZip', {
+      'fs': {
+        statSync() {
+          return {isFile() { return true; }}
+        }
+      },
+      'tmp': {
+        dirSync() {
+          return {name: 'fake-temp-dir'}
+        }
+      },
+      'adm-zip': function FakeAdmZip () {
+        this.getEntry = getEntryStub
+        this.extractAllTo = extractAllToStub
+      }
+    }
+    )
 
-		fromZip = proxyquire "../../lib/install/fromZip",
-			"fs":
-				statSync: ->
-					isFile: -> true
-			"tmp":
-				dirSync: ->
-					name: "fake-temp-dir"
-			"adm-zip": class FakeAdmZip
-				getEntry: getEntryStub
-				extractAllTo: extractAllToStub
+    let result = fromZip('fake-path-to-zip')
+    result.should.be.an.instanceof(Error)
 
-		result = fromZip "fake-path-to-zip"
-		result.should.be.an.instanceof Error
+    getEntryStub.should.have.been.called
+    return extractAllToStub.should.have.been.calledOnce
+  }
+  )
 
-		getEntryStub.should.have.been.called
-		extractAllToStub.should.have.been.calledOnce
+  it("returns an Error when 'fromFolder' returns an error", function () {
+    let fromZip = proxyquire('../../lib/install/fromZip', {
+      'fs': {
+        statSync() {
+          return {isFile() { return true; }}
+        }
+      },
+      'tmp': {
+        dirSync() { return {name: 'fake-temp-dir'}; }
+      },
+      'adm-zip': function FakeAdmZip (name) {
+        name.should.equal('fake-path-to-zip')
+        this.getEntry = () => ({})
+        this.extractAllTo = () => true
+      },
+      ['./fromFolder'](packageDirectory, zipPath) {
+        packageDirectory.should.equal('fake-temp-dir')
+        zipPath.should.equal('fake-path-to-zip')
+        return new Error()
+      },
+      '../cache': {
+        add() {}
+      }
+    }
+    )
 
-	it "returns an Error when 'fromFolder' returns an error", ->
-		fromZip = proxyquire "../../lib/install/fromZip",
-			"fs":
-				statSync: ->
-					isFile: -> true
-			"tmp":
-				dirSync: -> name: "fake-temp-dir"
-			"adm-zip": class FakeAdmZip
-				constructor: ( name ) ->
-					name.should.equal "fake-path-to-zip"
-				getEntry: ->
-					{}
-				extractAllTo: ->
-					true
-			"./fromFolder": ( packageDirectory, zipPath ) ->
-				packageDirectory.should.equal "fake-temp-dir"
-				zipPath.should.equal "fake-path-to-zip"
-				new Error
-			"../cache":
-				add: ->
+    let result = fromZip('fake-path-to-zip')
+    return result.should.be.an.instanceof(Error)
+  }
+  )
 
-		result = fromZip "fake-path-to-zip"
-		result.should.be.an.instanceof Error
+  it('caches the package after installing', function () {
+    let fakeManifest = {
+      name: 'fake-mod',
+      version: '1.2.3'
+    }
 
-	it "caches the package after installing", ->
-		fakeManifest =
-			name: "fake-mod"
-			version: "1.2.3"
+    let fakeAddToCache = sinon.mock()
+      .once()
+      .withExactArgs('fake-path-to-zip', fakeManifest)
 
-		fakeAddToCache = sinon.mock()
-			.once()
-			.withExactArgs "fake-path-to-zip", fakeManifest
+    let fromZip = proxyquire('../../lib/install/fromZip', {
+      'fs': {
+        statSync() {
+          return {isFile() { return true; }}
+        }
+      },
+      'tmp': {
+        dirSync() { return {name: 'fake-temp-dir'}; }
+      },
+      'adm-zip': function FakeAdmZip (name) {
+        name.should.equal('fake-path-to-zip')
+        this.getEntry = () => ({})
+        this.extractAllTo = () => true
+      },
+      ['./fromFolder'](packageDirectory, zipPath) {
+        packageDirectory.should.equal('fake-temp-dir')
+        zipPath.should.equal('fake-path-to-zip')
+        return fakeManifest
+      },
+      '../cache': {
+        add: fakeAddToCache
+      }
+    }
+    )
 
-		fromZip = proxyquire "../../lib/install/fromZip",
-			"fs":
-				statSync: ->
-					isFile: -> true
-			"tmp":
-				dirSync: -> name: "fake-temp-dir"
-			"adm-zip": class FakeAdmZip
-				constructor: ( name ) ->
-					name.should.equal "fake-path-to-zip"
-				getEntry: ->
-					{}
-				extractAllTo: ->
-					true
-			"./fromFolder": ( packageDirectory, zipPath ) ->
-				packageDirectory.should.equal "fake-temp-dir"
-				zipPath.should.equal "fake-path-to-zip"
-				fakeManifest
-			"../cache":
-				add: fakeAddToCache
+    let result = fromZip('fake-path-to-zip')
+    return fakeAddToCache.verify()
+  }
+  )
 
-		result = fromZip "fake-path-to-zip"
-		fakeAddToCache.verify()
+  return it("returns the result of calling 'fromFolder' on the unziped folder", function () {
+    let fromZip = proxyquire('../../lib/install/fromZip', {
+      'fs': {
+        statSync() {
+          return {isFile() { return true; }}
+        }
+      },
+      'tmp': {
+        dirSync() { return {name: 'fake-temp-dir'}; }
+      },
+      'adm-zip': function FakeAdmZip (name) {
+        name.should.equal('fake-path-to-zip')
+        this.getEntry = () => ({})
+        this.extractAllTo = () => true
+      },
+      ['./fromFolder'](packageDirectory, zipPath) {
+        packageDirectory.should.equal('fake-temp-dir')
+        zipPath.should.equal('fake-path-to-zip')
+        return 'fake-fromFolder-result'
+      },
+      '../cache': {
+        add() {}
+      }
+    }
+    )
 
-	it "returns the result of calling 'fromFolder' on the unziped folder", ->
-		fromZip = proxyquire "../../lib/install/fromZip",
-			"fs":
-				statSync: ->
-					isFile: -> true
-			"tmp":
-				dirSync: -> name: "fake-temp-dir"
-			"adm-zip": class FakeAdmZip
-				constructor: ( name ) ->
-					name.should.equal "fake-path-to-zip"
-				getEntry: ->
-					{}
-				extractAllTo: ->
-					true
-			"./fromFolder": ( packageDirectory, zipPath ) ->
-				packageDirectory.should.equal "fake-temp-dir"
-				zipPath.should.equal "fake-path-to-zip"
-				"fake-fromFolder-result"
-			"../cache":
-				add: ->
-
-		result = fromZip "fake-path-to-zip"
-		result.should.equal "fake-fromFolder-result"
+    let result = fromZip('fake-path-to-zip')
+    return result.should.equal('fake-fromFolder-result')
+  }
+  )
+}
+)

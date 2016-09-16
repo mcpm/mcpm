@@ -1,5 +1,6 @@
-path = require "path"
-getUserSettingsDir = require "user-settings-dir"
+let path = require('path')
+let getUserSettingsDir = require('user-settings-dir')
 
-module.exports = ->
-	path.join getUserSettingsDir(), ".mcpm"
+module.exports = function () {
+  return path.join(getUserSettingsDir(), '.mcpm')
+}

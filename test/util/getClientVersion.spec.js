@@ -1,19 +1,24 @@
-proxyquire = require "proxyquire"
-chai = require "chai"
-sinon = require "sinon"
+let proxyquire = require('proxyquire')
+let chai = require('chai')
+let sinon = require('sinon')
 chai.should()
-chai.use require "sinon-chai"
+chai.use(require('sinon-chai'))
 
-# Disabling logging in tests.
-require( "winston" ).level = Infinity
+// Disabling logging in tests.
+require('winston').level = Infinity
 
-getClientVersion = proxyquire "../../lib/util/getClientVersion",
-	"./getCurrentProfile": ( callback ) ->
-		callback version: "fake-version"
+let getClientVersion = proxyquire('../../lib/util/getClientVersion', {
+  ['./getCurrentProfile'](callback) {
+    return callback({version: 'fake-version'})
+  }
+}
+)
 
-describe "util.getClientVersion", ->
+describe('util.getClientVersion', () => it("returns 'getCurrentProfile().version'", done => getClientVersion(function (result) {
+  'fake-version'.should.equal(result)
+  return done()
+})
 
-		it "returns 'getCurrentProfile().version'", ( done ) ->
-			getClientVersion ( result ) ->
-				"fake-version".should.equal result
-				done()
+)
+
+)

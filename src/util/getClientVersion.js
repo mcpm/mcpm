@@ -1,10 +1,12 @@
-winston = require "winston"
-getCurrentProfile = require "./getCurrentProfile"
+let winston = require('winston')
+let getCurrentProfile = require('./getCurrentProfile')
 
-getClientVersion = ( callback ) ->
-	winston.verbose "util.getClientVersion: starting"
-	getCurrentProfile ( profile ) ->
-		winston.verbose "util.getClientVersion: success:", profile.version
-		callback profile.version
+let getClientVersion = function (callback) {
+  winston.verbose('util.getClientVersion: starting')
+  return getCurrentProfile(function (profile) {
+    winston.verbose('util.getClientVersion: success:', profile.version)
+    return callback(profile.version)
+  })
+}
 
 module.exports = getClientVersion

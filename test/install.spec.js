@@ -1,66 +1,84 @@
-proxyquire = require "proxyquire"
-chai = require "chai"
-sinon = require "sinon"
+let proxyquire = require('proxyquire')
+let chai = require('chai')
+let sinon = require('sinon')
 chai.should()
-chai.use require "sinon-chai"
+chai.use(require('sinon-chai'))
 
-# Disabling logging in tests.
-require( "winston" ).level = Infinity
+// Disabling logging in tests.
+require('winston').level = Infinity
 
-describe "install", ->
+describe('install', function () {
+  it('returns an Error when parsePackageString returns null', function () {
+    let fakeParsePackageString = sinon.stub().returns(null)
 
-	it "returns an Error when parsePackageString returns null", ->
-		fakeParsePackageString = sinon.stub().returns null
+    let install = proxyquire('../lib/install',
+      {'./install/parsePackageString': fakeParsePackageString})
 
-		install = proxyquire "../lib/install",
-			"./install/parsePackageString": fakeParsePackageString
+    let result = install('whatever')
 
-		result = install "whatever"
+    return result.should.be.instanceof(Error)
+  }
+  )
 
-		result.should.be.instanceof Error
+  it("calls install.fromFolder when package is of 'folder' type", function () {
+    let fakeParsePackageString = sinon.stub().returns({
+      type: 'folder',
+      name: 'whatever'
+    })
 
-	it "calls install.fromFolder when package is of 'folder' type", ->
-		fakeParsePackageString = sinon.stub().returns
-			type: "folder"
-			name: "whatever"
+    let fakeFromFolder = sinon.mock().once().withExactArgs('whatever')
 
-		fakeFromFolder = sinon.mock().once().withExactArgs "whatever"
+    let install = proxyquire('../lib/install', {
+      './install/parsePackageString': fakeParsePackageString,
+      './install/fromFolder': fakeFromFolder
+    }
+    )
 
-		install = proxyquire "../lib/install",
-			"./install/parsePackageString": fakeParsePackageString
-			"./install/fromFolder": fakeFromFolder
+    let result = install('whatever')
 
-		result = install "whatever"
+    return fakeFromFolder.verify()
+  }
+  )
 
-		fakeFromFolder.verify()
+  it("calls install.fromZip when package is of 'zip' type", function () {
+    let fakeParsePackageString = sinon.stub().returns({
+      type: 'zip',
+      name: 'whatever'
+    })
 
-	it "calls install.fromZip when package is of 'zip' type", ->
-		fakeParsePackageString = sinon.stub().returns
-			type: "zip"
-			name: "whatever"
+    let fakeFromZip = sinon.mock().once().withExactArgs('whatever')
 
-		fakeFromZip = sinon.mock().once().withExactArgs "whatever"
+    let install = proxyquire('../lib/install', {
+      './install/parsePackageString': fakeParsePackageString,
+      './install/fromZip': fakeFromZip
+    }
+    )
 
-		install = proxyquire "../lib/install",
-			"./install/parsePackageString": fakeParsePackageString
-			"./install/fromZip": fakeFromZip
+    let result = install('whatever')
 
-		result = install "whatever"
+    return fakeFromZip.verify()
+  }
+  )
 
-		fakeFromZip.verify()
+  return it("calls install.fromCache when package is of 'cache' type", function () {
+    let fakeParsePackageString = sinon.stub().returns({
+      type: 'cache',
+      name: 'whatever',
+      version: 'fake-version'
+    })
 
-	it "calls install.fromCache when package is of 'cache' type", ->
-		fakeParsePackageString = sinon.stub().returns
-			type: "cache"
-			name: "whatever"
-			version: "fake-version"
+    let fakeFromCache = sinon.mock().once().withExactArgs('whatever', 'fake-version')
 
-		fakeFromCache = sinon.mock().once().withExactArgs "whatever", "fake-version"
+    let install = proxyquire('../lib/install', {
+      './install/parsePackageString': fakeParsePackageString,
+      './install/fromCache': fakeFromCache
+    }
+    )
 
-		install = proxyquire "../lib/install",
-			"./install/parsePackageString": fakeParsePackageString
-			"./install/fromCache": fakeFromCache
+    let result = install('whatever')
 
-		result = install "whatever"
-
-		fakeFromCache.verify()
+    return fakeFromCache.verify()
+  }
+  )
+}
+)

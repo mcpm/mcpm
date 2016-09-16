@@ -1,20 +1,22 @@
-proxyquire = require "proxyquire"
-chai = require "chai"
-sinon = require "sinon"
+let proxyquire = require('proxyquire')
+let chai = require('chai')
+let sinon = require('sinon')
 chai.should()
-chai.use require "sinon-chai"
+chai.use(require('sinon-chai'))
 
-# Disabling logging in tests.
-require( "winston" ).level = Infinity
+// Disabling logging in tests.
+require('winston').level = Infinity
 
-path = require "path"
+let path = require('path')
 
-describe "util.getPathToMcpmDir", ->
+describe('util.getPathToMcpmDir', () => it("returns '%APPDATA%/.mcpm'", function () {
+  let getPathToMcpmDir = proxyquire('../../lib/util/getPathToMcpmDir',
+    {['user-settings-dir']() { return 'fake-dir'; }})
 
-	it "returns '%APPDATA%/.mcpm'", ->
-		getPathToMcpmDir = proxyquire "../../lib/util/getPathToMcpmDir",
-			"user-settings-dir": -> "fake-dir"
+  let result = getPathToMcpmDir()
 
-		result = getPathToMcpmDir()
+  return result.should.equal(path.join('fake-dir', '.mcpm'))
+}
+)
 
-		result.should.equal path.join "fake-dir", ".mcpm"
+)
