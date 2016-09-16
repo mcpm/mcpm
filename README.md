@@ -47,23 +47,17 @@
 
 #### Prerequisites
 
-- [io.js](https://iojs.org)
-- `$ npm install -g gulp` ([gulp](http://gulpjs.com/) is an automation tool)
-- Fork [this repo](https://github.com/mcpm/mcpm)
-- Check out it locally
-- `$ npm install`
+- Install [Node.js](https://nodejs.org/)
+- Fork and checkout this repo
+- Run `npm install` in this directory
 
 #### Workflow
 
-- [Write tests](https://en.wikipedia.org/wiki/Test-driven_development)
-- `$ gulp test`
+- Run `npm start` to start tests and re-run them on changes
+- [Write tests first](https://en.wikipedia.org/wiki/Test-driven_development)
 - Write code
-- `$ gulp test`
-
-#### Make a pull request
-
-- Push changes to your fork (don't push to `master`, create a separate branch)
-- Make a pull request on GitHub
+- Run `npm check-style` to make sure you follow our style guide
+- Make a Pull Request when ready
 
 ## Roadmap
 
