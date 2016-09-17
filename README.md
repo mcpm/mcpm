@@ -4,6 +4,7 @@
 [![Build Status](https://img.shields.io/travis/mcpm/mcpm.svg?style=flat&branch=master)](https://travis-ci.org/mcpm/mcpm)
 [![Coverage](https://img.shields.io/codeclimate/coverage/github/mcpm/mcpm.svg)](https://codeclimate.com/github/mcpm/mcpm)
 [![Code Climate](https://img.shields.io/codeclimate/github/mcpm/mcpm.svg)](https://codeclimate.com/github/mcpm/mcpm)
+[![JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
 ## Installation
 
