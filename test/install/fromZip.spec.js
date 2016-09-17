@@ -1,8 +1,9 @@
+/* eslint-env mocha */
+
 let proxyquire = require('proxyquire').noPreserveCache()
 let chai = require('chai')
 let sinon = require('sinon')
 chai.should()
-let { expect } = chai
 chai.use(require('sinon-chai'))
 
 // Disabling logging in tests.
@@ -39,12 +40,12 @@ describe('install.fromZip', function () {
 
     let fromZip = proxyquire('../../lib/install/fromZip', {
       'fs': {
-        statSync() {
-          return {isFile() { return true; }}
+        statSync () {
+          return {isFile () { return true }}
         }
       },
       'tmp': {
-        dirSync() {
+        dirSync () {
           return {name: 'fake-temp-dir'}
         }
       },
@@ -69,12 +70,12 @@ describe('install.fromZip', function () {
 
     let fromZip = proxyquire('../../lib/install/fromZip', {
       'fs': {
-        statSync() {
-          return {isFile() { return true; }}
+        statSync () {
+          return {isFile () { return true }}
         }
       },
       'tmp': {
-        dirSync() {
+        dirSync () {
           return {name: 'fake-temp-dir'}
         }
       },
@@ -96,25 +97,25 @@ describe('install.fromZip', function () {
   it("returns an Error when 'fromFolder' returns an error", function () {
     let fromZip = proxyquire('../../lib/install/fromZip', {
       'fs': {
-        statSync() {
-          return {isFile() { return true; }}
+        statSync () {
+          return {isFile () { return true }}
         }
       },
       'tmp': {
-        dirSync() { return {name: 'fake-temp-dir'}; }
+        dirSync () { return {name: 'fake-temp-dir'} }
       },
       'adm-zip': function FakeAdmZip (name) {
         name.should.equal('fake-path-to-zip')
         this.getEntry = () => ({})
         this.extractAllTo = () => true
       },
-      ['./fromFolder'](packageDirectory, zipPath) {
+      './fromFolder' (packageDirectory, zipPath) {
         packageDirectory.should.equal('fake-temp-dir')
         zipPath.should.equal('fake-path-to-zip')
         return new Error()
       },
       '../cache': {
-        add() {}
+        add () {}
       }
     }
     )
@@ -136,19 +137,19 @@ describe('install.fromZip', function () {
 
     let fromZip = proxyquire('../../lib/install/fromZip', {
       'fs': {
-        statSync() {
-          return {isFile() { return true; }}
+        statSync () {
+          return {isFile () { return true }}
         }
       },
       'tmp': {
-        dirSync() { return {name: 'fake-temp-dir'}; }
+        dirSync () { return {name: 'fake-temp-dir'} }
       },
       'adm-zip': function FakeAdmZip (name) {
         name.should.equal('fake-path-to-zip')
         this.getEntry = () => ({})
         this.extractAllTo = () => true
       },
-      ['./fromFolder'](packageDirectory, zipPath) {
+      './fromFolder' (packageDirectory, zipPath) {
         packageDirectory.should.equal('fake-temp-dir')
         zipPath.should.equal('fake-path-to-zip')
         return fakeManifest
@@ -159,33 +160,33 @@ describe('install.fromZip', function () {
     }
     )
 
-    let result = fromZip('fake-path-to-zip')
+    fromZip('fake-path-to-zip')
     return fakeAddToCache.verify()
   }
   )
 
-  return it("returns the result of calling 'fromFolder' on the unziped folder", function () {
+  it("returns the result of calling 'fromFolder' on the unziped folder", function () {
     let fromZip = proxyquire('../../lib/install/fromZip', {
       'fs': {
-        statSync() {
-          return {isFile() { return true; }}
+        statSync () {
+          return {isFile () { return true }}
         }
       },
       'tmp': {
-        dirSync() { return {name: 'fake-temp-dir'}; }
+        dirSync () { return {name: 'fake-temp-dir'} }
       },
       'adm-zip': function FakeAdmZip (name) {
         name.should.equal('fake-path-to-zip')
         this.getEntry = () => ({})
         this.extractAllTo = () => true
       },
-      ['./fromFolder'](packageDirectory, zipPath) {
+      './fromFolder' (packageDirectory, zipPath) {
         packageDirectory.should.equal('fake-temp-dir')
         zipPath.should.equal('fake-path-to-zip')
         return 'fake-fromFolder-result'
       },
       '../cache': {
-        add() {}
+        add () {}
       }
     }
     )

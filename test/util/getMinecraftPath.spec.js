@@ -1,3 +1,5 @@
+/* eslint-env mocha */
+
 let chai = require('chai')
 let sinon = require('sinon')
 chai.should()

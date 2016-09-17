@@ -1,6 +1,7 @@
+/* eslint-env mocha */
+
 let proxyquire = require('proxyquire')
 let chai = require('chai')
-let sinon = require('sinon')
 chai.should()
 let { expect } = chai
 chai.use(require('sinon-chai'))
@@ -11,7 +12,7 @@ require('winston').level = Infinity
 describe('util.addInstalledPackage', function () {
   it("adds specified module to 'mcpmInstalledPackages'", function (done) {
     let addInstalledPackage = proxyquire('../../lib/util/addInstalledPackage', {
-      ['./getCurrentProfile']() {
+      './getCurrentProfile' () {
         return {
           originalInfo: {
             mcpmInstalledPackages: {
@@ -20,7 +21,7 @@ describe('util.addInstalledPackage', function () {
           }
         }
       },
-      ['./setCurrentProfile'](newProfile) {
+      './setCurrentProfile' (newProfile) {
         return newProfile.mcpmInstalledPackages.should.deep.equal({
           'whatever': '1.2.3',
           'fake-package': '0.1.0'
@@ -38,12 +39,12 @@ describe('util.addInstalledPackage', function () {
   }
   )
 
-  return it("adds 'mcpmInstalledPackages' field if it's not there yet", function (done) {
+  it("adds 'mcpmInstalledPackages' field if it's not there yet", function (done) {
     let addInstalledPackage = proxyquire('../../lib/util/addInstalledPackage', {
-      ['./getCurrentProfile']() {
+      './getCurrentProfile' () {
         return {originalInfo: {}}
       },
-      ['./setCurrentProfile'](newProfile) {
+      './setCurrentProfile' (newProfile) {
         '0.1.0'.should.equal(newProfile.mcpmInstalledPackages[ 'fake-package' ])
       }
     }

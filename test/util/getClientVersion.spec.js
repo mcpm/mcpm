@@ -1,6 +1,7 @@
+/* eslint-env mocha */
+
 let proxyquire = require('proxyquire')
 let chai = require('chai')
-let sinon = require('sinon')
 chai.should()
 chai.use(require('sinon-chai'))
 
@@ -8,7 +9,7 @@ chai.use(require('sinon-chai'))
 require('winston').level = Infinity
 
 let getClientVersion = proxyquire('../../lib/util/getClientVersion', {
-  ['./getCurrentProfile'](callback) {
+  './getCurrentProfile' (callback) {
     return callback({version: 'fake-version'})
   }
 }

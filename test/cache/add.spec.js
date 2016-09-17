@@ -1,3 +1,5 @@
+/* eslint-env mocha */
+
 let proxyquire = require('proxyquire')
 let chai = require('chai')
 let { expect } = chai
@@ -24,7 +26,7 @@ describe('cache.add', function () {
 
     let add = proxyquire('../../lib/cache/add', {
       '../util': {
-        getPathToMcpmDir() { return 'fake-.mcpm'; }
+        getPathToMcpmDir () { return 'fake-.mcpm' }
       },
       'fs-extra': {
         copy: fakeCopy,
@@ -61,7 +63,7 @@ describe('cache.add', function () {
 
     let add = proxyquire('../../lib/cache/add', {
       '../util': {
-        getPathToMcpmDir() { return 'fake-.mcpm'; }
+        getPathToMcpmDir () { return 'fake-.mcpm' }
       },
       'fs-extra': {
         copy: fakeCopy,
@@ -80,7 +82,6 @@ describe('cache.add', function () {
   )
 
   it('returns an Error when fs.copy fails', function (done) {
-    let dest = path.join('fake-.mcpm', 'cache', 'fake-package', '1.2.3')
     let fakeManifest = {
       name: 'fake-package',
       version: '1.2.3'
@@ -95,7 +96,7 @@ describe('cache.add', function () {
 
     let add = proxyquire('../../lib/cache/add', {
       '../util': {
-        getPathToMcpmDir() { return 'fake-.mcpm'; }
+        getPathToMcpmDir () { return 'fake-.mcpm' }
       },
       'fs-extra': {
         copy: fakeCopy,
@@ -130,7 +131,7 @@ describe('cache.add', function () {
 
     let add = proxyquire('../../lib/cache/add', {
       '../util': {
-        getPathToMcpmDir() { return 'fake-.mcpm'; }
+        getPathToMcpmDir () { return 'fake-.mcpm' }
       },
       'fs-extra': {
         copy: fakeCopy,
@@ -148,7 +149,7 @@ describe('cache.add', function () {
   }
   )
 
-  return it('returns an Error when fs.outputJson fails', function (done) {
+  it('returns an Error when fs.outputJson fails', function (done) {
     let dest = path.join('fake-.mcpm', 'cache', 'fake-package', '1.2.3')
     let fakeManifest = {
       name: 'fake-package',
@@ -165,7 +166,7 @@ describe('cache.add', function () {
 
     let add = proxyquire('../../lib/cache/add', {
       '../util': {
-        getPathToMcpmDir() { return 'fake-.mcpm'; }
+        getPathToMcpmDir () { return 'fake-.mcpm' }
       },
       'fs-extra': {
         copy: fakeCopy,

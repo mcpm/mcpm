@@ -1,3 +1,5 @@
+/* eslint-env mocha */
+
 let proxyquire = require('proxyquire')
 let chai = require('chai')
 let sinon = require('sinon')
@@ -16,7 +18,7 @@ describe('cache.get', function () {
 
     let get = proxyquire('../../lib/cache/get', {
       '../util': {
-        getPathToMcpmDir() { return 'fake-.mcpm'; }
+        getPathToMcpmDir () { return 'fake-.mcpm' }
       },
       'fs-extra': {
         exists: fakeExists
@@ -32,43 +34,41 @@ describe('cache.get', function () {
   }
   )
 
-  let iterable = [ '', '-', '1sdf', 'π', 'mcpm/mcpm' ]
-  for (let i = 0; i < iterable.length; i++) {
-    let name = iterable[i](name => it(`returns an Error when package name isn't valid: ${name}`, function (done) {
-      let fakeExists = sinon.stub().throws()
+  let names = [ '', '-', '1sdf', 'π', 'mcpm/mcpm' ]
+  names.forEach(name => it(`returns an Error when package name isn't valid: ${name}`, function (done) {
+    let fakeExists = sinon.stub().throws()
 
-      let get = proxyquire('../../lib/cache/get', {
-        '../util': {
-          getPathToMcpmDir() { return 'fake-.mcpm'; }
-        },
-        'fs-extra': {
-          exists: fakeExists
-        }
+    let get = proxyquire('../../lib/cache/get', {
+      '../util': {
+        getPathToMcpmDir () { return 'fake-.mcpm' }
+      },
+      'fs-extra': {
+        exists: fakeExists
       }
-      )
-
-      return get(name, '1.0.0', function (err, result) {
-        err.should.be.an.instanceof(Error)
-        return done()
-      }
-      )
     }
     )
-    )(name)
+
+    return get(name, '1.0.0', function (err, result) {
+      err.should.be.an.instanceof(Error)
+      return done()
+    }
+    )
   }
+  )
+  )
 
   it("returns an Error when specified version isn't semantic", function (done) {
     let fakeExists = sinon.stub().throws()
 
     let get = proxyquire('../../lib/cache/get', {
       '../util': {
-        getPathToMcpmDir() { return 'fake-.mcpm'; }
+        getPathToMcpmDir () { return 'fake-.mcpm' }
       },
       'fs-extra': {
         exists: fakeExists
       },
       'semver': {
-        valid() { return false; }
+        valid () { return false }
       }
     }
     )
@@ -90,7 +90,7 @@ describe('cache.get', function () {
 
     let get = proxyquire('../../lib/cache/get', {
       '../util': {
-        getPathToMcpmDir() { return 'fake-.mcpm'; }
+        getPathToMcpmDir () { return 'fake-.mcpm' }
       },
       'fs-extra': {
         exists: fakeExists
@@ -107,7 +107,7 @@ describe('cache.get', function () {
   }
   )
 
-  return it('when the version is semantic, return path to zip if it exists', function (done) {
+  it('when the version is semantic, return path to zip if it exists', function (done) {
     let pathToZip = path.join('fake-.mcpm', 'cache', 'whatever', '1.0.0', 'mcpm-package.zip')
     let fakeExists = sinon.mock()
       .once()
@@ -116,7 +116,7 @@ describe('cache.get', function () {
 
     let get = proxyquire('../../lib/cache/get', {
       '../util': {
-        getPathToMcpmDir() { return 'fake-.mcpm'; }
+        getPathToMcpmDir () { return 'fake-.mcpm' }
       },
       'fs-extra': {
         exists: fakeExists

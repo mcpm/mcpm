@@ -1,8 +1,9 @@
+/* eslint-env mocha */
+
 let proxyquire = require('proxyquire').noPreserveCache()
 let chai = require('chai')
 let sinon = require('sinon')
 chai.should()
-let { expect } = chai
 chai.use(require('sinon-chai'))
 
 // Disabling logging in tests.
@@ -29,7 +30,7 @@ describe('install.fromCache', function () {
   }
   )
 
-  return it("delegates installation to 'fromZip', returns its result", function () {
+  it("delegates installation to 'fromZip', returns its result", function () {
     let fakeFromZip = sinon.stub().returns('fake-result')
     let fakeCacheGet = sinon.stub().returns('path/to/fake.zip')
 

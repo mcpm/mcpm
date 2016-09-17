@@ -1,7 +1,8 @@
+/* eslint-env mocha */
+
 let chai = require('chai')
 let sinon = require('sinon')
 chai.should()
-let { expect } = chai
 chai.use(require('sinon-chai'))
 let proxyquire = require('proxyquire')
 
@@ -12,7 +13,7 @@ describe('install.fromFolder', function () {
   it('reads and checks package config', function () {
     let fromFolder = proxyquire('../../lib/install/fromFolder', {
       '../util': {
-        getCurrentProfile() {
+        getCurrentProfile () {
           return ({})
         }
       }
@@ -28,12 +29,12 @@ describe('install.fromFolder', function () {
   it('returns an Error when install executable exits with error', function () {
     let fromFolder = proxyquire('../../lib/install/fromFolder', {
       '../util': {
-        getCurrentProfile() { return {}; }
+        getCurrentProfile () { return {} }
       },
-      ['./validateManifest']() {
+      './validateManifest' () {
         return {install_executable: 'file.jar'}
       },
-      ['./invokeInstallExecutable'](file, dir) {
+      './invokeInstallExecutable' (file, dir) {
         file.should.equal('file.jar')
         dir.should.equal('test/fixtures/invalid-mod')
         return new Error('Something went wrong!')
@@ -50,12 +51,12 @@ describe('install.fromFolder', function () {
     let fakeInvoke
     let fromFolder = proxyquire('../../lib/install/fromFolder', {
       '../util': {
-        getCurrentProfile() { return {}; },
-        addInstalledPackage() { return true; }
+        getCurrentProfile () { return {} },
+        addInstalledPackage () { return true }
       },
-      ['./copyFiles']() { return true; },
-      ['./addInstalledPackage']() { return true; },
-      ['./validateManifest']() { return {install_file_list: {}}; }
+      './copyFiles' () { return true },
+      './addInstalledPackage' () { return true },
+      './validateManifest' () { return {install_file_list: {}} }
     },
       './invokeInstallExecutable', fakeInvoke = sinon.spy())
 
@@ -68,11 +69,10 @@ describe('install.fromFolder', function () {
   it('returns an Error when flattenFileList returns an error', function () {
     let fromFolder = proxyquire('../../lib/install/fromFolder', {
       '../util': {
-        getCurrentProfile() { return {}; }
+        getCurrentProfile () { return {} }
       },
-      ['./validateManifest']() { return {install_file_list: { foo: 'bar'
-        }}; },
-      ['./flattenFileList'](list, dir) {
+      './validateManifest' () { return {install_file_list: { foo: 'bar' }} },
+      './flattenFileList' (list, dir) {
         list.should.deep.equal({foo: 'bar'})
         dir.should.equal('test/fixtures/invalid-mod')
         return new Error('Something went wrong!')
@@ -88,16 +88,15 @@ describe('install.fromFolder', function () {
   it('returns an Error when copyFiles returns an error', function () {
     let fromFolder = proxyquire('../../lib/install/fromFolder', {
       '../util': {
-        getCurrentProfile() { return {}; }
+        getCurrentProfile () { return {} }
       },
-      ['./validateManifest']() { return {install_file_list: { foo: 'bar'
-        }}; },
-      ['./flattenFileList'](list, dir) {
+      './validateManifest' () { return {install_file_list: { foo: 'bar' }} },
+      './flattenFileList' (list, dir) {
         list.should.deep.equal({foo: 'bar'})
         dir.should.equal('test/fixtures/invalid-mod')
         return {'copyFiles/foo': 'full/bar'}
       },
-      ['./copyFiles'](list, dir) {
+      './copyFiles' (list, dir) {
         list.should.deep.equal({'copyFiles/foo': 'full/bar'})
         dir.should.equal('test/fixtures/invalid-mod')
         return new Error('Something went wrong!')
@@ -114,21 +113,21 @@ describe('install.fromFolder', function () {
     let fakeInvoke
     let fromFolder = proxyquire('../../lib/install/fromFolder', {
       '../util': {
-        getCurrentProfile() { return {}; }
+        getCurrentProfile () { return {} }
       },
-      ['./validateManifest']() {
+      './validateManifest' () {
         return {
           install_executable: 'foo',
           install_file_list: { bar: 'qux'
           }
         }
       },
-      ['./flattenFileList']() {},
+      './flattenFileList' () {},
       './invokeInstallExecutable': fakeInvoke = sinon.spy(function () {
         fakeInvoke.should.have.been.calledOnce
         return new Error('Something went wrong!')
       }),
-      ['./copyFiles']() {
+      './copyFiles' () {
         return fakeInvoke.should.have.not.been.called
       }
     }
@@ -142,13 +141,13 @@ describe('install.fromFolder', function () {
   it('returns an Error when addInstalledPackage returns an error', function () {
     let fromFolder = proxyquire('../../lib/install/fromFolder', {
       '../util': {
-        getCurrentProfile() { return {}; },
-        addInstalledPackage() {
+        getCurrentProfile () { return {} },
+        addInstalledPackage () {
           return new Error('Something went wrong!')
         }
       },
-      ['./validateManifest']() { return {install_executable: 'file.jar'}; },
-      ['./invokeInstallExecutable']() { return true; }
+      './validateManifest' () { return {install_executable: 'file.jar'} },
+      './invokeInstallExecutable' () { return true }
     }
     )
 
@@ -160,21 +159,21 @@ describe('install.fromFolder', function () {
   it('passes correct name and version to addInstalledPackage', function () {
     let fromFolder = proxyquire('../../lib/install/fromFolder', {
       '../util': {
-        getCurrentProfile() { return {}; },
-        addInstalledPackage(name, ver) {
+        getCurrentProfile () { return {} },
+        addInstalledPackage (name, ver) {
           name.should.equal('fake-mod')
           ver.should.equal('1.2.3')
           return new Error('Something went wrong!')
         }
       },
-      ['./validateManifest']() {
+      './validateManifest' () {
         return {
           name: 'fake-mod',
           version: '1.2.3',
           install_executable: 'file.jar'
         }
       },
-      ['./invokeInstallExecutable']() { return true; }
+      './invokeInstallExecutable' () { return true }
     }
     )
 
@@ -183,17 +182,17 @@ describe('install.fromFolder', function () {
   }
   )
 
-  return it('returns the package manifest when everything goes right', function () {
+  it('returns the package manifest when everything goes right', function () {
     let fakeManifest =
     {install_executable: 'file.jar'}
 
     let fromFolder = proxyquire('../../lib/install/fromFolder', {
       '../util': {
-        getCurrentProfile() { return {}; },
-        addInstalledPackage() { return true; }
+        getCurrentProfile () { return {} },
+        addInstalledPackage () { return true }
       },
-      ['./validateManifest']() { return fakeManifest; },
-      ['./invokeInstallExecutable']() { return true; }
+      './validateManifest' () { return fakeManifest },
+      './invokeInstallExecutable' () { return true }
     }
     )
 

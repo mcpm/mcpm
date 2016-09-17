@@ -1,6 +1,7 @@
+/* eslint-env mocha */
+
 let proxyquire = require('proxyquire')
 let chai = require('chai')
-let sinon = require('sinon')
 chai.should()
 chai.use(require('sinon-chai'))
 
@@ -11,7 +12,7 @@ let path = require('path')
 
 describe('util.getPathToMcpmDir', () => it("returns '%APPDATA%/.mcpm'", function () {
   let getPathToMcpmDir = proxyquire('../../lib/util/getPathToMcpmDir',
-    {['user-settings-dir']() { return 'fake-dir'; }})
+    {'user-settings-dir' () { return 'fake-dir' }})
 
   let result = getPathToMcpmDir()
 

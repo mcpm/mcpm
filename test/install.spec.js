@@ -1,3 +1,5 @@
+/* eslint-env mocha */
+
 let proxyquire = require('proxyquire')
 let chai = require('chai')
 let sinon = require('sinon')
@@ -34,7 +36,7 @@ describe('install', function () {
     }
     )
 
-    let result = install('whatever')
+    install('whatever')
 
     return fakeFromFolder.verify()
   }
@@ -54,13 +56,13 @@ describe('install', function () {
     }
     )
 
-    let result = install('whatever')
+    install('whatever')
 
     return fakeFromZip.verify()
   }
   )
 
-  return it("calls install.fromCache when package is of 'cache' type", function () {
+  it("calls install.fromCache when package is of 'cache' type", function () {
     let fakeParsePackageString = sinon.stub().returns({
       type: 'cache',
       name: 'whatever',
@@ -75,7 +77,7 @@ describe('install', function () {
     }
     )
 
-    let result = install('whatever')
+    install('whatever')
 
     return fakeFromCache.verify()
   }

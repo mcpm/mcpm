@@ -1,5 +1,6 @@
+/* eslint-env mocha */
+
 let chai = require('chai')
-let sinon = require('sinon')
 chai.should()
 let { expect } = chai
 chai.use(require('sinon-chai'))
@@ -18,7 +19,7 @@ describe('install.readManifest', function () {
   }
   )
 
-  return it('returns null when config not found', function () {
+  it('returns null when config not found', function () {
     let result = readManifest(path.resolve('./test/fixtures/404'))
     return expect(result).to.equal(null)
   }

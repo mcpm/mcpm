@@ -1,6 +1,7 @@
+/* eslint-env mocha */
+
 let proxyquire = require('proxyquire')
 let chai = require('chai')
-let sinon = require('sinon')
 chai.should()
 let { expect } = chai
 chai.use(require('sinon-chai'))
@@ -18,7 +19,7 @@ let pathToTheFixture = path.join(pathToFixtures, 'launcher_profiles.json')
 let loadFixture = () => JSON.parse(fs.readFileSync(pathToTheFixture, {encoding: 'utf-8'}))
 
 let getCurrentProfile = proxyquire('../../lib/util/getCurrentProfile',
-  {['./getMinecraftPath']() { return pathToFixtures; }})
+  {'./getMinecraftPath' () { return pathToFixtures }})
 
 describe('util.getCurrentProfile', function () {
   afterEach(function () {
@@ -73,7 +74,7 @@ describe('util.getCurrentProfile', function () {
 
   )
 
-  return it('reloads profiles on each call', function (done) {
+  it('reloads profiles on each call', function (done) {
     let fixture = loadFixture()
     let actualInfo = fixture.profiles[ '1.8 + Forge + LiteLoader' ]
 

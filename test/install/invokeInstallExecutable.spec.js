@@ -1,14 +1,14 @@
+/* eslint-env mocha */
+
 let proxyquire = require('proxyquire')
 let chai = require('chai')
 let sinon = require('sinon')
 chai.should()
-let { expect } = chai
 chai.use(require('sinon-chai'))
 
 // Disabling logging in tests.
 require('winston').level = Infinity
 
-let path = require('path')
 let fakeChildProcess = {
   execFileSync: sinon.spy(function (file, args, opts) {
     file.should.equal('fake.jar')
@@ -21,7 +21,7 @@ let fakeChildProcess = {
 }
 
 let invokeInstallExecutable = proxyquire('../../lib/install/invokeInstallExecutable', {
-  '../util': { getMinecraftPath() { return 'mcpath'; }
+  '../util': { getMinecraftPath () { return 'mcpath' }
   },
   child_process: fakeChildProcess
 }
@@ -43,7 +43,7 @@ describe('install.invokeInstallExecutable', function () {
   }
   )
 
-  return it("returns an Error when 'execFileSync' throws", function () {
+  it("returns an Error when 'execFileSync' throws", function () {
     fakeChildProcess.execFileSync = sinon.spy(function (file, args, opts) {
       throw new Error('Something went wrong!')
     })

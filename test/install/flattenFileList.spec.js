@@ -1,8 +1,8 @@
+/* eslint-env mocha */
+
 let proxyquire = require('proxyquire')
 let chai = require('chai')
-let sinon = require('sinon')
 chai.should()
-let { expect } = chai
 chai.use(require('sinon-chai'))
 
 // Disabling logging in tests.
@@ -12,8 +12,6 @@ let path = require('path')
 
 let unpackedPath = 'path-to-unpacked'
 let zipPath = 'path-to-zip'
-
-let pathToMc = 'mcpath'
 
 let fakeFileList = {
   'mods/1.8/./../1.8': 'fake.mod',
@@ -26,14 +24,14 @@ let flattenedFakeFileList = {
 }
 
 let flattenFileList = proxyquire('../../lib/install/flattenFileList', {
-  glob: { sync(glob, opts) {
+  glob: {
+    sync (glob, opts) {
       opts.cwd.should.equal(unpackedPath)
       if (glob === 'configfiles/*.cfg') {
-        var result = [ 'configfiles/1.cfg', 'configfiles/2.cfg' ]
+        return [ 'configfiles/1.cfg', 'configfiles/2.cfg' ]
       } else {
-        var result = [ glob ]
+        return [ glob ]
       }
-      return result
     }
   }
 }
@@ -116,7 +114,7 @@ describe('install.flattenFileList', function () {
   }
   )
 
-  return it("ignores '@' when installing from a folder", function () {
+  it("ignores '@' when installing from a folder", function () {
     let list =
     {'mods/1.8': [ '@', 'other-file' ]}
 
