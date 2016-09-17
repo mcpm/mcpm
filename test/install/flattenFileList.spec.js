@@ -19,8 +19,8 @@ let fakeFileList = {
 }
 
 let flattenedFakeFileList = {
-  'mods/1.8': [ 'fake.mod' ],
-  'config': [ 'configfiles/1.cfg', 'configfiles/2.cfg' ]
+  [`mods${path.sep}1.8`]: [ 'fake.mod' ],
+  'config': [ `configfiles${path.sep}1.cfg`, `configfiles${path.sep}2.cfg` ]
 }
 
 let flattenFileList = proxyquire('../../lib/install/flattenFileList', {
@@ -101,7 +101,7 @@ describe('install.flattenFileList', function () {
     }
 
     let result = flattenFileList(list, unpackedPath, zipPath)
-    result.should.deep.equal({'mods/1.8': [ 'foo', 'bar', 'qux' ]})
+    result.should.deep.equal({[`mods${path.sep}1.8`]: [ 'foo', 'bar', 'qux' ]})
   }
   )
 
@@ -110,7 +110,7 @@ describe('install.flattenFileList', function () {
     {'mods/1.8': '@'}
 
     let result = flattenFileList(list, unpackedPath, zipPath)
-    result.should.deep.equal({'mods/1.8': [ zipPath ]})
+    result.should.deep.equal({[`mods${path.sep}1.8`]: [ zipPath ]})
   }
   )
 
@@ -119,7 +119,7 @@ describe('install.flattenFileList', function () {
     {'mods/1.8': [ '@', 'other-file' ]}
 
     let result = flattenFileList(list, 'path-to-unpacked')
-    result.should.deep.equal({'mods/1.8': [ 'other-file' ]})
+    result.should.deep.equal({[`mods${path.sep}1.8`]: [ 'other-file' ]})
   }
   )
 }

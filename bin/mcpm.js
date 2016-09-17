@@ -8,7 +8,7 @@ winston.cli()
 
 let verbosityLevels = [ 'info', 'debug', 'verbose', 'silly' ]
 let increaseVerbosity = function (v, total) {
-  winston.level = verbosityLevels[ total ]
+  winston.level = verbosityLevels[total]
   return total + (total < verbosityLevels.length - 1)
 }
 
@@ -20,21 +20,18 @@ commander
   .command('install <packages...>')
   .alias('i')
   .description('install one or more packages')
-  .action(function (packages) {
+  .action(packages => {
     let startProfile = util.getCurrentProfile()
     winston.info(`Current Minecraft version: ${startProfile.version}`)
     winston.info(`Current profile name: ${startProfile.originalInfo.name}`)
     console.log()
 
-    for (let i = 0; i < packages.length; i++) {
-      let pkg = packages[i]
-      winston.info(`${pkg}: Deciding what to do...`)
+    packages.forEach(pkg => {
       let result = install(pkg)
       if (result instanceof Error) {
-        winston.verbose('cli#install: error', result)
         winston.error(`${pkg}: ${result.name}: ${result.message}`)
       }
-    }
+    })
 
     let endProfile = util.getCurrentProfile()
     if ((endProfile.version !== startProfile.version) ||
