@@ -1,25 +1,18 @@
 /* eslint-env mocha */
 
 let proxyquire = require('proxyquire')
-let chai = require('chai')
-chai.should()
-chai.use(require('sinon-chai'))
-
-// Disabling logging in tests.
-require('winston').level = Infinity
 
 let getClientVersion = proxyquire('../../lib/util/getClientVersion', {
   './getCurrentProfile' (callback) {
-    return callback({version: 'fake-version'})
+    callback({version: 'fake-version'})
   }
-}
-)
-
-describe('util.getClientVersion', () => it("returns 'getCurrentProfile().version'", done => getClientVersion(function (result) {
-  'fake-version'.should.equal(result)
-  return done()
 })
 
-)
-
-)
+describe('util.getClientVersion', function () {
+  it("returns 'getCurrentProfile().version'", function (done) {
+    getClientVersion(function (result) {
+      'fake-version'.should.equal(result)
+      done()
+    })
+  })
+})

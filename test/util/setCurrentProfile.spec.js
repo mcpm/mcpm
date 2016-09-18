@@ -1,14 +1,7 @@
 /* eslint-env mocha */
 
+let expect = require('chai').expect
 let proxyquire = require('proxyquire')
-let chai = require('chai')
-chai.should()
-let { expect } = chai
-chai.use(require('sinon-chai'))
-
-// Disabling logging in tests.
-require('winston').level = Infinity
-
 let path = require('path')
 
 // cwd seems to be outside of test/
@@ -27,19 +20,16 @@ describe('util.setCurrentProfile', function () {
         writeFile (filename, json, callback) {
           filename.should.equal(pathToTheFixture)
           JSON.parse(json)
-          return callback('fake-result')
+          callback('fake-result')
         }
       }
-    }
-    )
+    })
 
-    return setCurrentProfile(fakeNewProfile, function (err) {
+    setCurrentProfile(fakeNewProfile, function (err) {
       expect(err).to.equal('fake-result')
-      return done()
-    }
-    )
-  }
-  )
+      done()
+    })
+  })
 
   it('blindly rewrites current profile with specified object', function (done) {
     let triedToWriteThis = {}
@@ -51,19 +41,15 @@ describe('util.setCurrentProfile', function () {
         writeFile (filename, json, callback) {
           filename.should.equal(pathToTheFixture)
           triedToWriteThis = JSON.parse(json)
-          return callback()
+          callback()
         }
       }
-    }
-    )
+    })
 
-    return setCurrentProfile(fakeNewProfile, function (err) {
+    setCurrentProfile(fakeNewProfile, function (err) {
       expect(err).to.equal(undefined)
       triedToWriteThis.profiles[ profileName ].should.deep.equal(fakeNewProfile)
-      return done()
-    }
-    )
-  }
-  )
-}
-)
+      done()
+    })
+  })
+})

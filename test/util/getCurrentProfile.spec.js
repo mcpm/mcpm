@@ -1,14 +1,7 @@
 /* eslint-env mocha */
 
+let expect = require('chai').expect
 let proxyquire = require('proxyquire')
-let chai = require('chai')
-chai.should()
-let { expect } = chai
-chai.use(require('sinon-chai'))
-
-// Disabling logging in tests.
-require('winston').level = Infinity
-
 let path = require('path')
 let fs = require('fs')
 
@@ -27,58 +20,56 @@ describe('util.getCurrentProfile', function () {
     let fixture = loadFixture()
     fixture.selectedProfile = '1.8 + Forge + LiteLoader'
     fixture.profiles[ '1.8 + Forge + LiteLoader' ].lastVersionId = '1.8.0'
-    return fs.writeFileSync(pathToTheFixture, JSON.stringify(fixture, null, 2))
+    fs.writeFileSync(pathToTheFixture, JSON.stringify(fixture, null, 2))
   })
 
   it('returns current profile in originalInfo property', function (done) {
     let fixture = loadFixture()
     let actualInfo = fixture.profiles[ '1.8 + Forge + LiteLoader' ]
 
-    return getCurrentProfile(function (err, currentProfile) {
+    getCurrentProfile(function (err, currentProfile) {
       expect(err).to.equal(undefined)
       actualInfo.should.deep.equal(currentProfile.originalInfo)
-      return done()
+      done()
     })
-  }
-  )
-
-  it('returns current Minecraft version in version property', done => getCurrentProfile(function (err, currentProfile) {
-    expect(err).to.equal(undefined)
-    '1.8.0'.should.equal(currentProfile.version)
-    return done()
   })
 
-  )
+  it('returns current Minecraft version in version property', function (done) {
+    getCurrentProfile(function (err, currentProfile) {
+      expect(err).to.equal(undefined)
+      '1.8.0'.should.equal(currentProfile.version)
+      done()
+    })
+  })
 
   it("normalizes version to 'x.x.0' when specified as 'x.x'", function (done) {
     let fixture = loadFixture()
     fixture.profiles[ '1.8 + Forge + LiteLoader' ].lastVersionId = '1.8'
     fs.writeFileSync(pathToTheFixture, JSON.stringify(fixture))
-    return getCurrentProfile(function (err, currentProfile) {
+    getCurrentProfile(function (err, currentProfile) {
       expect(err).to.equal(undefined)
       '1.8.0'.should.equal(currentProfile.version)
-      return done()
+      done()
     })
-  }
-  )
-
-  it('returns installed packages in installedPackages property', done => getCurrentProfile(function (err, currentProfile) {
-    expect(err).to.equal(undefined)
-    let packageList = {
-      fake: '1.2.3',
-      package: '2.3.4'
-    }
-    packageList.should.deep.equal(currentProfile.installedPackages)
-    return done()
   })
 
-  )
+  it('returns installed packages in installedPackages property', function (done) {
+    getCurrentProfile(function (err, currentProfile) {
+      expect(err).to.equal(undefined)
+      let packageList = {
+        fake: '1.2.3',
+        package: '2.3.4'
+      }
+      packageList.should.deep.equal(currentProfile.installedPackages)
+      done()
+    })
+  })
 
   it('reloads profiles on each call', function (done) {
     let fixture = loadFixture()
     let actualInfo = fixture.profiles[ '1.8 + Forge + LiteLoader' ]
 
-    return getCurrentProfile(function (err, currentProfile) {
+    getCurrentProfile(function (err, currentProfile) {
       expect(err).to.equal(undefined)
       actualInfo.should.deep.equal(currentProfile.originalInfo)
 
@@ -86,13 +77,11 @@ describe('util.getCurrentProfile', function () {
       fs.writeFileSync(pathToTheFixture, JSON.stringify(fixture))
       actualInfo = fixture.profiles[ '1.8' ]
 
-      return getCurrentProfile(function (err, currentProfile) {
+      getCurrentProfile(function (err, currentProfile) {
         expect(err).to.equal(undefined)
         actualInfo.should.deep.equal(currentProfile.originalInfo)
-        return done()
+        done()
       })
     })
-  }
-  )
-}
-)
+  })
+})

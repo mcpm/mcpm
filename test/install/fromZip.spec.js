@@ -1,38 +1,29 @@
 /* eslint-env mocha */
 
-let proxyquire = require('proxyquire').noPreserveCache()
-let chai = require('chai')
 let sinon = require('sinon')
-chai.should()
-chai.use(require('sinon-chai'))
-
-// Disabling logging in tests.
-require('winston').level = Infinity
+let proxyquire = require('proxyquire')
 
 describe('install.fromZip', function () {
   it('returns an Error when the target is actually a folder', function () {
     let fromZip = require('../../lib/install/fromZip')
 
     let result = fromZip('test/fixtures/fake-mod')
-    return result.should.be.an.instanceof(Error)
-  }
-  )
+    result.should.be.an.instanceof(Error)
+  })
 
   it('returns an Error when the file is not a zip', function () {
     let fromZip = require('../../lib/install/fromZip')
 
     let result = fromZip('test/fixtures/not-a-zip.zip')
-    return result.should.be.an.instanceof(Error)
-  }
-  )
+    result.should.be.an.instanceof(Error)
+  })
 
   it("returns an Error when there's no manifest file in the zip", function () {
     let fromZip = require('../../lib/install/fromZip')
 
     let result = fromZip('test/fixtures/empty.zip')
-    return result.should.be.an.instanceof(Error)
-  }
-  )
+    result.should.be.an.instanceof(Error)
+  })
 
   it('returns an Error when adm-zip returns an error', function () {
     let getEntryStub = sinon.stub().returns({})
@@ -53,16 +44,14 @@ describe('install.fromZip', function () {
         this.getEntry = getEntryStub
         this.extractAllTo = extractAllToStub
       }
-    }
-    )
+    })
 
     let result = fromZip('fake-path-to-zip')
     result.should.be.an.instanceof(Error)
 
     getEntryStub.should.have.been.called
-    return extractAllToStub.should.have.been.calledOnce
-  }
-  )
+    extractAllToStub.should.have.been.calledOnce
+  })
 
   it('returns an Error when adm-zip throws', function () {
     let getEntryStub = sinon.stub().returns({})
@@ -83,16 +72,14 @@ describe('install.fromZip', function () {
         this.getEntry = getEntryStub
         this.extractAllTo = extractAllToStub
       }
-    }
-    )
+    })
 
     let result = fromZip('fake-path-to-zip')
     result.should.be.an.instanceof(Error)
 
     getEntryStub.should.have.been.called
-    return extractAllToStub.should.have.been.calledOnce
-  }
-  )
+    extractAllToStub.should.have.been.calledOnce
+  })
 
   it("returns an Error when 'fromFolder' returns an error", function () {
     let fromZip = proxyquire('../../lib/install/fromZip', {
@@ -117,13 +104,11 @@ describe('install.fromZip', function () {
       '../cache': {
         add () {}
       }
-    }
-    )
+    })
 
     let result = fromZip('fake-path-to-zip')
-    return result.should.be.an.instanceof(Error)
-  }
-  )
+    result.should.be.an.instanceof(Error)
+  })
 
   it('caches the package after installing', function () {
     let fakeManifest = {
@@ -157,13 +142,11 @@ describe('install.fromZip', function () {
       '../cache': {
         add: fakeAddToCache
       }
-    }
-    )
+    })
 
     fromZip('fake-path-to-zip')
     return fakeAddToCache.verify()
-  }
-  )
+  })
 
   it("returns the result of calling 'fromFolder' on the unziped folder", function () {
     let fromZip = proxyquire('../../lib/install/fromZip', {
@@ -188,12 +171,9 @@ describe('install.fromZip', function () {
       '../cache': {
         add () {}
       }
-    }
-    )
+    })
 
     let result = fromZip('fake-path-to-zip')
-    return result.should.equal('fake-fromFolder-result')
-  }
-  )
-}
-)
+    result.should.equal('fake-fromFolder-result')
+  })
+})

@@ -1,15 +1,8 @@
 /* eslint-env mocha */
 
-let proxyquire = require('proxyquire')
-let chai = require('chai')
-let { expect } = chai
+let expect = require('chai').expect
 let sinon = require('sinon')
-chai.should()
-chai.use(require('sinon-chai'))
-
-// Disabling logging in tests.
-require('winston').level = Infinity
-
+let proxyquire = require('proxyquire')
 let path = require('path')
 
 describe('cache.add', function () {
@@ -32,19 +25,16 @@ describe('cache.add', function () {
         copy: fakeCopy,
         outputJson: fakeOutputJson
       }
-    }
-    )
+    })
 
     add(pathToZip, fakeManifest, function (err) {
       expect(err).to.equal(null)
-      return done()
-    }
-    )
+      done()
+    })
 
     fakeCopy.should.not.have.been.called
-    return fakeOutputJson.should.not.have.been.called
-  }
-  )
+    fakeOutputJson.should.not.have.been.called
+  })
 
   it('adds specified zip to cache', function (done) {
     let dest = path.join('fake-.mcpm', 'cache', 'fake-package', '1.2.3')
@@ -69,17 +59,14 @@ describe('cache.add', function () {
         copy: fakeCopy,
         outputJson: fakeOutputJson
       }
-    }
-    )
+    })
 
-    return add('path/to/src.zip', fakeManifest, function (err) {
+    add('path/to/src.zip', fakeManifest, function (err) {
       expect(err).to.equal(null)
       fakeCopy.verify()
-      return done()
-    }
-    )
-  }
-  )
+      done()
+    })
+  })
 
   it('returns an Error when fs.copy fails', function (done) {
     let fakeManifest = {
@@ -102,17 +89,14 @@ describe('cache.add', function () {
         copy: fakeCopy,
         outputJson: fakeOutputJson
       }
-    }
-    )
+    })
 
-    return add('path/to/src.zip', fakeManifest, function (err) {
+    add('path/to/src.zip', fakeManifest, function (err) {
       err.should.be.an.instanceof(Error)
       fakeCopy.verify()
-      return done()
-    }
-    )
-  }
-  )
+      done()
+    })
+  })
 
   it('adds the package manifest to cache', function (done) {
     let dest = path.join('fake-.mcpm', 'cache', 'fake-package', '1.2.3')
@@ -137,17 +121,14 @@ describe('cache.add', function () {
         copy: fakeCopy,
         outputJson: fakeOutputJson
       }
-    }
-    )
+    })
 
-    return add('path/to/src.zip', fakeManifest, function (err) {
+    add('path/to/src.zip', fakeManifest, function (err) {
       expect(err).to.equal(null)
       fakeOutputJson.verify()
-      return done()
-    }
-    )
-  }
-  )
+      done()
+    })
+  })
 
   it('returns an Error when fs.outputJson fails', function (done) {
     let dest = path.join('fake-.mcpm', 'cache', 'fake-package', '1.2.3')
@@ -172,16 +153,12 @@ describe('cache.add', function () {
         copy: fakeCopy,
         outputJson: fakeOutputJson
       }
-    }
-    )
+    })
 
-    return add('path/to/src.zip', fakeManifest, function (err) {
+    add('path/to/src.zip', fakeManifest, function (err) {
       err.should.be.an.instanceof(Error)
       fakeOutputJson.verify()
-      return done()
-    }
-    )
-  }
-  )
-}
-)
+      done()
+    })
+  })
+})

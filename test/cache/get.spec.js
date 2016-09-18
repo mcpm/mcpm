@@ -1,15 +1,8 @@
 /* eslint-env mocha */
 
-let proxyquire = require('proxyquire')
-let chai = require('chai')
+let expect = require('chai').expect
 let sinon = require('sinon')
-chai.should()
-let { expect } = chai
-chai.use(require('sinon-chai'))
-
-// Disabling logging in tests.
-require('winston').level = Infinity
-
+let proxyquire = require('proxyquire')
 let path = require('path')
 
 describe('cache.get', function () {
@@ -23,16 +16,13 @@ describe('cache.get', function () {
       'fs-extra': {
         exists: fakeExists
       }
-    }
-    )
+    })
 
-    return get(undefined, undefined, function (err, result) {
+    get(undefined, undefined, function (err, result) {
       err.should.be.an.instanceof(Error)
-      return done()
-    }
-    )
-  }
-  )
+      done()
+    })
+  })
 
   let names = [ '', '-', '1sdf', 'π', 'mcpm/mcpm' ]
   names.forEach(name => it(`returns an Error when package name isn't valid: ${name}`, function (done) {
@@ -45,16 +35,13 @@ describe('cache.get', function () {
       'fs-extra': {
         exists: fakeExists
       }
-    }
-    )
+    })
 
-    return get(name, '1.0.0', function (err, result) {
+    get(name, '1.0.0', function (err, result) {
       err.should.be.an.instanceof(Error)
-      return done()
-    }
-    )
-  }
-  )
+      done()
+    })
+  })
   )
 
   it("returns an Error when specified version isn't semantic", function (done) {
@@ -70,16 +57,13 @@ describe('cache.get', function () {
       'semver': {
         valid () { return false }
       }
-    }
-    )
+    })
 
-    return get('whatever', 'this is not a valid version', function (err, result) {
+    get('whatever', 'this is not a valid version', function (err, result) {
       err.should.be.an.instanceof(Error)
-      return done()
-    }
-    )
-  }
-  )
+      done()
+    })
+  })
 
   it("when the version is semantic, return an Error if it's not cached", function (done) {
     let pathToZip = path.join('fake-.mcpm', 'cache', 'whatever', '1.0.0', 'mcpm-package.zip')
@@ -95,17 +79,14 @@ describe('cache.get', function () {
       'fs-extra': {
         exists: fakeExists
       }
-    }
-    )
+    })
 
-    return get('whatever', '1.0.0', function (err, result) {
+    get('whatever', '1.0.0', function (err, result) {
       err.should.be.an.instanceof(Error)
       fakeExists.verify()
-      return done()
-    }
-    )
-  }
-  )
+      done()
+    })
+  })
 
   it('when the version is semantic, return path to zip if it exists', function (done) {
     let pathToZip = path.join('fake-.mcpm', 'cache', 'whatever', '1.0.0', 'mcpm-package.zip')
@@ -121,17 +102,13 @@ describe('cache.get', function () {
       'fs-extra': {
         exists: fakeExists
       }
-    }
-    )
+    })
 
-    return get('whatever', '1.0.0', function (err, result) {
+    get('whatever', '1.0.0', function (err, result) {
       expect(err).to.equal(null)
       result.should.equal(pathToZip)
       fakeExists.verify()
-      return done()
-    }
-    )
-  }
-  )
-}
-)
+      done()
+    })
+  })
+})

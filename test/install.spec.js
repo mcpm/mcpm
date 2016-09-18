@@ -1,13 +1,7 @@
 /* eslint-env mocha */
 
-let proxyquire = require('proxyquire')
-let chai = require('chai')
 let sinon = require('sinon')
-chai.should()
-chai.use(require('sinon-chai'))
-
-// Disabling logging in tests.
-require('winston').level = Infinity
+let proxyquire = require('proxyquire')
 
 describe('install', function () {
   it('returns an Error when parsePackageString returns null', function () {
@@ -18,9 +12,8 @@ describe('install', function () {
 
     let result = install('whatever')
 
-    return result.should.be.instanceof(Error)
-  }
-  )
+    result.should.be.instanceof(Error)
+  })
 
   it("calls install.fromFolder when package is of 'folder' type", function () {
     let fakeParsePackageString = sinon.stub().returns({
@@ -33,14 +26,12 @@ describe('install', function () {
     let install = proxyquire('../lib/install', {
       './install/parsePackageString': fakeParsePackageString,
       './install/fromFolder': fakeFromFolder
-    }
-    )
+    })
 
     install('whatever')
 
-    return fakeFromFolder.verify()
-  }
-  )
+    fakeFromFolder.verify()
+  })
 
   it("calls install.fromZip when package is of 'zip' type", function () {
     let fakeParsePackageString = sinon.stub().returns({
@@ -53,14 +44,12 @@ describe('install', function () {
     let install = proxyquire('../lib/install', {
       './install/parsePackageString': fakeParsePackageString,
       './install/fromZip': fakeFromZip
-    }
-    )
+    })
 
     install('whatever')
 
-    return fakeFromZip.verify()
-  }
-  )
+    fakeFromZip.verify()
+  })
 
   it("calls install.fromCache when package is of 'cache' type", function () {
     let fakeParsePackageString = sinon.stub().returns({
@@ -74,13 +63,10 @@ describe('install', function () {
     let install = proxyquire('../lib/install', {
       './install/parsePackageString': fakeParsePackageString,
       './install/fromCache': fakeFromCache
-    }
-    )
+    })
 
     install('whatever')
 
-    return fakeFromCache.verify()
-  }
-  )
-}
-)
+    fakeFromCache.verify()
+  })
+})

@@ -1,13 +1,7 @@
 /* eslint-env mocha */
 
-let chai = require('chai')
 let sinon = require('sinon')
-chai.should()
-chai.use(require('sinon-chai'))
 let proxyquire = require('proxyquire')
-
-// Disabling logging in tests.
-require('winston').level = Infinity
 
 describe('install.fromFolder', function () {
   it('reads and checks package config', function () {
@@ -17,14 +11,12 @@ describe('install.fromFolder', function () {
           return ({})
         }
       }
-    }
-    )
+    })
 
     let result = fromFolder('test/fixtures/invalid-mod')
     result.should.be.an.instanceof(Error)
-    return result.message.should.contain('manifest')
-  }
-  )
+    result.message.should.contain('manifest')
+  })
 
   it('returns an Error when install executable exits with error', function () {
     let fromFolder = proxyquire('../../lib/install/fromFolder', {
@@ -39,13 +31,11 @@ describe('install.fromFolder', function () {
         dir.should.equal('test/fixtures/invalid-mod')
         return new Error('Something went wrong!')
       }
-    }
-    )
+    })
 
     let result = fromFolder('test/fixtures/invalid-mod')
-    return result.should.be.an.instanceof(Error)
-  }
-  )
+    result.should.be.an.instanceof(Error)
+  })
 
   it("doesn't call invokeInstallExecutable when no install_executable", function () {
     let fakeInvoke
@@ -62,9 +52,8 @@ describe('install.fromFolder', function () {
 
     fromFolder('test/fixtures/invalid-mod')
 
-    return fakeInvoke.should.have.not.been.called
-  }
-  )
+    fakeInvoke.should.have.not.been.called
+  })
 
   it('returns an Error when flattenFileList returns an error', function () {
     let fromFolder = proxyquire('../../lib/install/fromFolder', {
@@ -77,13 +66,11 @@ describe('install.fromFolder', function () {
         dir.should.equal('test/fixtures/invalid-mod')
         return new Error('Something went wrong!')
       }
-    }
-    )
+    })
 
     let result = fromFolder('test/fixtures/invalid-mod')
-    return result.should.be.an.instanceof(Error)
-  }
-  )
+    result.should.be.an.instanceof(Error)
+  })
 
   it('returns an Error when copyFiles returns an error', function () {
     let fromFolder = proxyquire('../../lib/install/fromFolder', {
@@ -101,13 +88,11 @@ describe('install.fromFolder', function () {
         dir.should.equal('test/fixtures/invalid-mod')
         return new Error('Something went wrong!')
       }
-    }
-    )
+    })
 
     let result = fromFolder('test/fixtures/invalid-mod')
-    return result.should.be.an.instanceof(Error)
-  }
-  )
+    result.should.be.an.instanceof(Error)
+  })
 
   it("first copies files, then invokes installer when there're both", function () {
     let fakeInvoke
@@ -128,15 +113,13 @@ describe('install.fromFolder', function () {
         return new Error('Something went wrong!')
       }),
       './copyFiles' () {
-        return fakeInvoke.should.have.not.been.called
+        fakeInvoke.should.have.not.been.called
       }
-    }
-    )
+    })
 
     let result = fromFolder('test/fixtures/invalid-mod')
-    return result.should.be.an.instanceof(Error)
-  }
-  )
+    result.should.be.an.instanceof(Error)
+  })
 
   it('returns an Error when addInstalledPackage returns an error', function () {
     let fromFolder = proxyquire('../../lib/install/fromFolder', {
@@ -148,13 +131,11 @@ describe('install.fromFolder', function () {
       },
       './validateManifest' () { return {install_executable: 'file.jar'} },
       './invokeInstallExecutable' () { return true }
-    }
-    )
+    })
 
     let result = fromFolder('test/fixtures/invalid-mod')
-    return result.should.be.an.instanceof(Error)
-  }
-  )
+    result.should.be.an.instanceof(Error)
+  })
 
   it('passes correct name and version to addInstalledPackage', function () {
     let fromFolder = proxyquire('../../lib/install/fromFolder', {
@@ -174,13 +155,11 @@ describe('install.fromFolder', function () {
         }
       },
       './invokeInstallExecutable' () { return true }
-    }
-    )
+    })
 
     let result = fromFolder('test/fixtures/invalid-mod')
-    return result.should.be.an.instanceof(Error)
-  }
-  )
+    result.should.be.an.instanceof(Error)
+  })
 
   it('returns the package manifest when everything goes right', function () {
     let fakeManifest =
@@ -193,12 +172,9 @@ describe('install.fromFolder', function () {
       },
       './validateManifest' () { return fakeManifest },
       './invokeInstallExecutable' () { return true }
-    }
-    )
+    })
 
     let result = fromFolder('test/fixtures/invalid-mod')
-    return result.should.equal(fakeManifest)
-  }
-  )
-}
-)
+    result.should.equal(fakeManifest)
+  })
+})

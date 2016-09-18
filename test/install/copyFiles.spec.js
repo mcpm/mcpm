@@ -1,14 +1,7 @@
 /* eslint-env mocha */
 
+let expect = require('chai').expect
 let proxyquire = require('proxyquire')
-let chai = require('chai')
-chai.should()
-let { expect } = chai
-chai.use(require('sinon-chai'))
-
-// Disabling logging in tests.
-require('winston').level = Infinity
-
 let path = require('path')
 
 describe('install.copyFiles', function () {
@@ -24,24 +17,22 @@ describe('install.copyFiles', function () {
           } else {
             to.should.equal(path.join('mcpath', 'foo/bar/to/dir'))
           }
-          return setTimeout(callback)
+          setTimeout(callback)
         }
       }
-    }
-    )
+    })
 
-    return copyFiles({
+    copyFiles({
       fileList: {
         'foo/bar/to': [ 'whatever/from.file', 'whatever/from/dir' ]
       },
       packageRoot: 'pkgpath',
       callback (err) {
         expect(err).to.equal(null)
-        return done()
+        done()
       }
     })
-  }
-  )
+  })
 
   it('copies the package zip when trying to copy it', function (done) {
     let copyFiles = proxyquire('../../lib/install/copyFiles', {
@@ -52,13 +43,12 @@ describe('install.copyFiles', function () {
         copy (from, to, callback) {
           from.should.equal('/fake/path/to/package.zip')
           to.should.equal(path.join('mcpath', 'foo/bar/to/package.zip'))
-          return setTimeout(callback)
+          setTimeout(callback)
         }
       }
-    }
-    )
+    })
 
-    return copyFiles({
+    copyFiles({
       fileList: {
         'foo/bar/to': [ '/fake/path/to/package.zip' ]
       },
@@ -66,11 +56,10 @@ describe('install.copyFiles', function () {
       zipPath: '/fake/path/to/package.zip',
       callback (err) {
         expect(err).to.equal(null)
-        return done()
+        done()
       }
     })
-  }
-  )
+  })
 
   it('returns an error if fs.copy fails', function (done) {
     let copyFiles = proxyquire('../../lib/install/copyFiles', {
@@ -79,23 +68,20 @@ describe('install.copyFiles', function () {
       },
       'fs-extra': {
         copy (from, to, callback) {
-          return setTimeout(() => callback(new Error('Oh, snap!')))
+          setTimeout(() => callback(new Error('Oh, snap!')))
         }
       }
-    }
-    )
+    })
 
-    return copyFiles({
+    copyFiles({
       fileList: {
         'oh': [ 'snap' ]
       },
       packageRoot: 'pkgpath',
       callback (err) {
         err.should.be.an.instanceof(Error)
-        return done()
+        done()
       }
     })
-  }
-  )
-}
-)
+  })
+})
