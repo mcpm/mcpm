@@ -57,10 +57,5 @@
   "engines": {
     "node": ">=6"
   },
-  "eslintConfig": {
-    "extends": [
-      "standard"
-    ]
-  },
   "license": "MIT"
 }
