@@ -46,7 +46,9 @@ commander
   .command('minecraft-version')
   .alias('mc')
   .description('display currently selected Minecraft version')
-  .action(() => console.log(util.getClientVersion()))
+  .action(function () {
+    util.getClientVersion(version => console.log(version))
+  })
 
 commander.on('--help', () => console.log([
   '  Examples:',

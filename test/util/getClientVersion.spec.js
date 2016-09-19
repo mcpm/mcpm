@@ -4,7 +4,7 @@ let proxyquire = require('proxyquire')
 
 let getClientVersion = proxyquire('../../lib/util/getClientVersion', {
   './getCurrentProfile' (callback) {
-    callback({version: 'fake-version'})
+    callback(null, {version: 'fake-version'})
   }
 })
 

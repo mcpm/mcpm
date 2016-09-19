@@ -1,34 +1,33 @@
 /* eslint-env mocha */
 
-let sinon = require('sinon')
-let os = require('os')
 let path = require('path')
-let getMinecraftPath = require('../../lib/util/getMinecraftPath')
+let proxyquire = require('proxyquire')
 
 describe('util.getMinecraftPath', function () {
-  it('returns path to the Minecraft directory', function () {
-    let originalHome = process.env.HOME
-    process.env.HOME = 'fakeHome'
+  it('returns path to the Minecraft directory (win32)', function () {
+    let getMinecraftPath = proxyquire('../../lib/util/getMinecraftPath', {
+      'os': {platform: () => 'win32'},
+      'home-dir': {directory: 'fakeHome'}
+    })
 
-    let fakeOsPlatform = null
-    sinon.stub(os, 'platform', () => fakeOsPlatform)
+    getMinecraftPath().should.equal(path.join('fakeHome', 'AppData', 'Roaming', '.minecraft'))
+  })
 
-    fakeOsPlatform = 'win32'
-    getMinecraftPath().should.equal(path.join('fakeHome',
-      'AppData', 'Roaming', '.minecraft')
-    )
+  it('returns path to the Minecraft directory (linux)', function () {
+    let getMinecraftPath = proxyquire('../../lib/util/getMinecraftPath', {
+      'os': {platform: () => 'linux'},
+      'home-dir': {directory: 'fakeHome'}
+    })
 
-    fakeOsPlatform = 'linux'
-    getMinecraftPath().should.equal(path.join('fakeHome',
-      '.minecraft')
-    )
+    getMinecraftPath().should.equal(path.join('fakeHome', '.minecraft'))
+  })
 
-    fakeOsPlatform = 'darwin'
-    getMinecraftPath().should.equal(path.join('fakeHome',
-      'Library', 'Application Support', 'minecraft')
-    )
+  it('returns path to the Minecraft directory (darwin)', function () {
+    let getMinecraftPath = proxyquire('../../lib/util/getMinecraftPath', {
+      'os': {platform: () => 'darwin'},
+      'home-dir': {directory: 'fakeHome'}
+    })
 
-    process.env.HOME = originalHome
-    return os.platform.restore()
+    getMinecraftPath().should.equal(path.join('fakeHome', 'Library', 'Application Support', 'minecraft'))
   })
 })
