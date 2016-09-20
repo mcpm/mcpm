@@ -6,8 +6,12 @@ engines:
       - javascript
   eslint:
     enabled: true
+    config:
+      config: eslint-config-standard
   fixme:
     enabled: true
 ratings:
   paths:
   - "**.js"
+exclude_paths:
+- test/
