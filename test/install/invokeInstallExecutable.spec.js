@@ -15,9 +15,7 @@ let fakeChildProcess = {
 }
 
 let invokeInstallExecutable = proxyquire('../../lib/install/invokeInstallExecutable', {
-  '../util': {
-    getMinecraftPath () { return 'mcpath' }
-  },
+  '../util/getMinecraftPath': () => 'mcpath',
   child_process: fakeChildProcess
 })
 

@@ -11,9 +11,7 @@ describe('cache', function () {
       let fakeExists = sinon.stub().throws()
 
       let cache = proxyquire('../lib/cache', {
-        './util': {
-          getPathToMcpmDir () { return 'fake-.mcpm' }
-        },
+        './util/getPathToMcpmDir': () => 'fake-.mcpm',
         'fs-extra': {
           exists: fakeExists
         }
@@ -30,9 +28,7 @@ describe('cache', function () {
       let fakeExists = sinon.stub().throws()
 
       let cache = proxyquire('../lib/cache', {
-        './util': {
-          getPathToMcpmDir () { return 'fake-.mcpm' }
-        },
+        './util/getPathToMcpmDir': () => 'fake-.mcpm',
         'fs-extra': {
           exists: fakeExists
         }
@@ -49,9 +45,7 @@ describe('cache', function () {
       let fakeExists = sinon.stub().throws()
 
       let cache = proxyquire('../lib/cache', {
-        './util': {
-          getPathToMcpmDir () { return 'fake-.mcpm' }
-        },
+        './util/getPathToMcpmDir': () => 'fake-.mcpm',
         'fs-extra': {
           exists: fakeExists
         },
@@ -74,9 +68,7 @@ describe('cache', function () {
         .callsArgWithAsync(1, false)
 
       let cache = proxyquire('../lib/cache', {
-        './util': {
-          getPathToMcpmDir () { return 'fake-.mcpm' }
-        },
+        './util/getPathToMcpmDir': () => 'fake-.mcpm',
         'fs-extra': {
           exists: fakeExists
         }
@@ -97,9 +89,7 @@ describe('cache', function () {
         .callsArgWithAsync(1, true)
 
       let cache = proxyquire('../lib/cache', {
-        './util': {
-          getPathToMcpmDir () { return 'fake-.mcpm' }
-        },
+        './util/getPathToMcpmDir': () => 'fake-.mcpm',
         'fs-extra': {
           exists: fakeExists
         }
@@ -127,9 +117,7 @@ describe('cache', function () {
       let fakeOutputJson = sinon.stub()
 
       let cache = proxyquire('../lib/cache', {
-        './util': {
-          getPathToMcpmDir () { return 'fake-.mcpm' }
-        },
+        './util/getPathToMcpmDir': () => 'fake-.mcpm',
         'fs-extra': {
           copy: fakeCopy,
           outputJson: fakeOutputJson
@@ -161,9 +149,7 @@ describe('cache', function () {
         .callsArgAsync(2)
 
       let cache = proxyquire('../lib/cache', {
-        './util': {
-          getPathToMcpmDir () { return 'fake-.mcpm' }
-        },
+        './util/getPathToMcpmDir': () => 'fake-.mcpm',
         'fs-extra': {
           copy: fakeCopy,
           outputJson: fakeOutputJson
@@ -191,9 +177,7 @@ describe('cache', function () {
         .throws()
 
       let cache = proxyquire('../lib/cache', {
-        './util': {
-          getPathToMcpmDir () { return 'fake-.mcpm' }
-        },
+        './util/getPathToMcpmDir': () => 'fake-.mcpm',
         'fs-extra': {
           copy: fakeCopy,
           outputJson: fakeOutputJson
@@ -223,9 +207,7 @@ describe('cache', function () {
         .callsArgAsync(2)
 
       let cache = proxyquire('../lib/cache', {
-        './util': {
-          getPathToMcpmDir () { return 'fake-.mcpm' }
-        },
+        './util/getPathToMcpmDir': () => 'fake-.mcpm',
         'fs-extra': {
           copy: fakeCopy,
           outputJson: fakeOutputJson
@@ -255,9 +237,7 @@ describe('cache', function () {
         .callsArgWithAsync(2, new Error('Oh, snap!'))
 
       let cache = proxyquire('../lib/cache', {
-        './util': {
-          getPathToMcpmDir () { return 'fake-.mcpm' }
-        },
+        './util/getPathToMcpmDir': () => 'fake-.mcpm',
         'fs-extra': {
           copy: fakeCopy,
           outputJson: fakeOutputJson

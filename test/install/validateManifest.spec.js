@@ -4,10 +4,7 @@ let proxyquire = require('proxyquire')
 
 let validateManifest = proxyquire('../../lib/install/validateManifest', {
   './readManifest' (str) { return str },
-  '../util': {
-    getCurrentProfile () {
-      return {version: '1.8.0'}
-    }}
+  '../util/getCurrentProfile': () => ({version: '1.8.0'})
 })
 
 describe('install.validateManifest', function () {

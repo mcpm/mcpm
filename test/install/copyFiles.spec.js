@@ -7,9 +7,7 @@ let path = require('path')
 describe('install.copyFiles', function () {
   it('safely copies files and folders using fs-extra#copy', function (done) {
     let copyFiles = proxyquire('../../lib/install/copyFiles', {
-      '../util': {
-        getMinecraftPath () { return 'mcpath' }
-      },
+      '../util/getMinecraftPath': () => 'mcpath',
       'fs-extra': {
         copy (from, to, callback) {
           if (from.includes('from.file')) {
@@ -36,9 +34,7 @@ describe('install.copyFiles', function () {
 
   it('copies the package zip when trying to copy it', function (done) {
     let copyFiles = proxyquire('../../lib/install/copyFiles', {
-      '../util': {
-        getMinecraftPath () { return 'mcpath' }
-      },
+      '../util/getMinecraftPath': () => 'mcpath',
       'fs-extra': {
         copy (from, to, callback) {
           from.should.equal('/fake/path/to/package.zip')
@@ -63,9 +59,7 @@ describe('install.copyFiles', function () {
 
   it('returns an error if fs.copy fails', function (done) {
     let copyFiles = proxyquire('../../lib/install/copyFiles', {
-      '../util': {
-        getMinecraftPath () { return 'mcpath' }
-      },
+      '../util/getMinecraftPath': () => 'mcpath',
       'fs-extra': {
         copy (from, to, callback) {
           setTimeout(() => callback(new Error('Oh, snap!')))

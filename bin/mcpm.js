@@ -3,7 +3,8 @@
 let commander = require('commander')
 let winston = require('winston')
 let install = require('../lib/install')
-let util = require('../lib/util')
+let getCurrentProfile = require('../lib/util/getCurrentProfile')
+let getClientVersion = require('../lib/util/getClientVersion')
 
 winston.setLevels(winston.config.cli.levels)
 winston.cli()
@@ -23,7 +24,7 @@ commander
   .alias('i')
   .description('install one or more packages')
   .action(packages => {
-    let startProfile = util.getCurrentProfile()
+    let startProfile = getCurrentProfile()
     winston.info(`Current Minecraft version: ${startProfile.version}`)
     winston.info(`Current profile name: ${startProfile.originalInfo.name}`)
     console.log()
@@ -35,7 +36,7 @@ commander
       }
     })
 
-    let endProfile = util.getCurrentProfile()
+    let endProfile = getCurrentProfile()
     if ((endProfile.version !== startProfile.version) ||
       (endProfile.originalInfo.name !== startProfile.originalInfo.name)) {
       console.log()
@@ -49,7 +50,7 @@ commander
   .alias('mc')
   .description('display currently selected Minecraft version')
   .action(function () {
-    util.getClientVersion(version => console.log(version))
+    getClientVersion(version => console.log(version))
   })
 
 commander.on('--help', () => console.log([
