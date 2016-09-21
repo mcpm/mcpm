@@ -23,8 +23,8 @@
   },
   "scripts": {
     "check-style": "standard",
-    "test": "istanbul cover ./node_modules/mocha/bin/_mocha -- --recursive ./test/hooks.js ./test/**/*.spec.js",
-    "start": "mocha --recursive --watch ./test/hooks.js ./test/**/*.spec.js"
+    "test": "istanbul cover ./node_modules/mocha/bin/_mocha -- ./test/hooks.js \"./test/**/*.spec.js\"",
+    "start": "mocha --watch ./test/hooks.js \"./test/**/*.spec.js\""
   },
   "bin": {
     "mcpm": "./bin/mcpm.js"
