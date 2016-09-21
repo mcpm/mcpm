@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 let commander = require('commander')
 let winston = require('winston')
 let install = require('../lib/install')
