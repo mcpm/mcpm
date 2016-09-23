@@ -1,55 +1,75 @@
 /* eslint-env mocha */
 
-let expect = require('chai').expect
 let proxyquire = require('proxyquire')
 let path = require('path')
 
-// cwd seems to be outside of test/
-let pathToFixtures = path.resolve('test/fixtures')
-let pathToTheFixture = path.join(pathToFixtures, 'launcher_profiles.json')
 let profileName = '1.8 + Forge + LiteLoader'
+let fakeLauncherProfiles = require('../fixtures/launcher_profiles.json')
 let fakeNewProfile = {whatever: 5}
 
 describe('util.setCurrentProfile', function () {
-  it('returns an Error when writeFile fails', function (done) {
+  it('rejects when readFile fails', function (done) {
     let setCurrentProfile = proxyquire('../../lib/util/setCurrentProfile', {
-      './getMinecraftPath' () {
-        return pathToFixtures
-      },
+      './getMinecraftPath': () => 'fake-mc-path',
       'fs': {
-        writeFile (filename, json, callback) {
-          filename.should.equal(pathToTheFixture)
-          JSON.parse(json)
-          callback('fake-result')
+        readFile: (filename, encoding, callback) => {
+          filename.should.equal(`fake-mc-path${path.sep}launcher_profiles.json`)
+          callback('fake-error')
         }
       }
     })
 
-    setCurrentProfile(fakeNewProfile, function (err) {
-      expect(err).to.equal('fake-result')
+    setCurrentProfile(fakeNewProfile).then(() => {
+      done(new Error('Should have rejected!'))
+    }, error => {
+      console.log(error)
+      'fake-error'.should.equal(error)
       done()
     })
   })
 
-  it('blindly rewrites current profile with specified object', function (done) {
-    let triedToWriteThis = {}
+  it('rejects when writeFile fails', function (done) {
     let setCurrentProfile = proxyquire('../../lib/util/setCurrentProfile', {
-      './getMinecraftPath' () {
-        return pathToFixtures
-      },
+      './getMinecraftPath': () => 'fake-mc-path',
       'fs': {
-        writeFile (filename, json, callback) {
-          filename.should.equal(pathToTheFixture)
-          triedToWriteThis = JSON.parse(json)
+        readFile: (filename, encoding, callback) => {
+          filename.should.equal(`fake-mc-path${path.sep}launcher_profiles.json`)
+          'utf8'.should.equal(encoding)
+          callback(null, JSON.stringify(fakeLauncherProfiles))
+        },
+        writeFile: (filename, json, callback) => {
+          filename.should.equal(`fake-mc-path${path.sep}launcher_profiles.json`)
+          JSON.parse(json).profiles[profileName].should.deep.equal(fakeNewProfile)
+          callback('fake-error')
+        }
+      }
+    })
+
+    setCurrentProfile(fakeNewProfile).then(() => {
+      done(new Error('Should have rejected!'))
+    }, error => {
+      'fake-error'.should.equal(error)
+      done()
+    })
+  })
+
+  it('rewrites current profile with specified object', function (done) {
+    let setCurrentProfile = proxyquire('../../lib/util/setCurrentProfile', {
+      './getMinecraftPath': () => 'fake-mc-path',
+      'fs': {
+        readFile: (filename, encoding, callback) => {
+          filename.should.equal(`fake-mc-path${path.sep}launcher_profiles.json`)
+          'utf8'.should.equal(encoding)
+          callback(null, JSON.stringify(fakeLauncherProfiles))
+        },
+        writeFile: (filename, json, callback) => {
+          filename.should.equal(`fake-mc-path${path.sep}launcher_profiles.json`)
+          JSON.parse(json).profiles[profileName].should.deep.equal(fakeNewProfile)
           callback()
         }
       }
     })
 
-    setCurrentProfile(fakeNewProfile, function (err) {
-      expect(err).to.equal(undefined)
-      triedToWriteThis.profiles[ profileName ].should.deep.equal(fakeNewProfile)
-      done()
-    })
+    setCurrentProfile(fakeNewProfile).then(done)
   })
 })
