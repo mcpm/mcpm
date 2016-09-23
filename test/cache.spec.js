@@ -5,9 +5,28 @@ let sinon = require('sinon')
 let proxyquire = require('proxyquire')
 let path = require('path')
 
+let checkThatItRejects = (promise, done, additionalChecks = () => {}) => {
+  promise.then(() => {
+    done(new Error('Should have rejected!'))
+  }, err => {
+    expect(err).to.be.an.instanceof(Error)
+    additionalChecks(err)
+    done()
+  })
+}
+
+let checkThatItResolves = (promise, done, additionalChecks = () => {}) => {
+  promise.then(result => {
+    additionalChecks(result)
+    done()
+  }, () => {
+    done(new Error('Should have rejected!'))
+  })
+}
+
 describe('cache', function () {
   describe('get', function () {
-    it("returns an Error when package name isn't specified", function (done) {
+    it("rejects when package name isn't specified", function (done) {
       let fakeExists = sinon.stub().throws()
 
       let cache = proxyquire('../lib/cache', {
@@ -17,14 +36,11 @@ describe('cache', function () {
         }
       })
 
-      cache.get(undefined, undefined, function (err, result) {
-        err.should.be.an.instanceof(Error)
-        done()
-      })
+      checkThatItRejects(cache.get(undefined, undefined), done)
     })
 
     let names = [ '', '-', '1sdf', 'π', 'mcpm/mcpm' ]
-    names.forEach(name => it(`returns an Error when package name isn't valid: ${name}`, function (done) {
+    names.forEach(name => it(`rejects when package name isn't valid: ${name}`, function (done) {
       let fakeExists = sinon.stub().throws()
 
       let cache = proxyquire('../lib/cache', {
@@ -34,14 +50,11 @@ describe('cache', function () {
         }
       })
 
-      cache.get(name, '1.0.0', function (err, result) {
-        err.should.be.an.instanceof(Error)
-        done()
-      })
+      checkThatItRejects(cache.get(name, '1.0.0'), done)
     })
     )
 
-    it("returns an Error when specified version isn't semantic", function (done) {
+    it("rejects when specified version isn't semantic", function (done) {
       let fakeExists = sinon.stub().throws()
 
       let cache = proxyquire('../lib/cache', {
@@ -54,13 +67,10 @@ describe('cache', function () {
         }
       })
 
-      cache.get('whatever', 'this is not a valid version', function (err, result) {
-        err.should.be.an.instanceof(Error)
-        done()
-      })
+      checkThatItRejects(cache.get('whatever', 'this is not a valid version'), done)
     })
 
-    it("when the version is semantic, return an Error if it's not cached", function (done) {
+    it("when the version is semantic, rejects if it's not cached", function (done) {
       let pathToZip = path.join('fake-.mcpm', 'cache', 'whatever', '1.0.0', 'mcpm-package.zip')
       let fakeExists = sinon.mock()
         .once()
@@ -74,14 +84,12 @@ describe('cache', function () {
         }
       })
 
-      cache.get('whatever', '1.0.0', function (err, result) {
-        err.should.be.an.instanceof(Error)
+      checkThatItRejects(cache.get('whatever', '1.0.0'), done, () => {
         fakeExists.verify()
-        done()
       })
     })
 
-    it('when the version is semantic, return path to zip if it exists', function (done) {
+    it('when the version is semantic, returns path to zip if it exists', function (done) {
       let pathToZip = path.join('fake-.mcpm', 'cache', 'whatever', '1.0.0', 'mcpm-package.zip')
       let fakeExists = sinon.mock()
         .once()
@@ -95,11 +103,9 @@ describe('cache', function () {
         }
       })
 
-      cache.get('whatever', '1.0.0', function (err, result) {
-        expect(err).to.equal(null)
+      checkThatItResolves(cache.get('whatever', '1.0.0'), done, result => {
         result.should.equal(pathToZip)
         fakeExists.verify()
-        done()
       })
     })
   })
@@ -124,13 +130,10 @@ describe('cache', function () {
         }
       })
 
-      cache.add(pathToZip, fakeManifest, function (err) {
-        expect(err).to.equal(null)
-        done()
+      checkThatItResolves(cache.add(pathToZip, fakeManifest), done, () => {
+        fakeCopy.should.not.have.been.called
+        fakeOutputJson.should.not.have.been.called
       })
-
-      fakeCopy.should.not.have.been.called
-      fakeOutputJson.should.not.have.been.called
     })
 
     it('adds specified zip to cache', function (done) {
@@ -156,14 +159,12 @@ describe('cache', function () {
         }
       })
 
-      cache.add('path/to/src.zip', fakeManifest, function (err) {
-        expect(err).to.equal(null)
+      checkThatItResolves(cache.add('path/to/src.zip', fakeManifest), done, () => {
         fakeCopy.verify()
-        done()
       })
     })
 
-    it('returns an Error when fs.copy fails', function (done) {
+    it('rejects when fs.copy fails', function (done) {
       let fakeManifest = {
         name: 'fake-package',
         version: '1.2.3'
@@ -184,10 +185,8 @@ describe('cache', function () {
         }
       })
 
-      cache.add('path/to/src.zip', fakeManifest, function (err) {
-        err.should.be.an.instanceof(Error)
+      checkThatItRejects(cache.add('path/to/src.zip', fakeManifest), done, () => {
         fakeCopy.verify()
-        done()
       })
     })
 
@@ -214,14 +213,12 @@ describe('cache', function () {
         }
       })
 
-      cache.add('path/to/src.zip', fakeManifest, function (err) {
-        expect(err).to.equal(null)
+      checkThatItResolves(cache.add('path/to/src.zip', fakeManifest), done, () => {
         fakeOutputJson.verify()
-        done()
       })
     })
 
-    it('returns an Error when fs.outputJson fails', function (done) {
+    it('rejects when fs.outputJson fails', function (done) {
       let dest = path.join('fake-.mcpm', 'cache', 'fake-package', '1.2.3')
       let fakeManifest = {
         name: 'fake-package',
@@ -244,10 +241,8 @@ describe('cache', function () {
         }
       })
 
-      cache.add('path/to/src.zip', fakeManifest, function (err) {
-        err.should.be.an.instanceof(Error)
+      checkThatItRejects(cache.add('path/to/src.zip', fakeManifest), done, () => {
         fakeOutputJson.verify()
-        done()
       })
     })
   })
