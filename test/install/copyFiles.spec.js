@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-let expect = require('chai').expect
 let proxyquire = require('proxyquire')
 let path = require('path')
 
@@ -20,16 +19,8 @@ describe('install.copyFiles', function () {
       }
     })
 
-    copyFiles({
-      fileList: {
-        'foo/bar/to': [ 'whatever/from.file', 'whatever/from/dir' ]
-      },
-      packageRoot: 'pkgpath',
-      callback (err) {
-        expect(err).to.equal(null)
-        done()
-      }
-    })
+    copyFiles({'foo/bar/to': ['whatever/from.file', 'whatever/from/dir']}, 'pkgpath')
+    .then(done)
   })
 
   it('copies the package zip when trying to copy it', function (done) {
@@ -44,17 +35,8 @@ describe('install.copyFiles', function () {
       }
     })
 
-    copyFiles({
-      fileList: {
-        'foo/bar/to': [ '/fake/path/to/package.zip' ]
-      },
-      packageRoot: 'pkgpath',
-      zipPath: '/fake/path/to/package.zip',
-      callback (err) {
-        expect(err).to.equal(null)
-        done()
-      }
-    })
+    copyFiles({'foo/bar/to': ['/fake/path/to/package.zip']}, 'pkgpath', '/fake/path/to/package.zip')
+    .then(done)
   })
 
   it('returns an error if fs.copy fails', function (done) {
@@ -67,15 +49,10 @@ describe('install.copyFiles', function () {
       }
     })
 
-    copyFiles({
-      fileList: {
-        'oh': [ 'snap' ]
-      },
-      packageRoot: 'pkgpath',
-      callback (err) {
-        err.should.be.an.instanceof(Error)
-        done()
-      }
+    copyFiles({'oh': ['snap']}, 'pkgpath')
+    .catch(error => {
+      error.should.be.an.instanceof(Error)
+      done()
     })
   })
 })
