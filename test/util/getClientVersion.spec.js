@@ -2,15 +2,13 @@
 
 let proxyquire = require('proxyquire')
 
-let getClientVersion = proxyquire('../../lib/util/getClientVersion', {
-  './getCurrentProfile' (callback) {
-    callback(null, {version: 'fake-version'})
-  }
-})
-
 describe('util.getClientVersion', function () {
   it("returns 'getCurrentProfile().version'", function (done) {
-    getClientVersion(function (result) {
+    let getClientVersion = proxyquire('../../lib/util/getClientVersion', {
+      './getCurrentProfile': () => Promise.resolve({version: 'fake-version'})
+    })
+
+    getClientVersion().then(result => {
       'fake-version'.should.equal(result)
       done()
     })
