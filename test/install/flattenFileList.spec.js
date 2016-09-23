@@ -3,105 +3,119 @@
 let proxyquire = require('proxyquire')
 let path = require('path')
 
-let unpackedPath = 'path-to-unpacked'
-let zipPath = 'path-to-zip'
+let FOLDER_PATH = 'path-to-unpacked'
+let ZIP_PATH = 'path-to-zip'
 
-let fakeFileList = {
+let FAKE_FILE_LIST = {
   'mods/1.8/./../1.8': 'fake.mod',
   './config': 'configfiles/*.cfg'
 }
 
 let flattenedFakeFileList = {
-  [`mods${path.sep}1.8`]: [ 'fake.mod' ],
-  'config': [ `configfiles${path.sep}1.cfg`, `configfiles${path.sep}2.cfg` ]
+  [`mods${path.sep}1.8`]: ['fake.mod'],
+  'config': [`configfiles${path.sep}1.cfg`, `configfiles${path.sep}2.cfg`]
 }
 
 let flattenFileList = proxyquire('../../lib/install/flattenFileList', {
-  glob: {
-    sync (glob, opts) {
-      opts.cwd.should.equal(unpackedPath)
-      if (glob === 'configfiles/*.cfg') {
-        return [ 'configfiles/1.cfg', 'configfiles/2.cfg' ]
-      } else {
-        return [ glob ]
-      }
+  'glob': (glob, opts, callback) => {
+    opts.cwd.should.equal(FOLDER_PATH)
+    if (glob === 'configfiles/*.cfg') {
+      setImmediate(() => callback(null, ['configfiles/1.cfg', 'configfiles/2.cfg']))
+    } else {
+      setImmediate(() => callback(null, [glob]))
     }
   }
 })
 
 describe('install.flattenFileList', function () {
-  it('treats items as globs', function () {
-    let flattened = flattenFileList(fakeFileList, unpackedPath, zipPath)
-    flattened.should.deep.equal(flattenedFakeFileList)
+  it('treats items as globs', function (done) {
+    flattenFileList(FAKE_FILE_LIST, FOLDER_PATH, ZIP_PATH)
+    .then(result => {
+      result.should.deep.equal(flattenedFakeFileList)
+      done()
+    })
   })
 
-  it('returns an Error when packageDirectory not specified', function () {
-    let result = flattenFileList(fakeFileList)
-    result.should.be.an.instanceof(Error)
+  it('rejects when folder is not specified', function (done) {
+    flattenFileList(FAKE_FILE_LIST)
+    .catch(error => {
+      error.should.be.an.instanceof(Error)
+      done()
+    })
   })
 
-  it('returns an Error when trying to copy from outside of the package', function () {
-    let result = flattenFileList(
-      {'malicious': 'whatever/../..'}
-      , unpackedPath, zipPath)
-    result.should.be.an.instanceof(Error)
+  it('rejects when trying to copy from outside of the package', function (done) {
+    flattenFileList({'malicious': 'whatever/../..'}, FOLDER_PATH, ZIP_PATH)
+    .catch(error => {
+      error.should.be.an.instanceof(Error)
+      done()
+    })
   })
 
-  it('returns an Error when trying to copy from an absolute path', function () {
-    let result = flattenFileList(
-      {'malicious': path.resolve('whatever')}
-      , unpackedPath, zipPath)
-    result.should.be.an.instanceof(Error)
+  it('rejects when trying to copy from an absolute path', function (done) {
+    flattenFileList({'malicious': path.resolve('whatever')}, FOLDER_PATH, ZIP_PATH)
+    .catch(error => {
+      error.should.be.an.instanceof(Error)
+      done()
+    })
   })
 
-  it('returns an Error when trying to copy to outside of Minecraft', function () {
-    let result = flattenFileList(
-      {'whatever/../..': 'malicious'}
-      , unpackedPath, zipPath)
-    result.should.be.an.instanceof(Error)
+  it('rejects when trying to copy to outside of Minecraft', function (done) {
+    flattenFileList({'whatever/../..': 'malicious'}, FOLDER_PATH, ZIP_PATH)
+    .catch(error => {
+      error.should.be.an.instanceof(Error)
+      done()
+    })
   })
 
-  it('returns an Error when trying to copy to an absolute path', function () {
-    let list = {}
-    list[ path.resolve('whatever') ] = 'malicious'
-    let result = flattenFileList(list, unpackedPath, zipPath)
-    result.should.be.an.instanceof(Error)
+  it('rejects when trying to copy to an absolute path', function (done) {
+    flattenFileList({[path.resolve('whatever')]: 'malicious'}, FOLDER_PATH, ZIP_PATH)
+    .catch(error => {
+      error.should.be.an.instanceof(Error)
+      done()
+    })
   })
 
-  it('allows to specify arrays of globs', function () {
+  it('allows to specify arrays of globs', function (done) {
     let list = {
       'mods/1.8/./../1.8': [ 'fake.mod' ],
       './config': 'configfiles/*.cfg'
     }
 
-    let result = flattenFileList(list, unpackedPath, zipPath)
-    result.should.deep.equal(flattenedFakeFileList)
+    flattenFileList(list, FOLDER_PATH, ZIP_PATH)
+    .then(result => {
+      result.should.deep.equal(flattenedFakeFileList)
+      done()
+    })
   })
 
-  it('handles several denormalized paths pointing to the same folder', function () {
+  it('handles several denormalized paths pointing to the same folder', function (done) {
     let list = {
       'mods/1.8/./../1.8': 'foo',
       './mods/1.8': 'bar',
       'mods/1.8': 'qux'
     }
 
-    let result = flattenFileList(list, unpackedPath, zipPath)
-    result.should.deep.equal({[`mods${path.sep}1.8`]: [ 'foo', 'bar', 'qux' ]})
+    flattenFileList(list, FOLDER_PATH, ZIP_PATH)
+    .then(result => {
+      result.should.deep.equal({[`mods${path.sep}1.8`]: [ 'foo', 'bar', 'qux' ]})
+      done()
+    })
   })
 
-  it("allows to specify '@' as a way to copy an archive with the package", function () {
-    let list =
-    {'mods/1.8': '@'}
-
-    let result = flattenFileList(list, unpackedPath, zipPath)
-    result.should.deep.equal({[`mods${path.sep}1.8`]: [ zipPath ]})
+  it("allows to specify '@' as a way to copy an archive with the package", function (done) {
+    flattenFileList({'mods/1.8': '@'}, FOLDER_PATH, ZIP_PATH)
+    .then(result => {
+      result.should.deep.equal({[`mods${path.sep}1.8`]: [ ZIP_PATH ]})
+      done()
+    })
   })
 
-  it("ignores '@' when installing from a folder", function () {
-    let list =
-    {'mods/1.8': [ '@', 'other-file' ]}
-
-    let result = flattenFileList(list, 'path-to-unpacked')
-    result.should.deep.equal({[`mods${path.sep}1.8`]: [ 'other-file' ]})
+  it("ignores '@' when installing from a folder", function (done) {
+    flattenFileList({'mods/1.8': [ '@', 'other-file' ]}, 'path-to-unpacked')
+    .then(result => {
+      result.should.deep.equal({[`mods${path.sep}1.8`]: [ 'other-file' ]})
+      done()
+    })
   })
 })
