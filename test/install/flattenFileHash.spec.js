@@ -16,7 +16,7 @@ let flattenedFakeFileList = {
   'config': [`configfiles${path.sep}1.cfg`, `configfiles${path.sep}2.cfg`]
 }
 
-let flattenFileList = proxyquire('../../lib/install/flattenFileList', {
+let flattenFileHash = proxyquire('../../lib/install/flattenFileHash', {
   'glob': (glob, opts, callback) => {
     opts.cwd.should.equal(FOLDER_PATH)
     if (glob === 'configfiles/*.cfg') {
@@ -27,9 +27,9 @@ let flattenFileList = proxyquire('../../lib/install/flattenFileList', {
   }
 })
 
-describe('install.flattenFileList', function () {
+describe('install.flattenFileHash', function () {
   it('treats items as globs', function (done) {
-    flattenFileList(FAKE_FILE_LIST, FOLDER_PATH, ZIP_PATH)
+    flattenFileHash(FAKE_FILE_LIST, FOLDER_PATH, ZIP_PATH)
     .then(result => {
       result.should.deep.equal(flattenedFakeFileList)
       done()
@@ -37,7 +37,7 @@ describe('install.flattenFileList', function () {
   })
 
   it('rejects when folder is not specified', function (done) {
-    flattenFileList(FAKE_FILE_LIST)
+    flattenFileHash(FAKE_FILE_LIST)
     .catch(error => {
       error.should.be.an.instanceof(Error)
       done()
@@ -45,7 +45,7 @@ describe('install.flattenFileList', function () {
   })
 
   it('rejects when trying to copy from outside of the package', function (done) {
-    flattenFileList({'malicious': 'whatever/../..'}, FOLDER_PATH, ZIP_PATH)
+    flattenFileHash({'malicious': 'whatever/../..'}, FOLDER_PATH, ZIP_PATH)
     .catch(error => {
       error.should.be.an.instanceof(Error)
       done()
@@ -53,7 +53,7 @@ describe('install.flattenFileList', function () {
   })
 
   it('rejects when trying to copy from an absolute path', function (done) {
-    flattenFileList({'malicious': path.resolve('whatever')}, FOLDER_PATH, ZIP_PATH)
+    flattenFileHash({'malicious': path.resolve('whatever')}, FOLDER_PATH, ZIP_PATH)
     .catch(error => {
       error.should.be.an.instanceof(Error)
       done()
@@ -61,7 +61,7 @@ describe('install.flattenFileList', function () {
   })
 
   it('rejects when trying to copy to outside of Minecraft', function (done) {
-    flattenFileList({'whatever/../..': 'malicious'}, FOLDER_PATH, ZIP_PATH)
+    flattenFileHash({'whatever/../..': 'malicious'}, FOLDER_PATH, ZIP_PATH)
     .catch(error => {
       error.should.be.an.instanceof(Error)
       done()
@@ -69,7 +69,7 @@ describe('install.flattenFileList', function () {
   })
 
   it('rejects when trying to copy to an absolute path', function (done) {
-    flattenFileList({[path.resolve('whatever')]: 'malicious'}, FOLDER_PATH, ZIP_PATH)
+    flattenFileHash({[path.resolve('whatever')]: 'malicious'}, FOLDER_PATH, ZIP_PATH)
     .catch(error => {
       error.should.be.an.instanceof(Error)
       done()
@@ -82,7 +82,7 @@ describe('install.flattenFileList', function () {
       './config': 'configfiles/*.cfg'
     }
 
-    flattenFileList(list, FOLDER_PATH, ZIP_PATH)
+    flattenFileHash(list, FOLDER_PATH, ZIP_PATH)
     .then(result => {
       result.should.deep.equal(flattenedFakeFileList)
       done()
@@ -96,7 +96,7 @@ describe('install.flattenFileList', function () {
       'mods/1.8': 'qux'
     }
 
-    flattenFileList(list, FOLDER_PATH, ZIP_PATH)
+    flattenFileHash(list, FOLDER_PATH, ZIP_PATH)
     .then(result => {
       result.should.deep.equal({[`mods${path.sep}1.8`]: [ 'foo', 'bar', 'qux' ]})
       done()
@@ -104,7 +104,7 @@ describe('install.flattenFileList', function () {
   })
 
   it("allows to specify '@' as a way to copy an archive with the package", function (done) {
-    flattenFileList({'mods/1.8': '@'}, FOLDER_PATH, ZIP_PATH)
+    flattenFileHash({'mods/1.8': '@'}, FOLDER_PATH, ZIP_PATH)
     .then(result => {
       result.should.deep.equal({[`mods${path.sep}1.8`]: [ ZIP_PATH ]})
       done()
@@ -112,7 +112,7 @@ describe('install.flattenFileList', function () {
   })
 
   it("ignores '@' when installing from a folder", function (done) {
-    flattenFileList({'mods/1.8': [ '@', 'other-file' ]}, 'path-to-unpacked')
+    flattenFileHash({'mods/1.8': [ '@', 'other-file' ]}, 'path-to-unpacked')
     .then(result => {
       result.should.deep.equal({[`mods${path.sep}1.8`]: [ 'other-file' ]})
       done()

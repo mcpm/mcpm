@@ -110,12 +110,12 @@ describe('validateManifest', function () {
     })
   })
 
-  it('allows install_file_list instead of install_command', function (done) {
+  it('allows installFiles instead of install_command', function (done) {
     validateManifest({
       name: 'fake',
       version: '0.1.0',
       mc: '1.8',
-      install_file_list: { 'mods/fake-mod': 'index.js'
+      installFiles: { 'mods/fake-mod': 'index.js'
       }
     }).then(result => {
       result.should.equal(true)
@@ -123,12 +123,12 @@ describe('validateManifest', function () {
     })
   })
 
-  it('returns an Error when install_file_list is not an object', function (done) {
+  it('returns an Error when installFiles is not an object', function (done) {
     validateManifest({
       name: 'fake',
       version: '0.1.0',
       mc: '1.8',
-      install_file_list: [ 'index.js' ]
+      installFiles: [ 'index.js' ]
     }).catch(error => {
       error.should.be.an.instanceof(Error)
       error.message.should.contain('install')
@@ -136,7 +136,7 @@ describe('validateManifest', function () {
     })
   })
 
-  it('returns an Error when no install_file_list/install_command', function (done) {
+  it('returns an Error when no installFiles/install_command', function (done) {
     validateManifest({
       name: 'fake',
       version: '0.1.0',

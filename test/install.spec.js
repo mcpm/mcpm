@@ -6,7 +6,7 @@ let expect = require('chai').expect
 let FAKE_MANIFEST = {
   name: 'fake-name',
   version: 'fake-version',
-  install_file_list: 'fake-file-list',
+  installFiles: 'fake-file-list',
   install_command: 'fake-command'
 }
 
@@ -32,8 +32,8 @@ describe('install', function () {
         manifest.should.deep.equal(FAKE_MANIFEST)
         return Promise.resolve()
       },
-      './handleInstallFileList': (fileList, folderPath, zipPath) => {
-        fileList.should.equal(FAKE_MANIFEST.install_file_list)
+      './handleInstallFiles': (fileHash, folderPath, zipPath) => {
+        fileHash.should.equal(FAKE_MANIFEST.installFiles)
         folderPath.should.equal('fake-folder')
         zipPath.should.equal('fake-zip')
         return Promise.resolve()
@@ -65,8 +65,8 @@ describe('install', function () {
       },
       './install/readManifest': () => Promise.resolve(FAKE_MANIFEST),
       './validateManifest': () => Promise.resolve(),
-      './handleInstallFileList': (fileList, folderPath, zipPath) => {
-        fileList.should.equal(FAKE_MANIFEST.install_file_list)
+      './handleInstallFiles': (fileHash, folderPath, zipPath) => {
+        fileHash.should.equal(FAKE_MANIFEST.installFiles)
         folderPath.should.equal('fake-folder')
         expect(zipPath).to.equal(null)
         return Promise.resolve()
