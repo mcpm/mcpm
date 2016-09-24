@@ -6,7 +6,7 @@ describe('ensureUnzipped', function () {
   it('returns passed path when it is actually a folder', function (done) {
     let ensureUnzipped = proxyquire('../lib/ensureUnzipped', {
       'fs-extra-promise': {
-        isDirectory: () => Promise.resolve(true)
+        isDirectoryAsync: () => Promise.resolve(true)
       }
     })
 
@@ -19,7 +19,7 @@ describe('ensureUnzipped', function () {
   it('unzips to a temp directory and returns it', function (done) {
     let ensureUnzipped = proxyquire('../lib/ensureUnzipped', {
       'fs-extra-promise': {
-        isDirectory: () => Promise.resolve(false)
+        isDirectoryAsync: () => Promise.resolve(false)
       },
       'tmp-promise': {
         dir: () => Promise.resolve({path: 'fake-temp-dir'})

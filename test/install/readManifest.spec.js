@@ -7,7 +7,7 @@ describe('install.readManifest', function () {
   it('reads manifest from folder', function (done) {
     let readManifest = proxyquire('../../lib/install/readManifest', {
       'fs-extra-promise': {
-        readFile: (filename, encoding) => {
+        readFileAsync: (filename, encoding) => {
           filename.should.equal(`fake-folder${path.sep}mcpm-package.json`)
           encoding.should.equal('utf8')
           return Promise.resolve('{"foo": "bar"}')
@@ -25,7 +25,7 @@ describe('install.readManifest', function () {
   it('returns null when manifest not found', function (done) {
     let readManifest = proxyquire('../../lib/install/readManifest', {
       'fs-extra-promise': {
-        readFile: () => Promise.reject('fake-error')
+        readFileAsync: () => Promise.reject('fake-error')
       }
     })
 
