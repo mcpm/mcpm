@@ -10,10 +10,8 @@ describe('handleInstallCommand', function () {
         exec: (command, opts, callback) => {
           command.should.equal('fake-command')
           opts.cwd.should.equal('fake-folder')
-          opts.env.should.deep.equal({
-            MCPM: '1',
-            PATH_TO_MINECRAFT: 'fake-mcpath'
-          })
+          opts.env.should.have.property('MCPM', '1')
+          opts.env.should.have.property('PATH_TO_MINECRAFT', 'fake-mcpath')
           callback()
         }
       }
