@@ -36,6 +36,7 @@
     "fs-extra": "~0.30.0",
     "fs-extra-promise": "^0.4.1",
     "glob": "~7.1.0",
+    "got": "^6.5.0",
     "home-dir": "^1.0.0",
     "lodash": "^4.15.0",
     "semver": "~5.3.0",
