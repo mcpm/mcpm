@@ -2,5 +2,5 @@
   "name": "fake-mod",
   "version": "0.1.0",
   "mc": "~1.8.2",
-  "install_executable": "index.js"
+  "installCommand": "index.js"
 }
