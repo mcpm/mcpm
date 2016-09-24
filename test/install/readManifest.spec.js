@@ -1,17 +1,38 @@
 /* eslint-env mocha */
 
-let expect = require('chai').expect
+let proxyquire = require('proxyquire')
 let path = require('path')
-let readManifest = require('../../lib/install/readManifest')
 
 describe('install.readManifest', function () {
-  it('reads config inside package and returns its contents', function () {
-    let result = readManifest(path.resolve('./test/fixtures/fake-mod'))
-    result.should.be.a('string')
+  it('reads manifest from folder', function (done) {
+    let readManifest = proxyquire('../../lib/install/readManifest', {
+      'fs-extra-promise': {
+        readFile: (filename, encoding) => {
+          filename.should.equal(`fake-folder${path.sep}mcpm-package.json`)
+          encoding.should.equal('utf8')
+          return Promise.resolve('{"foo": "bar"}')
+        }
+      }
+    })
+
+    readManifest('fake-folder')
+    .then(result => {
+      result.should.deep.equal({foo: 'bar'})
+      done()
+    })
   })
 
-  it('returns null when config not found', function () {
-    let result = readManifest(path.resolve('./test/fixtures/404'))
-    expect(result).to.equal(null)
+  it('returns null when manifest not found', function (done) {
+    let readManifest = proxyquire('../../lib/install/readManifest', {
+      'fs-extra-promise': {
+        readFile: () => Promise.reject('fake-error')
+      }
+    })
+
+    readManifest('fake-folder')
+    .catch(error => {
+      error.should.equal('fake-error')
+      done()
+    })
   })
 })
