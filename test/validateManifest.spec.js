@@ -11,7 +11,7 @@ describe('validateManifest', function () {
     validateManifest({
       version: '0.1.0',
       mc: '1.8',
-      install_command: 'index.js'
+      installCommand: 'index.js'
     }).catch(error => {
       error.should.be.an.instanceof(Error)
       error.message.should.contain('name')
@@ -23,7 +23,7 @@ describe('validateManifest', function () {
     validateManifest({
       name: 'fake',
       mc: '1.8',
-      install_command: 'index.js'
+      installCommand: 'index.js'
     }).catch(error => {
       error.should.be.an.instanceof(Error)
       error.message.should.contain('version')
@@ -35,7 +35,7 @@ describe('validateManifest', function () {
     validateManifest({
       name: 'fake',
       version: '0.1.0',
-      install_command: 'index.js'
+      installCommand: 'index.js'
     }).catch(error => {
       error.should.be.an.instanceof(Error)
       error.message.should.contain('mc')
@@ -49,7 +49,7 @@ describe('validateManifest', function () {
       name,
       version: '0.1.0',
       mc: '1.8',
-      install_command: 'index.js'
+      installCommand: 'index.js'
     }).catch(error => {
       error.should.be.an.instanceof(Error)
       error.message.should.contain('name')
@@ -63,7 +63,7 @@ describe('validateManifest', function () {
       name: 'fake',
       version,
       mc: '1.8',
-      install_command: 'index.js'
+      installCommand: 'index.js'
     }).catch(error => {
       error.should.be.an.instanceof(Error)
       error.message.should.contain('version')
@@ -77,7 +77,7 @@ describe('validateManifest', function () {
       name: 'fake',
       version: '0.1.0',
       mc,
-      install_command: 'index.js'
+      installCommand: 'index.js'
     }).catch(error => {
       error.should.be.an.instanceof(Error)
       error.message.should.contain('mc')
@@ -90,7 +90,7 @@ describe('validateManifest', function () {
       name: 'fake',
       version: '0.1.0',
       mc: '1.5',
-      install_command: 'index.js'
+      installCommand: 'index.js'
     }).catch(error => {
       error.should.be.an.instanceof(Error)
       error.message.should.contain('version')
@@ -103,14 +103,14 @@ describe('validateManifest', function () {
       name: 'fake',
       version: '0.1.0',
       mc: '1.8',
-      install_command: 'index.js'
+      installCommand: 'index.js'
     }).then(result => {
       result.should.equal(true)
       done()
     })
   })
 
-  it('allows installFiles instead of install_command', function (done) {
+  it('allows installFiles instead of installCommand', function (done) {
     validateManifest({
       name: 'fake',
       version: '0.1.0',
@@ -136,7 +136,7 @@ describe('validateManifest', function () {
     })
   })
 
-  it('returns an Error when no installFiles/install_command', function (done) {
+  it('returns an Error when no installFiles/installCommand', function (done) {
     validateManifest({
       name: 'fake',
       version: '0.1.0',
@@ -153,7 +153,7 @@ describe('validateManifest', function () {
       name: 'fake',
       version: '0.1.0',
       mc: '1.8',
-      install_command: 'index.js',
+      installCommand: 'index.js',
       custom: 'whatever',
       field: 5
     }).then(result => {

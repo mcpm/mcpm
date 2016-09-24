@@ -7,7 +7,7 @@ let FAKE_MANIFEST = {
   name: 'fake-name',
   version: 'fake-version',
   installFiles: 'fake-file-list',
-  install_command: 'fake-command'
+  installCommand: 'fake-command'
 }
 
 describe('install', function () {
@@ -39,7 +39,7 @@ describe('install', function () {
         return Promise.resolve()
       },
       './handleInstallCommand': (command, folderPath) => {
-        command.should.equal(FAKE_MANIFEST.install_command)
+        command.should.equal(FAKE_MANIFEST.installCommand)
         folderPath.should.equal('fake-folder')
         return Promise.resolve()
       },
