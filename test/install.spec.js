@@ -1,66 +1,80 @@
 /* eslint-env mocha */
 
-let sinon = require('sinon')
 let proxyquire = require('proxyquire')
+let expect = require('chai').expect
+
+let FAKE_MANIFEST = {
+  name: 'fake-name',
+  version: 'fake-version',
+  install_file_list: 'fake-file-list',
+  install_command: 'fake-command'
+}
 
 describe('install', function () {
-  it('rejects when parsePackageString returns null', function (done) {
-    let fakeParsePackageString = sinon.stub().returns(null)
-
-    let install = proxyquire('../lib/install',
-      {'./install/parsePackageString': fakeParsePackageString})
-
-    install('whatever').then(() => {
-      done(new Error('Should have rejected!'))
-    }, (err) => {
-      err.should.be.instanceof(Error)
-      done()
-    })
-  })
-
-  it("calls install.fromFolder when package is of 'folder' type", function (done) {
+  it('installs from a zip', function (done) {
     let install = proxyquire('../lib/install', {
-      './install/parsePackageString': (str) => {
-        str.should.equal('fake-str')
-        return {type: 'folder', name: 'fake-name'}
+      './install/parsePackageString': packageString => {
+        packageString.should.equal('fake-package')
+        return {
+          name: 'fake-zip',
+          type: 'zip'
+        }
       },
-      './install/fromFolder': (name) => {
-        name.should.equal('fake-name')
+      './ensureUnzipped': zipPath => {
+        zipPath.should.equal('fake-zip')
+        return Promise.resolve('fake-folder')
+      },
+      './install/readManifest': folderPath => {
+        folderPath.should.equal('fake-folder')
+        return Promise.resolve(FAKE_MANIFEST)
+      },
+      './validateManifest': manifest => {
+        manifest.should.deep.equal(FAKE_MANIFEST)
+        return Promise.resolve()
+      },
+      './handleInstallFileList': (fileList, folderPath, zipPath) => {
+        fileList.should.equal(FAKE_MANIFEST.install_file_list)
+        folderPath.should.equal('fake-folder')
+        zipPath.should.equal('fake-zip')
+        return Promise.resolve()
+      },
+      './handleInstallCommand': (command, folderPath) => {
+        command.should.equal(FAKE_MANIFEST.install_command)
+        folderPath.should.equal('fake-folder')
+        return Promise.resolve()
+      },
+      './util/addInstalledPackage': (name, version) => {
+        name.should.equal(FAKE_MANIFEST.name)
+        version.should.equal(FAKE_MANIFEST.version)
         return Promise.resolve()
       }
     })
 
-    install('fake-str').then(done)
+    install('fake-package').then(done)
   })
 
-  it("calls install.fromZip when package is of 'zip' type", function (done) {
+  it('installs from a folder', function (done) {
     let install = proxyquire('../lib/install', {
-      './install/parsePackageString': (str) => {
-        str.should.equal('fake-str')
-        return {type: 'zip', name: 'fake-name'}
+      './install/parsePackageString': () => ({
+        name: 'fake-folder',
+        type: 'folder'
+      }),
+      './ensureUnzipped': zipPath => {
+        zipPath.should.equal('fake-folder')
+        return Promise.resolve('fake-folder')
       },
-      './install/fromZip': (name) => {
-        name.should.equal('fake-name')
+      './install/readManifest': () => Promise.resolve(FAKE_MANIFEST),
+      './validateManifest': () => Promise.resolve(),
+      './handleInstallFileList': (fileList, folderPath, zipPath) => {
+        fileList.should.equal(FAKE_MANIFEST.install_file_list)
+        folderPath.should.equal('fake-folder')
+        expect(zipPath).to.equal(null)
         return Promise.resolve()
-      }
+      },
+      './handleInstallCommand': () => Promise.resolve(),
+      './util/addInstalledPackage': () => Promise.resolve()
     })
 
-    install('fake-str').then(done)
-  })
-
-  it("calls install.fromCache when package is of 'cache' type", function (done) {
-    let install = proxyquire('../lib/install', {
-      './install/parsePackageString': (str) => {
-        str.should.equal('fake-str')
-        return {type: 'cache', name: 'fake-name', version: 'fake-version'}
-      },
-      './install/fromCache': (name, version) => {
-        name.should.equal('fake-name')
-        version.should.equal('fake-version')
-        return Promise.resolve()
-      }
-    })
-
-    install('fake-str').then(done)
+    install('fake-package').then(done)
   })
 })
