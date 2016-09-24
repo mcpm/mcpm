@@ -2,6 +2,7 @@
 
 let commander = require('commander')
 let winston = require('winston')
+let async = require('async')
 let install = require('../lib/install')
 let getCurrentProfile = require('../lib/util/getCurrentProfile')
 let getClientVersion = require('../lib/util/getClientVersion')
@@ -24,25 +25,33 @@ commander
   .alias('i')
   .description('install one or more packages')
   .action(packages => {
-    let startProfile = getCurrentProfile()
-    winston.info(`Current Minecraft version: ${startProfile.version}`)
-    winston.info(`Current profile name: ${startProfile.originalInfo.name}`)
-    console.log()
-
-    packages.forEach(pkg => {
-      let result = install(pkg)
-      if (result instanceof Error) {
-        winston.error(`${pkg}: ${result.name}: ${result.message}`)
-      }
-    })
-
-    let endProfile = getCurrentProfile()
-    if ((endProfile.version !== startProfile.version) ||
-      (endProfile.originalInfo.name !== startProfile.originalInfo.name)) {
+    getCurrentProfile().then(startProfile => {
+      winston.info(`Current Minecraft version: ${startProfile.version}`)
+      winston.info(`Current profile name: ${startProfile.originalInfo.name}`)
       console.log()
-      winston.info(`Current Minecraft version: ${endProfile.version}`)
-      return winston.info(`Current profile name: ${endProfile.originalInfo.name}`)
-    }
+
+      async.forEachSeries(packages, (pkg, done) => {
+        winston.info(`Installing ${pkg}`)
+        install(pkg)
+        .then(() => done())
+        .catch(error => {
+          winston.error(`${pkg}: ${error.name}: ${error.message}`)
+          done(error)
+        })
+      }, (error) => {
+        if (error) return winston.error(`Something went wrong! ${error.message}`)
+
+        winston.info('Done!')
+        getCurrentProfile().then(endProfile => {
+          if ((endProfile.version !== startProfile.version) ||
+            (endProfile.originalInfo.name !== startProfile.originalInfo.name)) {
+            console.log()
+            winston.info(`Current Minecraft version: ${endProfile.version}`)
+            winston.info(`Current profile name: ${endProfile.originalInfo.name}`)
+          }
+        })
+      })
+    })
   })
 
 commander
