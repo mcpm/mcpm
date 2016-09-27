@@ -65,21 +65,29 @@ commander
 commander.on('--help', () => console.log([
   '  Examples:',
   '',
-  '    Install a package from the ./foo directory',
+  '    Install a package from a remote archive',
+  '      $ mcpm install "https://example.com/path/to/mod"',
+  '',
+  '    Install a package from directory ./foo',
   '      $ mcpm install ./foo',
   '',
-  '    Install a package from the ./foo.zip archive',
+  '    Install a package from the archive ./foo.zip',
   '      $ mcpm install ./foo.zip',
   '',
-  '    Install a package from cache',
-  '      $ mcpm install foo@0.2.0',
+  '    Show Minecraft version of the currently selected profile',
+  '      $ mcpm mc',
   '',
-  '    Show the Minecraft version of the currently selected profile',
-  '      $ mcpm mc'
-].join('\n')
-)
-
-)
+  '  Packages:',
+  '',
+  '    A package is a ZIP archive with "mcpm-package.json" file inside.',
+  '      See https://github.com/mcpm/mcpm/wiki/mcpm-Package-Manifest',
+  '      for more details.',
+  '',
+  '  Other supported formats: ',
+  '',
+  '   - Forge mods ("mcmod.info" inside)',
+  '   - LiteLoader mods ("litemod.json" inside)'
+].join('\n')))
 
 commander
   .parse(process.argv)
