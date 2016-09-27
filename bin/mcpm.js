@@ -59,7 +59,7 @@ commander
   .alias('mc')
   .description('display currently selected Minecraft version')
   .action(function () {
-    getClientVersion(version => console.log(version))
+    getClientVersion().then(version => console.log(version))
   })
 
 commander.on('--help', () => console.log([
