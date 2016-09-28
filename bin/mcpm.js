@@ -16,9 +16,15 @@ let increaseVerbosity = function (v, total) {
   return total + (total < verbosityLevels.length - 1)
 }
 
+function setPathToMinecraft (path) {
+  const getMinecraftPath = require('../lib/util/getMinecraftPath')
+  getMinecraftPath.set(path)
+}
+
 commander
   .version(require('../package.json').version)
   .option('-v, --verbose', 'increase verbosity', increaseVerbosity, 0)
+  .option('-m, --minecraft-path <path>', 'custom path to .minecraft', setPathToMinecraft)
 
 commander
   .command('install <packages...>')
